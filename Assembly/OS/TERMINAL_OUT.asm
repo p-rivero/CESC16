@@ -116,7 +116,7 @@ PRINT:
 
 ; Prints the contents of a1,a0 as aN UNSIGNED 32-bit integer (a1 contains upper bits).
 .DWord:
-    ; TODO
+    ; TODO: fer versió de 32 bits de Double dabble
     ret
     
     

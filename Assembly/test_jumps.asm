@@ -105,6 +105,6 @@ progmem_end:
 
 #bank data
 ; Arguments to be tested:
-args:       #res (progmem_outputs - progmem_args)*2 ; PROGMEM(progmem_args, progmem_outputs)
+args:       PROGMEM(progmem_args, progmem_outputs)
 ; Expected outputs:
-outputs:    #res (progmem_end - progmem_outputs)*2 ;PROGMEM(progmem_outputs, progmem_end)
+outputs:    PROGMEM(progmem_outputs, progmem_end)
