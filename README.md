@@ -6,7 +6,7 @@ This repository contains the following:
 - [**MAIN DOCUMENTATION**](https://github.com/p-rivero/CESC16/blob/main/DOCS/CESC16.pdf)
 - Extended information about the ISA it supports and the I/O interfaces
 - Examples of some assembly programs
-- A basic OS
+- A basic OS, including libraries for Math, I/O, and Flow control
 
 ## Computer:
 - C source code for generating the computer microcode
