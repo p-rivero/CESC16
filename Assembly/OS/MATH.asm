@@ -36,11 +36,11 @@ MATH:
 ; Worst case run time: ~330 clock cycles (170 if M is 8 bit)
 .UMult32:
 .Mult32:
-    mov v0, zero     ; Set the result to 0 (lower bits)
-    mov t4, zero     ; Set the result to 0 (upper bits)
+    mov v0, zero    ; Set the result to 0 (lower bits)
+    mov t4, zero    ; Set the result to 0 (upper bits)
     
     test a2
-    jz ..endwhile      ; if B == 0, return 0
+    jz ..endwhile   ; if B == 0, return 0
 
 ..while: 
     mask a2, 0x01       ; Test last bit

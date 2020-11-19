@@ -1,3 +1,7 @@
+#ifndef _RULEDEF
+#define _RULEDEF
+; Include ruledef file only once
+
 #subruledef REG {
     zero => 0x0
     sp   => 0x1
@@ -51,23 +55,35 @@
     {Imm: u16}   =>   Imm
 }
 
+; Instruction definitions needed for macros
+#define _MOV_REG(rD, rA)            0x00 @ rD`4 @ rA`4 @ 0x0000
+#define _ALU_REG(op, rD, rA, rB)    0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+#define _ALU_IMM(op, rD, rA, Imm)   0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
+#define _ALU_DIR(op, rD, rA, Addr)  0b00010 @ op`3 @ rD`4 @ rA`4 @ Addr
+#define _ALU_IND(op, rD, rA, rB)    0b00011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+
+#define _LOAD_B(rD, rA, Imm)        0x61 @ rD`4 @ rA`4 @ Imm
+#define _STORE(rB, rA, Imm)         0x62 @ rB`4 @ rA`4 @ Imm
+
+#define _CALL(Addr)                 0x7801 @ Addr`16
+
 
 #ruledef INSTRUCTIONS {
     ; ALU
-    mov {rD: REG}, {rA: REG} => 0x00 @ rD`4 @ rA`4 @ 0x0000
-    {op: ALU_OP} {rD: REG}, {rA: REG}, {rB: REG}  => 0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+    mov {rD: REG}, {rA: REG} => _MOV_REG(rD, rA)
+    {op: ALU_OP} {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(op, rD, rA, rB)
 
     mov {rD: REG}, ({Addr: u16}) => 0x10 @ rD`4 @ 0x0 @ Addr
-    {op: ALU_OP} {rD: REG}, {rA: REG}, ({Addr: u16}) => 0b00010 @ op`3 @ rD`4 @ rA`4 @ Addr
+    {op: ALU_OP} {rD: REG}, {rA: REG}, ({Addr: u16}) => _ALU_DIR(op, rD, rA, Addr)
 
     mov {rD: REG}, {Imm: i16} => 0x08 @ rD`4 @ 0x0 @ Imm
-    {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => 0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
+    {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => _ALU_IMM(op, rD, rA, Imm)
     
     mov {rD: REG}, ({rB: REG}) => 0x18 @ rD`4 @ 0x0000 @ rB`4
-    {op: ALU_OP} {rD: REG}, {rA: REG}, ({rB: REG}) => 0b00011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+    {op: ALU_OP} {rD: REG}, {rA: REG}, ({rB: REG}) => _ALU_IND(op, rD, rA, rB)
     
-    {op: ALU_OP} ({Addr: u16}), {rA: REG}   => 0b00100 @ op`3 @ 0x0 @ rA`4 @ Addr
-    {op: ALU_OP} ({rA: REG}), {rB: REG}     => 0b00101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
+    {op: ALU_OP} ({Addr: u16}), {rA: REG} => 0b00100 @ op`3 @ 0x0 @ rA`4 @ Addr
+    {op: ALU_OP} ({rA: REG}), {rB: REG} => 0b00101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x4 @ Imm @ rD`4 @ rA`4 @ 0x0000
@@ -75,62 +91,60 @@
     
     
     ; Memory
-    lw   {rD: REG}, {Imm: i16}({rA: REG})   => 0x60 @ rD`4 @ rA`4 @ Imm
-    lb   {rD: REG}, {Imm: i16}({rA: REG})   => 0x61 @ rD`4 @ rA`4 @ Imm
-    sw   {rB: REG}, {Imm: i16}({rA: REG})   => 0x62 @ rB`4 @ rA`4 @ Imm
+    lw   {rD: REG}, {Imm: i16}({rA: REG}) => 0x60 @ rD`4 @ rA`4 @ Imm
+    lb   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD_B(rD, rA, Imm)
+    sw   {rB: REG}, {Imm: i16}({rA: REG}) => _STORE(rB, rA, Imm)
     
-    push {rB: REG}  => 0x6301000 @ rB`4
-    pop  {rD: REG}  => 0x64 @ rD`4 @ 0x10000
+    push {rB: REG} => 0x6301000 @ rB`4
+    pop  {rD: REG} => 0x64 @ rD`4 @ 0x10000
     
-    swap {rD: REG}, {Imm: i16}({rA: REG})   => 0x65 @ rD`4 @ rA`4 @ Imm
+    swap {rD: REG}, {Imm: i16}({rA: REG}) => 0x65 @ rD`4 @ rA`4 @ Imm
     peek {rD: REG}, {Imm: i16}({rA: REG}), {W: i1}  => 0b0110011 @ W @ rD`4 @ rA`4 @ Imm
     
     
     ; Jumps
     {jmp: JUMP} {Addr: JMP_ADDR} => 0b01101 @ jmp`3 @ 0x00 @ Addr`16
-    {jmp: JUMP} {rA: REG}        => 0b01110 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {rA: REG} => 0b01110 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
     
-    call {Addr: JMP_ADDR}   => 0x7801 @ Addr`16
-    ret     => 0x79010000
+    call {Addr: JMP_ADDR} => _CALL(Addr)
+    ret => 0x79010000
 }
 
 #ruledef MACROS {
-    ; TODO: canviar rA -> rA amb rA, rB, rD
-    movf {rD: REG}, {rA: REG}     => 0x04 @ rD`4 @ 0x0000 @ rA`4 ; Expands to: add rD, zero, rA
-    movf {rD: REG}, ({Addr: u16}) => 0x14 @ rD`4 @ 0x0 @ Addr    ; Expands to: add rD, zero, (Addr16)
-    movf {rD: REG}, {Imm: i16}    => 0x0C @ rD`4 @ 0x0 @ Imm     ; Expands to: add rD, zero, Imm16
-    movf {rD: REG}, ({rA: REG})   => 0x1C @ rD`4 @ 0x0000 @ rA   ; Expands to: add rD, zero, (rA)
+    movf {rD: REG}, {rA: REG}     => _ALU_REG(0b100, rD, 0, rA)     ; Expands to: add rD, zero, rA
+    movf {rD: REG}, ({Addr: u16}) => _ALU_DIR(0b100, rD, 0, Addr)   ; Expands to: add rD, zero, (Addr16)
+    movf {rD: REG}, {Imm: i16}    => _ALU_IMM(0b100, rD, 0, Imm)    ; Expands to: add rD, zero, Imm16
+    movf {rD: REG}, ({rA: REG})   => _ALU_IND(0b100, rD, 0, rA)     ; Expands to: add rD, zero, (rA)
     
-    not  {rD: REG}, {rA: REG}   => 0x0B @ rD`4 @ rA`4 @ 0xFFFF ; Expands to: xor rD, rA, 0xFFFF
-    nand {rD: REG}, {rA: REG}, {rB: REG}    => 0x01 @ rD`4 @ rA`4 @ 0x000 @ rB`4  @  0x0B @ rD`4 @ rD`4 @ 0xFFFF ; Expands to: and rD, rA, rB; xor rD, rD, 0xFFFF
-    nor  {rD: REG}, {rA: REG}, {rB: REG}    => 0x02 @ rD`4 @ rA`4 @ 0x000 @ rB`4  @  0x0B @ rD`4 @ rD`4 @ 0xFFFF ; Expands to: or rD, rA, rB; xor rD, rD, 0xFFFF
-    xnor {rD: REG}, {rA: REG}, {rB: REG}    => 0x03 @ rD`4 @ rA`4 @ 0x000 @ rB`4  @  0x0B @ rD`4 @ rD`4 @ 0xFFFF ; Expands to: xor rD, rA, rB; xor rD, rD, 0xFFFF
+    not  {rD: REG}, {rA: REG}   =>  _ALU_IMM(0b011, rD, rA, 0xFFFF) ; Expands to: xor rD, rA, 0xFFFF
+    nand {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b001, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: and rD, rA, rB; xor rD, rD, 0xFFFF
+    nor  {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b010, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: or rD, rA, rB; xor rD, rD, 0xFFFF
+    xnor {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b011, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: xor rD, rA, rB; xor rD, rD, 0xFFFF
     
-    sllc {rD: REG}, {rA: REG} => 0x06 @ rD`4 @ rA`4 @ 0x000 @ rA`4 ; Expands to: addc rD, rA, rA
+    sllc {rD: REG}, {rA: REG}   =>  _ALU_REG(0b110, rD, rA, rA)  ; Expands to: addc rD, rA, rA
     
-    lbu  {rD: REG}, {Imm: i16}({rA: REG})   => 0x61 @ rD`4 @ rA`4 @ Imm  @  0x09 @ rD`4 @ rD`4 @ 0x00FF ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
-    sb   {rB: REG}, {Imm: i16}({rA: REG})   => 0x62 @ rB`4 @ rA`4 @ Imm ; sw rD, Imm16(rA)
+    lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD_B(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
+    sb   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
     
-    cmp {rA: REG}, {rB: REG}  => 0x050 @ rA`4 @ 0x000 @ rB`4 ; Expands to: sub zero, rA, rB
-    cmp {rA: REG}, {Imm: i16} => 0x0D0 @ rA`4 @ Imm ; Expands to: sub zero, rA, Imm
+    cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
+    cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
     
-    mask {rA: REG}, {rB: REG}  => 0x010 @ rA`4 @ 0x000 @ rB`4 ; Expands to: and zero, rA, rB
-    mask {rA: REG}, {Imm: i16} => 0x090 @ rA`4 @ Imm ; Expands to: and zero, rA, Imm
+    mask {rA: REG}, {rB: REG}  => _ALU_REG(0b001, 0, rA, rB)  ; Expands to: and zero, rA, rB
+    mask {rA: REG}, {Imm: i16} => _ALU_IMM(0b001, 0, rA, Imm) ; Expands to: and zero, rA, Imm
     
-    test {rA: REG}      => 0x0400000 @ rA`4 ; Expands to: add zero, zero, rA
-    test ({Addr: u16})  => 0x1400 @ Addr    ; Expands to: add zero, zero, (Addr16)
-    test ({rA: REG})    => 0x1C00000 @ rA`4 ; Expands to: add zero, zero, (rA)
+    test {rA: REG}      => _ALU_REG(0b100, 0, 0, rA)    ; Expands to: add zero, zero, rA
+    test ({Addr: u16})  => _ALU_DIR(0b100, 0, 0, Addr)  ; Expands to: add zero, zero, (Addr16)
+    test ({rA: REG})    => _ALU_IND(0b100, 0, 0, rA)    ; Expands to: add zero, zero, (rA)
     
-    clf => 0x0C000001 ; Expands to: add zero, zero, 0x0001
+    clf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
     
-    syscall {Addr: u16} => 0x7801 @ Addr ; Expands to: call Addr16
+    syscall {Addr: u16} => _CALL(Addr)  ; Expands to: call Addr16
     
-    nop => 0x00000000 ; Expands to: mov zero, zero
+    nop => _MOV_REG(0, 0)   ; Encoded as 0x00000000, Expands to: mov zero, zero
 }
 
-#ruledef UTILITIES {
-    PROGMEM({Begin: u16}, {End: u16}) => ((End - Begin)*2)`16
-}
+; Utilities
+#define PROGMEM(Begin, End) #res (End - Begin)*2
 
 #bankdef program {
     #addr 0
@@ -144,3 +158,6 @@
     #size 0x10000   ; 64k
     #bits 16
 }
+
+; End ruledef
+#endif
