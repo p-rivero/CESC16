@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<NotepadPlus>
+	<AutoComplete language="CESC16">
+    
+		<Environment ignoreCase="no" />
+        
+		<KeyWord name="zero" />
+		<KeyWord name="sp" />
+		<KeyWord name="t0" />
+		<KeyWord name="t1" />
+		<KeyWord name="t2" />
+		<KeyWord name="t3" />
+		<KeyWord name="t4" />
+		<KeyWord name="a0" />
+		<KeyWord name="a1" />
+		<KeyWord name="a2" />
+		<KeyWord name="v0" />
+		<KeyWord name="s0" />
+		<KeyWord name="s1" />
+		<KeyWord name="s2" />
+		<KeyWord name="s3" />
+		<KeyWord name="s4" />
+        
+		<KeyWord name="mov" />
+		<KeyWord name="and" />
+		<KeyWord name="or" />
+		<KeyWord name="xor" />
+		<KeyWord name="add" />
+		<KeyWord name="sub" />
+		<KeyWord name="addc" />
+		<KeyWord name="subb" />
+		<KeyWord name="sll" />
+		<KeyWord name="srl" />
+		<KeyWord name="sra" />
+		<KeyWord name="sw" />
+		<KeyWord name="lw" />
+		<KeyWord name="lb" />
+		<KeyWord name="push" />
+		<KeyWord name="pop" />
+		<KeyWord name="swap" />
+		<KeyWord name="peek" />
+		<KeyWord name="call" />
+		<KeyWord name="ret" />
+		<KeyWord name="j" />
+		<KeyWord name="jz" />
+		<KeyWord name="jnz" />
+		<KeyWord name="jc" />
+		<KeyWord name="jnc" />
+		<KeyWord name="jleu" />
+		<KeyWord name="jlt" />
+		<KeyWord name="jle" />
+        
+		<KeyWord name="movf" />
+		<KeyWord name="not" />
+		<KeyWord name="nand" />
+		<KeyWord name="nor" />
+		<KeyWord name="xnor" />
+		<KeyWord name="sllc" />
+		<KeyWord name="cmp" />
+		<KeyWord name="mask" />
+		<KeyWord name="test" />
+		<KeyWord name="clf" />
+		<KeyWord name="lbu" />
+		<KeyWord name="sb" />
+		<KeyWord name="jb" />
+		<KeyWord name="jnb" />
+		<KeyWord name="jeq" />
+		<KeyWord name="jne" />
+		<KeyWord name="jltu" />
+		<KeyWord name="syscall" />
+		<KeyWord name="nop" />
+        
+		<KeyWord name="include" />
+		<KeyWord name="bank" />
+		<KeyWord name="str" />
+		<KeyWord name="res" />
+		<KeyWord name="d8" />
+		<KeyWord name="d16" />
+		<KeyWord name="d32" />
+		<KeyWord name="pc" />
+		<KeyWord name="offset" />
+		<KeyWord name="PROGMEM" />
+        
+	</AutoComplete>
+</NotepadPlus>
