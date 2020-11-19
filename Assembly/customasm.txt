@@ -1,0 +1,4 @@
+CUSTOMASM:
+
+Go to https://github.com/hlorenzi/customasm/releases and download the latest version of customasm.
+Then replace this file with customasm.exe
