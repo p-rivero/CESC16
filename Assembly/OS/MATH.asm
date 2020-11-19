@@ -23,7 +23,7 @@ MATH:
 
     sll a1, a1, 1   ; Shift m to the left
     srl a0, a0, 1   ; Shift n to the right
-    jnz ..while      ; Keep looping until n == 0
+    jnz ..while     ; Keep looping until n == 0
     
 ..return:
     ret
@@ -76,7 +76,7 @@ MATH:
     ret
     
 .Pow:
-    ; a^b (EDA problema 1.23 algorisme 2)
+    ; a^b
     ; int pow (int a, int b) {
     ; if (b==0) return 1;
     ; if (b==1) return a;

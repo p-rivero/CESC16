@@ -80,7 +80,7 @@ INPUT:
 ; If it is, returns the input. If it isn't, returns 0.
 .Get:
     call .GetFull           ; Get both make and break inputs
-    mask v0, .MASK_BREAK  ; Detect if the input was break
+    mask v0, .MASK_BREAK    ; Detect if the input was break
     jz ..return             ; If it wasn't, return the value
     mov v0, 0               ; If it was, return 0
     

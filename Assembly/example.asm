@@ -4,8 +4,7 @@
 ; This example shows some important aspects of the CESC16 assembler, as well as customasm in general. The program itself doesn't do
 ; anything useful and some parts are even unreachable. It's meant to give an intuition of how would a real program look like.
 
-; Include definition and libraries
-#include "CESC16.cpu"
+#include "CESC16.cpu" ; Include cpudef
 #include "OS/OS.inc"
 
 ; constant that can be used as a number

@@ -3,11 +3,11 @@
 #bank program
 #bits 32
 
-; Rename to 'control flow'?
+; Rename to "control flow"?
 TIME:
 
 .Halt:
-    ; TODO: Output to terminal that execution is halted
+    ; TODO: Output message indicating that execution is halted
     ; INPUT.WaitFull will reset the computer if the reset key is pressed 
     syscall INPUT.WaitFull
     j .Halt
@@ -15,7 +15,7 @@ TIME:
     
 .Wait_ms:
     ; TODO: a0 is amount of ms to wait
-    ; fer bucle while a0>0 que cada iteració (contant call/ret i decrement de a0) duri 1ms. tenir en compte fixed clock speed i cronometrar
+    ; loop while a0>0, each iteration (including call/ret and decrementing a0) takes 1ms. Take into account oscillator freq
     ret
     
 
