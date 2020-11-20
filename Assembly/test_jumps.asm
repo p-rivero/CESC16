@@ -2,8 +2,8 @@
 #include "OS/OS.inc"
 
 ; Program for checking if all the conditional jumps work. At the end the result is sent to the output device:
-; - All tests passed: 1
-; - A test failed: -1 (0xFFFF)
+; - All tests passed: 'K' (0x4B)
+; - 1 or more tests failed: 'F' (0x46)
 
 ; WARNING: THE J AND JNZ (JNE) INTRUCTIONS NEED TO BE CHECKED MANUALLY, SINCE THIS TEST DEPENDS ON THEM
 
@@ -38,7 +38,7 @@ MAIN_PROGRAM:
     cmp s0, outputs ; Check if all tests have been performed
     jne ..loop
     
-    mov a0, 1       ; Tests passed! Output a 1
+    mov a0, "K"     ; All tests passed!
     syscall PRINT.Char
     
     pop s1
@@ -48,7 +48,7 @@ MAIN_PROGRAM:
     
 ; Called if a test fails
 .error:
-    mov a0, 0xFF
+    mov a0, "F"
     syscall PRINT.Char
     syscall TIME.Halt
 
@@ -108,3 +108,6 @@ progmem_end:
 args:       PROGMEM(progmem_args, progmem_outputs)
 ; Expected outputs:
 outputs:    PROGMEM(progmem_outputs, progmem_end)
+
+; PROGMEM(a,b) reserves enough space to fit all data stored in program memory between a and b.
+; The data itself still needs to be copied to data memory at runtime by using STARTUP.MemCopy
