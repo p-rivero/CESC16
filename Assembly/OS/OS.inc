@@ -6,15 +6,15 @@
 
 ; Constants:
 KEYBOARD_ADDR = 0xFF00
-TERMINAL_ADDR = 0xFF01
-IO_DEV_2_ADDR = 0xFF02
-IO_DEV_3_ADDR = 0xFF03
+TERMINAL_ADDR = 0xFF40
+GPIO_2_ADDR = 0xFF80
+GPIO_3_ADDR = 0xFFC0
 
-#include "STARTUP.asm16"
-#include "MATH.asm16"
-#include "KEYBOARD_IN.asm16"
-#include "TERMINAL_OUT.asm16"
-#include "TIME.asm16"
+#include "STARTUP.asm"
+#include "MATH.asm"
+#include "KEYBOARD_IN.asm"
+#include "TERMINAL_OUT.asm"
+#include "TIME.asm"
     
 _OS_END:
 
