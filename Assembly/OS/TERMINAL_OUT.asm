@@ -2,6 +2,9 @@
 ;  VGA Terminal Output Library
 ; =============================
 
+#bank data
+Print_Buffer: #res 8
+
 #bank program
 #bits 32
 
@@ -26,11 +29,18 @@ PRINT:
     
     
 ; Prints the contents of a0 as an UNSIGNED integer.
-; TODO: do not print leading 0s (00012 -> 12)
 ; TODO: calculate time of division method
 .Word:
+    cmp a0, 10
+    jltu skip(1)
+    j ..continue
+    ; If the input is a number between 0 and 9, just print it and return
+    add a0, a0, "0"
+    j .Char
+    
+..continue:
     ; Implement 16 bit Double dabble algorithm (convert to BCD)
-    ; Takes between 850 and 900 cycles
+    ; Takes ~1000 cycles
     push s0
     mov s0, 16      ; Iteration counter
     mov a1, zero    ; BCD output is stored in a1 and a2
@@ -71,30 +81,35 @@ PRINT:
     sub s0, s0, 1
     jnz ..loop      ; Iterate 16 times
     
-    ; Now print the BCD in order
-    
-    ; Print most significant BCD digit (5th)
-    add a0, a2, "0"
-    call .Char
-    
-    and s0, a1, 0x000F ; Save lowest BCD digit
+    ; At this point, a0 = 0 and a2,a1 contain BCD. s0 and v0 are free to use
+    ; Store numbers to print
+    and s0, a1, 0x000F  ; Store lowest BCD digit
+    mov (Print_Buffer+4), s0
     srl a1, a1, 4
-    and a2, a1, 0x000F ; Save 2nd BCD digit
+    and s0, a1, 0x000F  ; Store 2nd BCD digit
+    mov (Print_Buffer+3), s0
     srl a1, a1, 4
-    and v0, a1, 0x000F ; Save 3rd BCD digit
+    and s0, a1, 0x000F  ; Store 3rd BCD digit
+    mov (Print_Buffer+2), s0
+    srl s0, a1, 4
+    mov (Print_Buffer+1), s0  ; Store 4th BCD digit
+    mov (Print_Buffer), a2    ; Store most significant BCD digit (5th)
     
-    srl a0, a1, 4       ; Print 4th BCD digit
+; Remove leading zeroes
+    mov s0, Print_Buffer-1
+..rem_zeroes:           
+    add s0, s0, 1
+    movf a0, (s0)
+    jz ..rem_zeroes
+
+; Print number from first non-zero digit onward
+..print:        
     add a0, a0, "0"
     call .Char
-    
-    add a0, v0, "0"     ; Print 3rd BCD digit
-    call .Char
-    
-    add a0, a2, "0"     ; Print 2nd BCD digit
-    call .Char
-    
-    add a0, s0, "0"     ; Print least significat BCD digit
-    call .Char
+    add s0, s0, 1
+    mov a0, (s0)
+    cmp s0, Print_Buffer+4
+    jleu ..print ; Loop while pointer is less or equal than address of last digit
     
     pop s0  ; Restore context and return
     ret
@@ -102,7 +117,7 @@ PRINT:
     
 ; Prints the contents of a0 as a SIGNED integer.
 .Signed:
-    cmp a0, zero
+    cmp zero, a0
     jle ..continue
     
     ; If number is strictly negative, output '-' and print absolute value
@@ -114,7 +129,7 @@ PRINT:
     j .Word  ; Print unsigned integer and return
 
 
-; Prints the contents of a1,a0 as aN UNSIGNED 32-bit integer (a1 contains upper bits).
+; Prints the contents of a1,a0 as an UNSIGNED 32-bit integer (a1 contains upper bits).
 .DWord:
     ; TODO: 32 bit Double dabble
     ret
