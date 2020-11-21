@@ -22,7 +22,6 @@
 }
 
 #subruledef ALU_OP {
-    mov  => 0b000
     and  => 0b001
     or   => 0b010
     xor  => 0b011
@@ -82,7 +81,10 @@
     mov {rD: REG}, ({rB: REG}) => 0x18 @ rD`4 @ 0x0000 @ rB`4
     {op: ALU_OP} {rD: REG}, {rA: REG}, ({rB: REG}) => _ALU_IND(op, rD, rA, rB)
     
+    mov ({Addr: u16}), {rA: REG} => 0x200 @ rA`4 @ Addr
     {op: ALU_OP} ({Addr: u16}), {rA: REG} => 0b00100 @ op`3 @ 0x0 @ rA`4 @ Addr
+    
+    mov ({rA: REG}), {rB: REG} => 0x280 @ rA`4 @ 0x000 @ rB`4
     {op: ALU_OP} ({rA: REG}), {rB: REG} => 0b00101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
