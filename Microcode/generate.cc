@@ -91,8 +91,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 #define MOV_DIRD     Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 #define ALU_DIRD(OP) Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_INDD     Fetch,  MemOut|Bank0|LdX|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdX|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define MOV_INDD     Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
 
 #define SLL_STEP    ALU_add|AluOutD|LdImm|LdX|LdY
 #define SLL_END     ALU_add|AluOutD|LdReg|LdFlg|PcOutAddr|CLR
