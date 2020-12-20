@@ -5,10 +5,10 @@
 ; Include OS code only once
 
 ; Constants:
-KEYBOARD_ADDR = 0xFF00
-TERMINAL_ADDR = 0xFF40
-GPIO_2_ADDR = 0xFF80
-GPIO_3_ADDR = 0xFFC0
+KEYBOARD_ADDR = 0xFF80
+TERMINAL_ADDR = 0xFFA0
+GPIO_2_ADDR = 0xFFC0
+GPIO_3_ADDR = 0xFFE0
 
 #include "STARTUP.asm"
 #include "MATH.asm"
