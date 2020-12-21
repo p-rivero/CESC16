@@ -6,8 +6,7 @@ STARTUP:
     .Reset:
     ; Reset vector (hardware entry point):
     nop             ; Ensure that a reset is performed correctly, regardless of the clock state
-    mov sp, 0xFEFF  ; Initialize stack
-                    ; (it could start at 0xFF00, but I prefer leaving 1 extra space between stack and I/O)
+    mov sp, INIT_STACK  ; Initialize stack
     
     ; Initialize I/O: Make sure there is no leftover input and clear terminal
     syscall INPUT.GetFull ; Acknowledge input

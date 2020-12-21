@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <assert.h>
+#include <ciso646> // Include this so vscode doesn't complain about alternative logical operators
 using namespace std;
 
 
@@ -131,8 +132,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 
 // 4 bit flags + 7 bit opcode + 4 bit timestep
-const unsigned int size = 16 * 128 * 16;
-vector<unsigned int> content(size);
+const unsigned int SIZE = 16 * 128 * 16;
+vector<unsigned int> content(SIZE);
 
 // Size of template: 7 bit opcode + 4 bit timestep
 const unsigned int TEMPL_SIZE = 128 * 16;
@@ -268,7 +269,7 @@ void generate() {
     assert(TEMPLATE.size() == TEMPL_SIZE); // Make sure size is correct
     
     // Copy template 16 times while inverting active low signals:
-    for (int i = 0; i < size; i+=TEMPL_SIZE)
+    for (int i = 0; i < SIZE; i+=TEMPL_SIZE)
         for (int j = 0; j < TEMPL_SIZE; j++)
             content[i+j] = TEMPLATE[j] ^ ACTIVE_LOW_MASK;
     
@@ -310,7 +311,7 @@ void write_file(int filenum) {
     cout << "Writing HEX file " << filenum << endl;
     outputFile.open("output" + to_string(filenum) + ".hex");
     
-    for (int i = 0; i < size/32; i++) {
+    for (int i = 0; i < SIZE/32; i++) {
         for (int j = 0; j < 32; j++) {
             unsigned char output = content[32*i + j] >> (8*filenum);
             outputFile << setw(2) << setfill('0') << hex << int(output) << ' ';

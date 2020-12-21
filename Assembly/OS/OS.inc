@@ -5,6 +5,7 @@
 ; Include OS code only once
 
 ; Constants:
+INIT_STACK = 0xFEFF ; The stack gets predecremented, so it could start at 0xFF00. However, I prefer leaving 1 extra space between stack and I/O
 KEYBOARD_ADDR = 0xFF00
 TERMINAL_ADDR = 0xFF40
 GPIO_2_ADDR = 0xFF80
