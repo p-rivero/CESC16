@@ -61,7 +61,6 @@
 #define _ALU_DIR(op, rD, rA, Addr)  0b00010 @ op`3 @ rD`4 @ rA`4 @ Addr
 #define _ALU_IND(op, rD, rA, rB)    0b00011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 
-#define _LOAD_W(rD, rA, Imm)        0x60 @ rD`4 @ rA`4 @ Imm
 #define _LOAD_B(rD, rA, Imm)        0x61 @ rD`4 @ rA`4 @ Imm
 #define _STORE(rB, rA, Imm)         0x62 @ rB`4 @ rA`4 @ Imm
 
@@ -94,7 +93,7 @@
     
     
     ; Memory
-    lw   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD_W(rD, rA, Imm)
+    lw   {rD: REG}, {Imm: i16}({rA: REG}) => 0x60 @ rD`4 @ rA`4 @ Imm
     lb   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD_B(rD, rA, Imm)
     sw   {rB: REG}, {Imm: i16}({rA: REG}) => _STORE(rB, rA, Imm)
     
@@ -102,6 +101,7 @@
     pop  {rD: REG} => 0x64 @ rD`4 @ 0x10000
     
     swap {rD: REG}, {Imm: i16}({rA: REG}) => 0x65 @ rD`4 @ rA`4 @ Imm
+    peek {rD: REG}, {Imm: i16}({rA: REG}), {W: i1}  => 0b0110011 @ W @ rD`4 @ rA`4 @ Imm
     
     
     ; Jumps
@@ -127,8 +127,6 @@
     
     lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD_B(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
     sb   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
-    peek {rD: REG}, {Imm: i16}({rA: REG}), 0    =>  _LOAD_B(rD, rA, Imm)
-    peek {rD: REG}, {Imm: i16}({rA: REG}), 1    =>  _LOAD_W(rD, rA, Imm)
     
     cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
     cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
@@ -153,13 +151,13 @@
 ; Banks
 #bankdef program {
     #addr 0
-    #size 0x8000   ; 32k
+    #size 0x10000   ; 64k
     #outp 0
     #bits 32
 }
 #bankdef data {
-    #addr 0x8000
-    #size 0x8000   ; 32k
+    #addr 0
+    #size 0x10000   ; 64k
     #bits 16
 }
 
