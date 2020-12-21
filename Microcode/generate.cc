@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <assert.h>
-#include <ciso646> // Include this so vscode doesn't complain about alternative logical operators
 using namespace std;
 
 
@@ -15,8 +14,8 @@ using namespace std;
 #define Dout2           0x000008    //     100 = PC,  101 = IR,  11x = No output (unused)
 #define AddrOut0        0x000010    // Output select (address bus):
 #define AddrOut1        0x000020    //     00 = No output,  01 = PC,  10 = ALU,  11 = SP
-#define MBank           0x000040    // Memory bank select
-//#define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = Unused
+#define Bank0           0x000040    // Memory bank select:
+#define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = Unused
 
 #define PCpp            0x000100    // Increment Program Counter
 #define SPpp            0x000200    // Increment Stack Pointer (SP-- if AluS3 = 1) [ACTIVE LOW]
@@ -78,22 +77,22 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 // INSTRUCTIONS:
 #define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,  ZEROx14
-#define ALU_REG(OP)  Fetch,  MemOut|MBank|LdY,                   OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
+#define ALU_REG(OP)  Fetch,  MemOut|Bank0|LdY,                   OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
 
-#define MOV_IMM      Fetch,  MemOut|MBank|LdReg|PcOutAddr|CLR,   ZEROx14
-#define ALU_IMM(OP)  Fetch,  MemOut|MBank|LdImm|LdY,             OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
+#define MOV_IMM      Fetch,  MemOut|Bank0|LdReg|PcOutAddr|CLR,   ZEROx14
+#define ALU_IMM(OP)  Fetch,  MemOut|Bank0|LdImm|LdY,             OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
 
-#define MOV_DIRA     Fetch,  MemOut|MBank|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_DIRA(OP) Fetch,  MemOut|MBank|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define MOV_DIRA     Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
+#define ALU_DIRA(OP) Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_INDA     Fetch,  MemOut|MBank|LdY|ALU_Y|AluOutAddr,    MemOut|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_INDA(OP) Fetch,  MemOut|MBank|LdY|ALU_Y|AluOutAddr,    MemOut|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define MOV_INDA     Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
+#define ALU_INDA(OP) Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_DIRD     Fetch,  MemOut|MBank|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|PcOutAddr|CLR,    ZEROx13
-#define ALU_DIRD(OP) Fetch,  MemOut|MBank|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|LdImm|LdX,     OP|AluOutD|MemIn|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define MOV_DIRD     Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define ALU_DIRD(OP) Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_INDD     Fetch,  MemOut|MBank|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|PcOutAddr|CLR,    ZEROx13
-#define ALU_INDD(OP) Fetch,  MemOut|MBank|LdY|ALU_X|AluOutAddr,  MemOut|LdImm|LdX,     OP|AluOutD|MemIn|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define MOV_INDD     Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
 
 #define SLL_STEP    ALU_add|AluOutD|LdImm|LdX|LdY
 #define SLL_END     ALU_add|AluOutD|LdReg|LdFlg|PcOutAddr|CLR
@@ -108,32 +107,32 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 #define SRA_STEP_4  SRA_STEP, SRA_STEP, SRA_STEP, SRA_STEP
 
 
-#define LOAD(_BANK) Fetch,  MemOut|MBank|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|_BANK|LdReg|PcOutAddr|CLR,    ZEROx13
+#define LOAD(Bank)  Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
 
-#define STORE       Fetch,  MemOut|MBank|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|PcOutAddr|CLR,    ZEROx12
+#define STORE       Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
 
-#define PUSH        Fetch,  SPmm|MemOut|MBank|LdY|ALU_Xminus1|AluOutAddr,   ALU_Y|AluOutD|MemIn|PcOutAddr|CLR,    ZEROx13
+#define PUSH        Fetch,  SPmm|MemOut|Bank0|LdY|ALU_Xminus1|AluOutAddr,   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 
-#define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|LdReg|PcOutAddr|CLR,      ZEROx13
+#define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
 
-#define SWAP        Fetch,  MemOut|MBank|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|LdReg,     ALU_Y|AluOutD|MemIn|PcOutAddr|CLR,    ZEROx11
+#define SWAP        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
 
 
-#define CALL        Fetch,  MemOut|MBank|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn,      ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
+#define CALL        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
 
-#define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|PcIn|PcOutAddr|CLR,   ZEROx13
+#define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,   ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 
-#define JMP_IMM     Fetch,  MemOut|MBank/*|PcIn*/|PcOutAddr|CLR,    ZEROx14
+#define JMP_IMM     Fetch,  MemOut|Bank0/*|PcIn*/|PcOutAddr|CLR,    ZEROx14
 
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
 
 
 // 4 bit flags + 7 bit opcode + 4 bit timestep
-const unsigned int SIZE = 16 * 128 * 16;
-vector<unsigned int> content(SIZE);
+const unsigned int size = 16 * 128 * 16;
+vector<unsigned int> content(size);
 
 // Size of template: 7 bit opcode + 4 bit timestep
 const unsigned int TEMPL_SIZE = 128 * 16;
@@ -211,8 +210,8 @@ const vector<unsigned int> TEMPLATE = {
     Fetch, SRA_STEP_4, SRA_STEP_4, SRA_STEP_4, SRA_STEP, SRA_STEP,  SRA_END,            // Shift 15 positions
 
 
-    LOAD(0),        // 1100000 - lw
-    LOAD(MBank),    // 1100001 - lb
+    LOAD(Bank1),        // 1100000 - lw
+    LOAD(Bank1|Bank0),  // 1100001 - lb
 
     STORE,      // 1100010 - sw
 
@@ -222,8 +221,7 @@ const vector<unsigned int> TEMPLATE = {
 
     SWAP,       // 1100101 - swap
 
-    // LOAD(MBank), LOAD(0),    // 110011W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
-    NOP, NOP, // Reserved instructions for the future implementation of interrupts
+    LOAD(Bank0), LOAD(0),    // 110011W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
 
 
     // 1101FFF - [JUMP] Addr
@@ -255,7 +253,7 @@ void switchCarry(int flags, int funct) {
     // ALU_REG and ALU_IMM perform the ALU operation on the second time step (excluding the fetch cycle). Invert the carry bit on that microinstruction.
     // The affected opcodes are 0b0000FFF (reg), 0b0001FFF (imm), 0b0010FFF and 0b0011FFF -> funct + 0,8,16,24
 
-    int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|MBank|LdY
+    int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|Bank0|LdY
     content[address] ^= AluCIn;         // REG variant (base address)
     content[address + 8*16] ^= AluCIn;  // Disable IMM variant (add 8 to opcode -> add 8*16 to address)
     
@@ -270,7 +268,7 @@ void generate() {
     assert(TEMPLATE.size() == TEMPL_SIZE); // Make sure size is correct
     
     // Copy template 16 times while inverting active low signals:
-    for (int i = 0; i < SIZE; i+=TEMPL_SIZE)
+    for (int i = 0; i < size; i+=TEMPL_SIZE)
         for (int j = 0; j < TEMPL_SIZE; j++)
             content[i+j] = TEMPLATE[j] ^ ACTIVE_LOW_MASK;
     
@@ -312,7 +310,7 @@ void write_file(int filenum) {
     cout << "Writing HEX file " << filenum << endl;
     outputFile.open("output" + to_string(filenum) + ".hex");
     
-    for (int i = 0; i < SIZE/32; i++) {
+    for (int i = 0; i < size/32; i++) {
         for (int j = 0; j < 32; j++) {
             unsigned char output = content[32*i + j] >> (8*filenum);
             outputFile << setw(2) << setfill('0') << hex << int(output) << ' ';
