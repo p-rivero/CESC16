@@ -148,13 +148,13 @@
 ; Utilities
 #define PROGMEM(Begin, End) #res (End - Begin)*2
 
-; Banks
 #bankdef program {
     #addr 0
     #size 0x10000   ; 64k
     #outp 0
     #bits 32
 }
+
 #bankdef data {
     #addr 0
     #size 0x10000   ; 64k

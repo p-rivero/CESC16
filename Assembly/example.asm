@@ -29,7 +29,7 @@ MAIN_PROGRAM:
 global_label:
     .local_const = 2        ; Labels and constants that start with a dot (.) are local (only visible whithin 2 global labels)
     
-    nop                     ; This is the first program instruction that will be executed
+    nop                     ; This is the first instruction that will be executed (PC=0x0000)
     mov (vector+2), zero    ; Debug
     mov t3, constant        ; Loads 0x0FF1 into t3 (0x10 - (2 * 4 + 0x07) evaluates to 0x0FF1).
     mov s0, .local_const    ; Loads 2 into s0. s0 is a safe register
