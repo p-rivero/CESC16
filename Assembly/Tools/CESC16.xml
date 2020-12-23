@@ -80,6 +80,7 @@
 		<KeyWord name="pc" />
 		<KeyWord name="offset" />
 		<KeyWord name="PROGMEM" />
+		<KeyWord name="SIZEOF" />
         
 	</AutoComplete>
 </NotepadPlus>

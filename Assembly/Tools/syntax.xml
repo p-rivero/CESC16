@@ -1,5 +1,5 @@
 <NotepadPlus>
-    <UserLang name="CESC16" ext="asm" udlVersion="2.1">
+    <UserLang name="CESC16" ext="asm inc" udlVersion="2.1">
         <Settings>
             <Global caseIgnored="no" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
             <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="yes" Keywords6="no" Keywords7="no" Keywords8="no" />
@@ -26,7 +26,7 @@
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">zero sp t0 t1 t2 t3 t4 a0 a1 a2 v0 s0 s1 s2 s3 s4</Keywords>
             <Keywords name="Keywords2">mov and or xor add sub addc subb srl sra sll sw lw lb lbu sb push pop swap peek call ret j jz jnz jc jnc jleu jlt jle movf not nand nor xnor sllc cmp mask test clf jb jnb jeq jne jltu syscall nop</Keywords>
-            <Keywords name="Keywords3">#include #bank #bits #str #res #d #d8 #d16 #d32 pc skip PROGMEM</Keywords>
+            <Keywords name="Keywords3">#include #bank #bits #str #res #d #d8 #d16 #d32 pc skip PROGMEM SIZEOF</Keywords>
             <Keywords name="Keywords4">program data</Keywords>
             <Keywords name="Keywords5">..</Keywords>
             <Keywords name="Keywords6"></Keywords>

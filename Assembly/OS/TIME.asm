@@ -8,6 +8,7 @@ TIME:
 
 .Halt:
     ; TODO: Output message indicating that execution is halted
+    ; TODO: When interrupts are implemented, calling INPUT.WaitFull will no longer be needed
     ; INPUT.WaitFull will reset the computer if the reset key is pressed 
     syscall INPUT.WaitFull
     j .Halt

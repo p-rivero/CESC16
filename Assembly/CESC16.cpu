@@ -146,7 +146,8 @@
 }
 
 ; Utilities
-#define PROGMEM(Begin, End) #res (End - Begin)*2
+#define SIZEOF(Begin) (pc - Begin)*2    ; Returns the data size between Begin and the current spot
+#define PROGMEM(Begin, End) #res (End - Begin)*2    ; Reserve space to fit program memory between Begin and End
 
 ; Banks
 #bankdef program {
