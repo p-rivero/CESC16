@@ -12,13 +12,13 @@ using namespace std;
 #define CLR             0x000001    // Clear microcode counter (start next instruction) [ACTIVE LOW]
 #define Dout0           0x000002    // Output select (data/main bus):
 #define Dout1           0x000004    //     000 = No output,  001 = ALU,  010 = ALU (Shifted),  011 = Memory
-#define Dout2           0x000008    //     100 = PC,  101 = IR,  11x = No output (unused)
+#define Dout2           0x000008    //     100 = PC,  101 = IR,  110 = Flags,  111 = Constant 0x0011
 #define AddrOut0        0x000010    // Output select (address bus):
 #define AddrOut1        0x000020    //     00 = No output,  01 = PC,  10 = ALU,  11 = SP
 #define Bank0           0x000040    // Memory bank select:
-#define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = Unused
+#define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = RAM (Sign extended)
 
-#define PCpp            0x000100    // Increment Program Counter
+#define CLR_IRQ         0x000100    // TODO: Clear IRQ latch
 #define SPpp            0x000200    // Increment Stack Pointer (SP-- if AluS3 = 1) [ACTIVE LOW]
 #define AddrIn          0x000400    // Memory Address register in [ACTIVE LOW]
 #define MemIn           0x000800    // Memory (RAM) in
@@ -37,7 +37,7 @@ using namespace std;
 #define AluCIn          0x800000    // Carry In input for 74HC181 ALU
 
 // Selective inverter for active low lines
-const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn | PcIn;
+const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn | PcIn | CLR_IRQ;
 
 
 
@@ -54,6 +54,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 #define IrIn        AddrOut1|AddrOut0   // Load Instruction Register (@Bus is never used in fetch)
 #define SPmm        SPpp|AluS0          // SP--
+#define PCpp        IrIn                // IrIn signal also causes PC++
+#define LdFlgALU    LdFlg|LdReg         // Generate flags from ALU
 
 #define Fetch       PCpp|MemOut|IrIn|LdX|LdY    // First timestep for all instructions
 
@@ -78,29 +80,29 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 // INSTRUCTIONS:
 #define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,  ZEROx14
-#define ALU_REG(OP)  Fetch,  MemOut|Bank0|LdY,                   OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
+#define ALU_REG(OP)  Fetch,  MemOut|Bank0|LdY,                   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
 
 #define MOV_IMM      Fetch,  MemOut|Bank0|LdReg|PcOutAddr|CLR,   ZEROx14
-#define ALU_IMM(OP)  Fetch,  MemOut|Bank0|LdImm|LdY,             OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,  ZEROx13
+#define ALU_IMM(OP)  Fetch,  MemOut|Bank0|LdImm|LdY,             OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
 
 #define MOV_DIRA     Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_DIRA(OP) Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define ALU_DIRA(OP) Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define MOV_INDA     Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_INDA(OP) Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define ALU_INDA(OP) Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define MOV_DIRD     Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_DIRD(OP) Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define ALU_DIRD(OP) Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define MOV_INDD     Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlg|PcOutAddr|CLR,     ZEROx12
+#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define SLL_STEP    ALU_add|AluOutD|LdImm|LdX|LdY
-#define SLL_END     ALU_add|AluOutD|LdReg|LdFlg|PcOutAddr|CLR
+#define SLL_END     ALU_add|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR
 #define SLL_STEP_4  SLL_STEP, SLL_STEP, SLL_STEP, SLL_STEP
 
 #define SRL_STEP    ALU_X|AluShOut|LdImm|LdX
-#define SRL_END     ALU_X|AluShOut|LdReg|LdImm|LdX|LdFlg|PcOutAddr|CLR
+#define SRL_END     ALU_X|AluShOut|LdReg|LdImm|LdX|LdFlgALU|PcOutAddr|CLR
 #define SRL_STEP_4  SRL_STEP, SRL_STEP, SRL_STEP, SRL_STEP
 
 #define SRA_STEP    SRL_STEP|AluCIn     // AluCIn also changes from SRL to SRA
@@ -131,8 +133,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 
 
-// 4 bit flags + 7 bit opcode + 4 bit timestep
-const unsigned int SIZE = 16 * 128 * 16;
+// 4 bit flags + 7 bit opcode + 4 bit timestep + 1 bit IRQ
+const unsigned int SIZE = 16 * 128 * 16 * 2;
 vector<unsigned int> content(SIZE);
 
 // Size of template: 7 bit opcode + 4 bit timestep
@@ -269,7 +271,7 @@ void generate() {
     assert(TEMPLATE.size() == TEMPL_SIZE); // Make sure size is correct
     
     // Copy template 16 times while inverting active low signals:
-    for (int i = 0; i < SIZE; i+=TEMPL_SIZE)
+    for (int i = 0; i < SIZE/2; i+=TEMPL_SIZE)
         for (int j = 0; j < TEMPL_SIZE; j++)
             content[i+j] = TEMPLATE[j] ^ ACTIVE_LOW_MASK;
     
@@ -302,6 +304,10 @@ void generate() {
         if (CF) switchCarry(flags, 0b110);  // ADDC
         else    switchCarry(flags, 0b111);  // SUBB
     }
+
+    // TODO: Generate interrupt logic
+    for (int i = SIZE/2; i < SIZE; i++)
+        content[i] = 0 ^ ACTIVE_LOW_MASK;
 }
 
 
@@ -329,7 +335,7 @@ int main() {
     for (int i = 0; i < 3; i++)
         write_file(i);
     
-    cout << "File 0 contains CLR, D_Out...,  File 1 contains PC++, SP++..., File 2 contains LdImm, LdFlg..." << endl;
+    cout << "File 0 contains CLR, D_Out...,  File 1 contains CLR_IRQ, SP++..., File 2 contains LdImm, LdFlg..." << endl;
     
     cout << "Done." << endl;
 }
