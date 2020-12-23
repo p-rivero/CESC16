@@ -9,19 +9,35 @@
 
 #bank program
 
-; Entry point
+; Data in program memory:
+args: ; Arguments to be tested
+#d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
+.size = SIZEOF(args)
+
+outputs: ; Expected outputs
+#d16    0x55,      0x55,        0x55,       0x7a,       0x7a,        0x1a,       0x1a,       0x06,       0x66,       0x66,       0x06,        0x7a
+.size = SIZEOF(outputs)
+
+progmem_end:
+
+
+; User program entry point
 MAIN_PROGRAM:
-    ; Copy progmem to data memory
-    mov a0, progmem_args
-    mov a1, progmem_end
-    mov a2, args
-    syscall STARTUP.MemCopy
-    
 .main:
     push s0
     push s1
-    mov s0, args
-    mov s1, outputs
+    push s2
+
+    ; Copy progmem to data memory (stack)
+    sub sp, sp, args.size + outputs.size    ; Reserve space in stack
+    mov a0, args
+    mov a1, progmem_end
+    mov a2, sp              ; Destination is the stack
+    syscall STARTUP.MemCopy
+    
+    mov s0, sp  ; Pointer to start of arguments
+    add s2, sp, args.size   ; End of arguments
+    mov s1, s2  ; Pointer to start of outputs
 
 ..loop:
     lw a0, 0(s0)    ; Load arguments
@@ -35,12 +51,14 @@ MAIN_PROGRAM:
     add s0, s0, 2
     add s1, s1, 1
     
-    cmp s0, outputs ; Check if all tests have been performed
+    cmp s0, s2      ; Check if all tests have been performed
     jne ..loop
     
     mov a0, "K"     ; All tests passed!
     syscall PRINT.Char
     
+    add sp, sp, args.size + outputs.size    ; Free space in stack
+    pop s2
     pop s1
     pop s0
     ret
@@ -90,24 +108,3 @@ MAIN_PROGRAM:
     
     ret
     
-    
-    
-    
-progmem_args:
-; Arguments to be tested:
-#d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
-progmem_outputs:
-; Expected outputs:
-#d16    0x55,      0x55,        0x55,       0x7a,       0x7a,        0x1a,       0x1a,       0x06,       0x66,       0x66,       0x06,        0x7a
-progmem_end:
-
-
-
-#bank data
-; Arguments to be tested:
-args:       PROGMEM(progmem_args, progmem_outputs)
-; Expected outputs:
-outputs:    PROGMEM(progmem_outputs, progmem_end)
-
-; PROGMEM(a,b) reserves enough space to fit all data stored in program memory between a and b.
-; The data itself still needs to be copied to data memory at runtime by using STARTUP.MemCopy
