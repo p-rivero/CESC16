@@ -32,12 +32,13 @@ MATH:
 
 ; Signed or Unsigned 32 bit * 16 bit Multiply
 ; Arguments: a1_a0 = N, a2 = M   (a0 = lower bits)
-; Returns: t4_v0 = n*m   (v0 = lower bits)
-; Worst case run time: ~330 clock cycles (170 if M is 8 bit)
+; Returns: a0_v0 = n*m   (v0 = lower bits)
+; Worst case run time: ~335 clock cycles (175 if M is 8 bit)
 .UMult32:
 .Mult32:
+    push s0
     mov v0, zero    ; Set the result to 0 (lower bits)
-    mov t4, zero    ; Set the result to 0 (upper bits)
+    mov s0, zero    ; Set the result to 0 (upper bits)
     
     test a2
     jz ..endwhile   ; if B == 0, return 0
@@ -46,7 +47,7 @@ MATH:
     mask a2, 0x01       ; Test last bit
     jz ..endif
     add v0, v0, a0      
-    addc t4, t4, a1     ; Add A to the result (16 bit add)
+    addc s0, s0, a1     ; Add A to the result (16 bit add)
 ..endif:
     
     sll a0, a0, 1       ; Shift lower A to the left and store carry
@@ -55,6 +56,8 @@ MATH:
     jnz ..while         ; Keep looping until B == 0
     
 ..endwhile:
+    mov a0, s0
+    pop s0
     ret
     
     
