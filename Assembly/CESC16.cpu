@@ -97,12 +97,13 @@
     lb   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD_B(rD, rA, Imm)
     sw   {rB: REG}, {Imm: i16}({rA: REG}) => _STORE(rB, rA, Imm)
     
-    push {rB: REG} => 0x6301000 @ rB`4
-    pop  {rD: REG} => 0x64 @ rD`4 @ 0x10000
+    swap {rD: REG}, {Imm: i16}({rA: REG}) => 0x63 @ rD`4 @ rA`4 @ Imm
+    peek {rD: REG}, {Imm: i16}({rA: REG}), {W: i1}  => 0b0110010 @ W @ rD`4 @ rA`4 @ Imm
     
-    swap {rD: REG}, {Imm: i16}({rA: REG}) => 0x65 @ rD`4 @ rA`4 @ Imm
-    peek {rD: REG}, {Imm: i16}({rA: REG}), {W: i1}  => 0b0110011 @ W @ rD`4 @ rA`4 @ Imm
-    
+    push  {rB: REG} => 0x6601000 @ rB`4
+    pop   {rD: REG} => 0x67 @ rD`4 @ 0x10000
+    pushf           => 0x7A010000
+    popf            => 0x7B010000
     
     ; Jumps
     {jmp: JUMP} {Addr: JMP_ADDR} => 0b01101 @ jmp`3 @ 0x00 @ Addr`16

@@ -48,6 +48,7 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 #define MemOut      Dout1|Dout0         // MEM -> Data Bus
 #define PcOutD      Dout2               // PC -> Data Bus
 #define IrOut       Dout2|Dout0         // IR -> Data Bus
+#define FlagsOut    Dout2|Dout1         // Flags -> Data Bus
 
 #define PcOutAddr   AddrOut0|AddrIn     // PC -> MAR
 #define AluOutAddr  AddrOut1|AddrIn     // ALU -> MAR
@@ -114,12 +115,15 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 #define STORE       Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
 
+#define SWAP        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
+
 #define PUSH        Fetch,  SPmm|MemOut|Bank0|LdY|ALU_Xminus1|AluOutAddr,   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 
 #define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
 
-#define SWAP        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
+#define PUSHF       Fetch,  SPmm|ALU_Xminus1|AluOutAddr,                    FlagsOut|MemIn|Bank1|PcOutAddr|CLR,         ZEROx13
 
+#define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlg|PcOutAddr|CLR,      ZEROx13
 
 #define CALL        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
 
@@ -218,14 +222,12 @@ const vector<unsigned int> TEMPLATE = {
 
     STORE,      // 1100010 - sw
 
-    PUSH,       // 1100011 - push
+    SWAP,       // 1100011 - swap
 
-    POP,        // 1100100 - pop
-
-    SWAP,       // 1100101 - swap
-
-    LOAD(Bank0), LOAD(0),    // 110011W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
-
+    LOAD(Bank0), LOAD(0),    // 110010W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
+    
+    PUSH,       // 1100110 - push
+    POP,        // 1100111 - pop
 
     // 1101FFF - [JUMP] Addr
     JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM,
@@ -237,7 +239,10 @@ const vector<unsigned int> TEMPLATE = {
 
     RET,    // 1111001 - ret
 
-    NOP, NOP, NOP, NOP, NOP, NOP    // 1111010-1111111 - Unused
+    PUSHF,  // 1111010 - pushf
+    POPF,   // 1111011 - popf
+    
+    NOP, NOP, NOP, NOP    // 1111100-1111111 - Unused
 
 };
 

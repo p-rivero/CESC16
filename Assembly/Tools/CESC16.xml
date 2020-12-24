@@ -36,7 +36,9 @@
 		<KeyWord name="lw" />
 		<KeyWord name="lb" />
 		<KeyWord name="push" />
+		<KeyWord name="pushf" />
 		<KeyWord name="pop" />
+		<KeyWord name="popf" />
 		<KeyWord name="swap" />
 		<KeyWord name="peek" />
 		<KeyWord name="call" />
