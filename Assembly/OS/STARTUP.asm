@@ -1,11 +1,11 @@
 
 
 #bank program
-#bits 32
 STARTUP:
     .Reset:
     ; Reset vector (hardware entry point):
     nop             ; Ensure that a reset is performed correctly, regardless of the clock state
+    j .Reset
     mov sp, INIT_STACK  ; Initialize stack
     
     ; Initialize I/O: Make sure there is no leftover input and clear terminal
@@ -19,6 +19,66 @@ STARTUP:
     syscall TIME.Halt
     
     
+    #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector
+    ; This is the interrupt handler that gets called whenever any interrupt occurs.
+    ; It takes ~60 clock cycles
+    
+    ; Store context
+    pushf
+    push a0
+    push a1
+    push a2
+    push v0
+    push t0
+    push t1
+    push t2
+    push t3
+    push t4
+    
+    ; Check timer and call user interrupt handler
+    ; TODO
+    
+    ; Check keyboard input (max ~27 cycles + user interrupt)
+.readKeyboard:
+    movf a0, (KEYBOARD_ADDR)    ; Read from keyboard
+    jz ..continue               ; If there was no input, don't do anything
+    mov (KEYBOARD_ADDR), zero   ; Else acknowledge input
+
+    mask a0, INPUT.MASK_BREAK
+    jnz ..skip
+    
+    ; Key was pressed down
+    call .Key_Pressed_Handler
+    j ..continue
+    ..skip:
+
+    ; Key was released
+    xor a0, a0, INPUT.MASK_BREAK    ; Remove break bit
+    
+    cmp a0, INPUT.HOME  ; If "Home" key was released, reset computer
+    jeq STARTUP.Reset
+    ; More keys can be checked here
+    
+    call .Key_Released_Handler
+    ..continue:
+
+    
+    ; Check other input sources
+    ; TODO
+    
+    
+    ; Restore context
+    pop t4
+    pop t3
+    pop t2
+    pop t1
+    pop t0
+    pop v0
+    pop a2
+    pop a1
+    pop a0
+    popf
+    ret
     
 
 ; Copy data from program memory to RAM
@@ -46,3 +106,14 @@ STARTUP:
 ..return:
     ret
     
+    
+    
+; Interrupt handlers
+.Key_Pressed_Handler:
+    ret
+
+.Key_Released_Handler:
+    ret
+    
+#bank data
+

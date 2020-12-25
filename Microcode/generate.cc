@@ -49,6 +49,7 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 #define PcOutD      Dout2               // PC -> Data Bus
 #define IrOut       Dout2|Dout0         // IR -> Data Bus
 #define FlagsOut    Dout2|Dout1         // Flags -> Data Bus
+#define ConstOut    Dout2|Dout1|Dout0   // Constant 0x0011 -> Data Bus
 
 #define PcOutAddr   AddrOut0|AddrIn     // PC -> MAR
 #define AluOutAddr  AddrOut1|AddrIn     // ALU -> MAR
@@ -135,6 +136,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
+// Jump to interrupt vector
+const vector<unsigned int> JMP_INT = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR_IRQ|CLR,    ZEROx13};
 
 
 // 4 bit flags + 7 bit opcode + 4 bit timestep + 1 bit IRQ
@@ -310,9 +313,13 @@ void generate() {
         else    switchCarry(flags, 0b111);  // SUBB
     }
 
-    // TODO: Generate interrupt logic
-    for (int i = SIZE/2; i < SIZE; i++)
-        content[i] = 0 ^ ACTIVE_LOW_MASK;
+
+    // Generate interrupt logic
+    assert(JMP_INT.size() == 16);
+    
+    for (int i = SIZE/2; i < SIZE; i+=16)
+        for (int j = 0; j < 16; j++)
+            content[i+j] = JMP_INT[j] ^ ACTIVE_LOW_MASK;
 }
 
 
