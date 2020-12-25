@@ -5,23 +5,26 @@ STARTUP:
     .Reset:
     ; Reset vector (hardware entry point):
     nop             ; Ensure that a reset is performed correctly, regardless of the clock state
-    j .Reset
     mov sp, INIT_STACK  ; Initialize stack
+    mov (KEY_PRESSED_HANDLER), zero ; Reset interrupt handlers
+    mov (KEY_RELEASED_HANDLER), zero
     
-    ; Initialize I/O: Make sure there is no leftover input and clear terminal
-    syscall INPUT.GetFull ; Acknowledge input
+    ; Initialize I/O:
     syscall PRINT.Reset   ; Clear screen
     
     ; User code execution
     call MAIN_PROGRAM
     
-    ; If user code terminates, halt computer
+    ; If user code terminates, halt the computer
     syscall TIME.Halt
     
-    
     #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector
-    ; This is the interrupt handler that gets called whenever any interrupt occurs.
-    ; It takes ~60 clock cycles
+    
+    
+; INTERRUPT HANDLER
+    ; This handler gets called whenever any interrupt occurs. Its job is to call the correct specialized handlers
+    ; Save+Restore context: ~60 clock cycles
+    ; PS/2 Keyboard: Max ~30 cycles + user interrupt
     
     ; Store context
     pushf
@@ -38,34 +41,26 @@ STARTUP:
     ; Check timer and call user interrupt handler
     ; TODO
     
-    ; Check keyboard input (max ~27 cycles + user interrupt)
+    ; Check PS/2 keyboard input (max ~30 cycles + user interrupt)
 .readKeyboard:
     movf a0, (KEYBOARD_ADDR)    ; Read from keyboard
     jz ..continue               ; If there was no input, don't do anything
     mov (KEYBOARD_ADDR), zero   ; Else acknowledge input
 
-    mask a0, INPUT.MASK_BREAK
-    jnz ..skip
+    mask a0, INPUT.MASK_BREAK   ; Check if the key was pressed or released
+    jnz ..key_released
     
     ; Key was pressed down
-    call .Key_Pressed_Handler
+    call INPUT.Key_Pressed_Handler  ; Call the handler and continue
     j ..continue
-    ..skip:
-
+    
+    ..key_released:
     ; Key was released
-    xor a0, a0, INPUT.MASK_BREAK    ; Remove break bit
-    
-    cmp a0, INPUT.HOME  ; If "Home" key was released, reset computer
-    jeq STARTUP.Reset
-    ; More keys can be checked here
-    
-    call .Key_Released_Handler
+    call INPUT.Key_Released_Handler ; Call the handler and continue
     ..continue:
-
     
-    ; Check other input sources
+    ; Check other input sources (serial)
     ; TODO
-    
     
     ; Restore context
     pop t4
@@ -105,15 +100,3 @@ STARTUP:
     
 ..return:
     ret
-    
-    
-    
-; Interrupt handlers
-.Key_Pressed_Handler:
-    ret
-
-.Key_Released_Handler:
-    ret
-    
-#bank data
-

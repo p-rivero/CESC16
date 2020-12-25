@@ -12,6 +12,10 @@ TERMINAL_ADDR = 0xFF40
 GPIO_2_ADDR = 0xFF80
 GPIO_3_ADDR = 0xFFC0
 
+#bank data
+KEY_PRESSED_HANDLER:    #res 1
+KEY_RELEASED_HANDLER:   #res 1
+
 #include "STARTUP.asm"
 #include "MATH.asm"
 #include "KEYBOARD_IN.asm"

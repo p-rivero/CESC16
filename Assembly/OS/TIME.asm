@@ -7,9 +7,6 @@ TIME:
 
 .Halt:
     ; TODO: Output message indicating that execution is halted
-    ; TODO: When interrupts are implemented, calling INPUT.WaitFull will no longer be needed
-    ; INPUT.WaitFull will reset the computer if the reset key is pressed 
-    syscall INPUT.WaitFull
     j .Halt
     
     
@@ -18,15 +15,15 @@ TIME:
     ; loop while a0>0, each iteration (including call/ret and decrementing a0) takes 1ms. Take into account oscillator freq
     ret
     
-
-; Halts until any key gets pressed, then continues execution normally.
-; Allows the user to switch to manual or 555 clock before continuing.
-.Breakpoint:
-    push v0
-    call INPUT.Wait
+.SetTimer:
+    ; Placeholder for future timer interrupts
+    ret
     
-    ; Visual indicator that execution is about to continue
-    mov v0, 0xFFFF  ; Flash all the LEDs of v0 for 3 cycles
-    pop v0
+.AttachInterrupt:
+    ; Placeholder for future timer interrupts
+    ret
+
+.DetachInterrupt:
+    ; Placeholder for future timer interrupts
     ret
     

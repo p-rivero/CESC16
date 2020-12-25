@@ -2,8 +2,6 @@
 ;  Keyboard Input library
 ; ========================
 
-; WARNING: THIS LIBRARY IS OBSOLETE
-
 #bank program
 
 INPUT:
@@ -18,72 +16,53 @@ INPUT:
 .PAGEDOWN = 26    ; From PS2Keyboard.h
 
 
-; ----------------
-; WAIT UNTIL INPUT
-; ----------------
+; Attach an interrupt handler (jump address) to a keypress or a key being released
+; WARNING: Those syscalls make use of the stack, and so they should be called in the correct order
+; as if they were push/pop instructions.
+; Example of correct use: [AttachInterrupt.Pressed], [5 push instructions], [AttachInterrupt.Released],
+;          [...], [DetachInterrupt.Released], [5 pop instructions], [DetachInterrupt.Pressed]
+.AttachInterrupt:
+..Pressed:
+    swap a0, KEY_PRESSED_HANDLER(zero) ; Attach new interrupt and retrieve old one
+    swap a0, 0(sp) ; Simultaneously pop return address and push old interrupt handler
+    j a0    ; Jump to return address
+    
+..Released:
+    swap a0, KEY_RELEASED_HANDLER(zero) ; Attach new interrupt and retrieve old one
+    swap a0, 0(sp) ; Simultaneously pop return address and push old interrupt handler
+    j a0    ; Jump to return address
 
-; Halts the program until a keyboard input (press down or lift up) is available and returns the input.
-; WARNING: INPUT.Wait doesn't remove the "lift up" version of its input. When calling INPUT.WaitFull after having 
-; called INPUT.Wait, the first detected input will probably be the remnants of the last INPUT.Wait call.
-.WaitFull:
-    movf v0, (KEYBOARD_ADDR)    ; Read from keyboard
-    jz .WaitFull                ; Poll until it's not 0
-    mov (KEYBOARD_ADDR), zero   ; Acknowledge input
+.DetachInterrupt:
+..Pressed:
+    pop a0  ; Pop return address
+    pop a1  ; Pop old interrupt handler
+    mov (KEY_PRESSED_HANDLER), a1   ; Attach old interrupt handler
+    j a0    ; Jump to return address
     
-    ; Search for special values:
-    
-    ; If HOME key was released, reset computer
-    cmp v0, .HOME | .MASK_BREAK
-    jeq STARTUP.Reset ; Jump to reset vector
-    
+..Released:
+    pop a0  ; Pop return address
+    pop a1  ; Pop old interrupt handler
+    mov (KEY_RELEASED_HANDLER), a1   ; Attach old interrupt handler
+    j a0    ; Jump to return address
+
+
+
+; INTERRUPT HANDLERS: those get called when a key is pressed/released
+; A key has been pressed down
+.Key_Pressed_Handler:
+    movf t0, (KEY_PRESSED_HANDLER) ; Load the address of the user interrupt handler
+    jnz t0  ; If it's not zero, jump to the user handler
+    ret     ; If it's zero, don't do anything
+
+
+; A key has been released
+.Key_Released_Handler:
+    xor a0, a0, INPUT.MASK_BREAK    ; Remove break bit
+    cmp a0, INPUT.HOME              ; If "Home" key was released, reset computer
+    jeq STARTUP.Reset
     ; More keys can be checked here
     
-    ; No special key detected, return the input
-    ret
+    movf t0, (KEY_RELEASED_HANDLER) ; Load the address of the user interrupt handler
+    jnz t0  ; If it's not zero, jump to the user handler
+    ret     ; If it's zero, don't do anything
     
-    
-; Halts the program until a keyboard input (only press down) is available and returns the input.
-.Wait:
-    call .WaitFull          ; Get both make and break inputs
-    mask v0, .MASK_BREAK    ; Detect if the input was break
-    jnz .Wait               ; If it was, keep waiting
-    
-    ret
-    
-
-; -----------------------
-; GET CURRENT INPUT STATE
-; -----------------------
-
-; Checks if a keyboard input (press down or lift up) is available. 
-; If it is, returns the input. If it isn't, returns 0.
-; WARNING: INPUT.Get doesn't remove the "lift up" version of its input. When calling INPUT.GetFull after having 
-; called INPUT.Get, the first detected input will probably be the remnants of the last INPUT.Get call.
-.GetFull:
-    movf v0, (KEYBOARD_ADDR)    ; Read from keyboard
-    jz ..return                 ; If there was no input, return 0
-    mov (KEYBOARD_ADDR), zero   ; Else acknowledge input
-
-    ; There was input, search special values
-    
-    ; If HOME key was released, reset computer
-    cmp v0, .HOME | .MASK_BREAK
-    jeq STARTUP.Reset ; Jump to reset vector
-    
-    ; More keys can be checked here
-    
-..return:
-    ; No special key detected, return the input
-    ret
- 
- 
-; Checks if a keyboard input (only press down) is available.
-; If it is, returns the input. If it isn't, returns 0.
-.Get:
-    call .GetFull           ; Get both make and break inputs
-    mask v0, .MASK_BREAK    ; Detect if the input was break
-    jz ..return             ; If it wasn't, return the value
-    mov v0, 0               ; If it was, return 0
-    
-..return:
-    ret
