@@ -2,8 +2,9 @@
 ;  Keyboard Input library
 ; ========================
 
+; WARNING: THIS LIBRARY IS OBSOLETE
+
 #bank program
-#bits 32
 
 INPUT:
 

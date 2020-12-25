@@ -1,7 +1,6 @@
 
 
 #bank program
-#bits 32
 
 MATH:
 

@@ -6,7 +6,6 @@
 Print_Buffer: #res 8
 
 #bank program
-#bits 32
 
 PRINT:
 
