@@ -3,13 +3,20 @@
 #bank program
 STARTUP:
     .Reset:
-    ; Reset vector (hardware entry point):
-    nop             ; Ensure that a reset is performed correctly, regardless of the clock state
-    mov sp, INIT_STACK  ; Initialize stack
-    mov (KEY_PRESSED_HANDLER), zero ; Reset interrupt handlers
-    mov (KEY_RELEASED_HANDLER), zero
+    ; Reset vector (hardware entry point): nop ensures that a reset is performed correctly, regardless of the clock state
+    nop
+    ; Initialize stack
+    mov sp, INIT_STACK
+    ; Disable timer
+    mov (TMR_ACTIVE), zero
+    ; Reset interrupt handlers
+    mov (HANDLERS.KEY_PRESSED), zero
+    mov (HANDLERS.KEY_RELEASED), zero
+    mov (HANDLERS.TMR), zero
     
     ; Initialize I/O:
+    mov t0, 0xFFFF
+    mov (TIMER_ADDR), t0  ; This forces an interrupt that initializes the TMR and inputs to a known state
     syscall PRINT.Reset   ; Clear screen
     
     ; User code execution
@@ -18,12 +25,13 @@ STARTUP:
     ; If user code terminates, halt the computer
     syscall TIME.Halt
     
-    #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector
+    #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector (hardware entry point)
     
     
-; INTERRUPT HANDLER
+MAIN_INTERRUPT_HANDLER:
     ; This handler gets called whenever any interrupt occurs. Its job is to call the correct specialized handlers
     ; Save+Restore context: ~60 clock cycles
+    ; Timer: Max ~30 cycles + user interrupt
     ; PS/2 Keyboard: Max ~30 cycles + user interrupt
     
     ; Store context
@@ -38,8 +46,18 @@ STARTUP:
     push t3
     push t4
     
-    ; Check timer and call user interrupt handler
-    ; TODO
+    ; Check timer (max ~30 cycles + user interrupt)
+.readTimer:
+    test (TMR_ACTIVE)   ; Check if the timer had been activated
+    jz ..continue       ; If it hasn't, skip the rest of checks
+    
+    mov a0, (HANDLERS.TMR)  ; Read current timer value
+    cmp a0, 0xFFFF      ; The timer causes an interrupt when it reaches 0xFFFF
+    jne ..continue      ; If it has any other value, don't call handler
+    
+    mov (TMR_ACTIVE), zero  ; Disable the timer so the handler only gets called once
+    call TIME.Timer_Handler
+..continue:
     
     ; Check PS/2 keyboard input (max ~30 cycles + user interrupt)
 .readKeyboard:
@@ -57,7 +75,7 @@ STARTUP:
     ..key_released:
     ; Key was released
     call INPUT.Key_Released_Handler ; Call the handler and continue
-    ..continue:
+..continue:
     
     ; Check other input sources (serial)
     ; TODO
@@ -73,30 +91,4 @@ STARTUP:
     pop a1
     pop a0
     popf
-    ret
-    
-
-; Copy data from program memory to RAM
-; Arguments: a0 = Address of first element in program memory (origin)
-;            a1 = Address AFTER last element in program memory (will NOT be copied)
-;            a2 = Address of first element in data memory (destination)
-; Warning: The conversion from 32-bit program memory to 16-bit data memory is performed
-;          using big endian format (upper bits get copied before lower bits).
-;          This ensures that the #d16 get stored in the order that they were typed.
-.MemCopy:
-    cmp a1, a0      ; If (address of last element) <= (address of first element),
-    jleu ..return   ; then return (nothing to copy)
-    
-..loop:
-    peek v0, 0(a0), 1   ; Read upper 16-bit word / opcode
-    mov (a2), v0        ; Store to lower address (big endian)
-    peek v0, 0(a0), 0   ; Read lower 16-bit word / argument
-    sw v0, 1(a2)        ; Store to upper address (big endian)
-    add a0, a0, 1       ; Increment program memory pointer
-    add a2, a2, 2       ; Increment data memory pointer
-    
-    cmp a0, a1          ; Keep looping until there are no more words
-    jne ..loop
-    
-..return:
     ret

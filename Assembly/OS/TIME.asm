@@ -1,5 +1,3 @@
-
-
 #bank program
 
 ; Rename to "control flow"?
@@ -15,15 +13,40 @@ TIME:
     ; loop while a0>0, each iteration (including call/ret and decrementing a0) takes 1ms. Take into account oscillator freq
     ret
     
+; Start a timer using the value stored in a0. The timer will tick (get incremented) every 16 clock cycles. Once it
+; overflows, it will trigger an interrupt AND IT WILL STOP COUNTING (for perioding interrupts, the handler has to 
+; call TIME.SetTimer again).
+; Warning: The latency from the overflow occurring to the user interrupt being called can be as high as 55 clock cycles.
 .SetTimer:
-    ; Placeholder for future timer interrupts
+    mov (TIMER_ADDR), a0    ; Send char to timer. The timer starts counting automatically
     ret
     
-.AttachInterrupt:
-    ; Placeholder for future timer interrupts
+; Read the current value of the timer and store it in v0.
+; The number of clock cycles that have passed since the call to TIME.SetTimer is (v0-INIT_VALUE)*16
+.ReadTimer:
+    mov v0, (TIMER_ADDR)
     ret
+    
+    
+; Attach an interrupt handler (jump address) to a timer overflow event
+; WARNING: Those syscalls make use of the stack, and so they should be called in the correct order
+; as if they were push/pop instructions.
+.AttachInterrupt:
+    swap a0, HANDLERS.TMR(zero) ; Attach new interrupt and retrieve old one
+    swap a0, 0(sp) ; Simultaneously pop return address and push old interrupt handler
+    j a0    ; Jump to return address
 
 .DetachInterrupt:
-    ; Placeholder for future timer interrupts
-    ret
+    pop a0  ; Pop return address
+    pop a1  ; Pop old interrupt handler
+    mov (HANDLERS.TMR), a1  ; Attach old interrupt handler
+    j a0    ; Jump to return address
+    
+    
+    
+; INTERRUPT HANDLER: it gets called when the timer reaches 0xFFFF
+.Timer_Handler:
+    movf t0, (HANDLERS.TMR) ; Load the address of the user interrupt handler
+    jnz t0  ; If it's not zero, jump to the user handler
+    ret     ; If it's zero, don't do anything
     
