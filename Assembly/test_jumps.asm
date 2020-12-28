@@ -33,7 +33,7 @@ MAIN_PROGRAM:
     mov a0, args
     mov a1, progmem_end
     mov a2, sp              ; Destination is the stack
-    syscall STARTUP.MemCopy
+    syscall MEMORY.MemCopy
     
     mov s0, sp  ; Pointer to start of arguments
     add s2, sp, args.size   ; End of arguments
