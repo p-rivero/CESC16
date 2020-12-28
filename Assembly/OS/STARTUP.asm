@@ -51,7 +51,7 @@ MAIN_INTERRUPT_HANDLER:
     test (TMR_ACTIVE)   ; Check if the timer had been activated
     jz ..continue       ; If it hasn't, skip the rest of checks
     
-    mov a0, (HANDLERS.TMR)  ; Read current timer value
+    mov a0, (TIMER_ADDR)    ; Read current timer value
     cmp a0, 0xFFFF      ; The timer causes an interrupt when it reaches 0xFFFF
     jne ..continue      ; If it has any other value, don't call handler
     

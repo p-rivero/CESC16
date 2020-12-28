@@ -19,6 +19,13 @@ TIME:
 ; Warning: The latency from the overflow occurring to the user interrupt being called can be as high as 55 clock cycles.
 .SetTimer:
     mov (TIMER_ADDR), a0    ; Send char to timer. The timer starts counting automatically
+    mov (TMR_ACTIVE), sp    ; Mark timer as active (any non-zero value means "true", and sp is guaranteed to never be 0)
+    ret
+    
+; Cancel the current timer. Note that there is no way to stop the timer once it's started.
+; However, when the cancelled timer overflows, the user handler won't be called.
+.CancelTimer:
+    mov (TMR_ACTIVE), zero
     ret
     
 ; Read the current value of the timer and store it in v0.
@@ -26,7 +33,6 @@ TIME:
 .ReadTimer:
     mov v0, (TIMER_ADDR)
     ret
-    
     
 ; Attach an interrupt handler (jump address) to a timer overflow event
 ; WARNING: Those syscalls make use of the stack, and so they should be called in the correct order
