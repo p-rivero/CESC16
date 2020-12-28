@@ -23,7 +23,7 @@ TMR_ACTIVE:     #res 1
 #include "STARTUP.asm"
 #include "MEMORY.asm"
 #include "MATH.asm"
-#include "KEYBOARD_IN.asm"
+#include "INPUT.asm"
 #include "TERMINAL_OUT.asm"
 #include "TIME.asm"
     
