@@ -34,7 +34,7 @@ MAIN_PROGRAM:
     
 ..wait:             ; Wait until the timer overflows and Sync gets set to 1.
     test (Sync)     ; Even if main program is halted, keystrokes will still trigger
-    jz ..wait       ; interrupts and call PRINT.Char.
+    jz ..wait       ; interrupts and call PRINT.Char
     
     ; Remember to pop the old handlers in the correct order (stack = LIFO)
     syscall TIME.DetachInterrupt
@@ -60,6 +60,6 @@ MAIN_PROGRAM:
 ; Routine that will get called whenever the timer overflows.
 .TMR_Handler:
     mov t0, 1
-    mov (Sync), t0
+    mov (Sync), t0  ; The global variable Sync signals the main program to exit the loop
     ret
     
