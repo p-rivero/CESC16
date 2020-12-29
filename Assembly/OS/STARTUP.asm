@@ -5,18 +5,17 @@ STARTUP:
     .Reset:
     ; Reset vector (hardware entry point): nop ensures that a reset is performed correctly, regardless of the clock state
     nop
-    ; Initialize stack
-    mov sp, INIT_STACK
     ; Disable timer
     mov (TMR_ACTIVE), zero
+    ; Initialize stack
+    mov sp, INIT_STACK
     ; Reset interrupt handlers
     mov (HANDLERS.KEY_PRESSED), zero
     mov (HANDLERS.KEY_RELEASED), zero
     mov (HANDLERS.TMR), zero
     
     ; Initialize I/O:
-    mov t0, 0xFFFF
-    mov (TIMER_ADDR), t0  ; This forces an interrupt that initializes the TMR and inputs to a known state
+    mov (KEYBOARD_ADDR), zero   ; Acknowledge any leftover input
     syscall PRINT.Reset   ; Clear screen
     
     ; User code execution
