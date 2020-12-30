@@ -246,23 +246,22 @@ const vector<unsigned int> TEMPLATE = {
     POPF,   // 1111011 - popf
     
     NOP, NOP, NOP, NOP    // 1111100-1111111 - Unused
-
 };
 
 
 void enable_jmp(int flags, int funct) {
     // Invert the PcIn signal from a given conditional jump ("enable" the jump)
-    // The disabled opcodes are both 0b1101FFF (imm) and 0b1110FFF (reg) -> 0b1101000+funct and 0b1101000+8+funct
+    // The affected opcodes are 0b1101FFF (imm) and 0b1110FFF (reg) -> 0b1101000+funct and 0b1101000+8+funct
 
     int address = TEMPL_SIZE * flags + 16 * (0b1101000 + funct) + 1; // 16*(0x61+funct) points to first microinstruction, +1 skips Fetch
-    content[address] ^= PcIn;       // IMM variant (base address)
 
+    content[address] ^= PcIn;       // IMM variant (base address)
     content[address + 8*16] ^= PcIn; // REG variant: Add 8 to opcode -> add 8*16 to address
 }
 
 void switchCarry(int flags, int funct) {
     // ALU_REG and ALU_IMM perform the ALU operation on the second time step (excluding the fetch cycle). Invert the carry bit on that microinstruction.
-    // The affected opcodes are 0b0000FFF (reg), 0b0001FFF (imm), 0b0010FFF and 0b0011FFF -> funct + 0,8,16,24
+    // The affected opcodes are: 0b0000FFF (REG), 0b0001FFF (IMM), 0b0010FFF (DIR_arg), 0b0011FFF (IND_arg), 0b0100FFF (DIR_dest), 0b0101FFF (IND_dest)
 
     int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|Bank0|LdY
     content[address] ^= AluCIn;         // REG variant (base address)
@@ -271,8 +270,8 @@ void switchCarry(int flags, int funct) {
     // Direct and Indirect modes must skip an extra timestep!
     content[address + 16*16 + 1] ^= AluCIn; // Disable DIR_arg variant (add 16 to opcode -> add 16*16 to address) 
     content[address + 24*16 + 1] ^= AluCIn; // Disable IND_arg variant (add 24 to opcode -> add 24*16 to address) 
-    content[address + 32*16 + 1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 16*16 to address) 
-    content[address + 40*16 + 1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 24*16 to address) 
+    content[address + 32*16 + 1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address) 
+    content[address + 40*16 + 1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address) 
 }
 
 void generate() {
