@@ -1,3 +1,3 @@
-Assembly/**.exe
-Assembly/**.preprocessed
-Assembly/**.hex
+Assembly/*.exe
+Assembly/*.preprocessed
+Assembly/*.hex
