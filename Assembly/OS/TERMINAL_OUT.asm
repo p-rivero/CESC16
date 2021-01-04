@@ -16,14 +16,14 @@ PRINT:
 ; Waits until the terminal is available and prints
 ; a char stored in the lower bits of a0.
 .Char:
-    test (TERMINAL_ADDR)    ; Read flag
+    test [TERMINAL_ADDR]    ; Read flag
     jnz .Char               ; Poll until it's 0 (terminal ready)
     ; Arduino Terminal accepts 1 byte every 32 us.
     ; (shortest access loop: 18 cycles, when [syscall PRINT.Char; mov a0, x; syscall PRINT.Char] is performed)
     ; - 1 MHz: At most, the polling loops 4 times (with polling every 6 us)
     ; - 2 MHz: At most, the polling loops 9 times (with polling every 3 us)
     
-    mov (TERMINAL_ADDR), a0     ; Send char to terminal
+    mov [TERMINAL_ADDR], a0     ; Send char to terminal
     ret
     
     
@@ -83,22 +83,22 @@ PRINT:
     ; At this point, a0 = 0 and a2,a1 contain BCD. s0 and v0 are free to use
     ; Store numbers to print
     and s0, a1, 0x000F  ; Store lowest BCD digit
-    mov (Print_Buffer+4), s0
+    mov [Print_Buffer+4], s0
     srl a1, a1, 4
     and s0, a1, 0x000F  ; Store 2nd BCD digit
-    mov (Print_Buffer+3), s0
+    mov [Print_Buffer+3], s0
     srl a1, a1, 4
     and s0, a1, 0x000F  ; Store 3rd BCD digit
-    mov (Print_Buffer+2), s0
+    mov [Print_Buffer+2], s0
     srl s0, a1, 4
-    mov (Print_Buffer+1), s0  ; Store 4th BCD digit
-    mov (Print_Buffer), a2    ; Store most significant BCD digit (5th)
+    mov [Print_Buffer+1], s0  ; Store 4th BCD digit
+    mov [Print_Buffer], a2    ; Store most significant BCD digit (5th)
     
 ; Remove leading zeroes
     mov s0, Print_Buffer-1
 ..rem_zeroes:           
     add s0, s0, 1
-    movf a0, (s0)
+    movf a0, [s0]
     jz ..rem_zeroes
 
 ; Print number from first non-zero digit onward
@@ -106,7 +106,7 @@ PRINT:
     add a0, a0, "0"
     call .Char
     add s0, s0, 1
-    mov a0, (s0)
+    mov a0, [s0]
     cmp s0, Print_Buffer+4
     jleu ..print ; Loop while pointer is less or equal than address of last digit
     

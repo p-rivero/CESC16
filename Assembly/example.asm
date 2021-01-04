@@ -30,7 +30,7 @@ global_label:
     .local_const = 2        ; Labels and constants that start with a dot (.) are local (only visible whithin 2 global labels)
     
     nop                     ; This is the first program instruction that will be executed
-    mov (vector+2), zero    ; Initialize vector[2] to 0
+    mov [vector+2], zero    ; Initialize vector[2] to 0
     mov t3, constant        ; Loads 0x0FF1 into t3 (0x10 - (2 * 4 + 0x07) evaluates to 0x0FF1).
     mov s0, .local_const    ; Loads 2 into s0. s0 is a safe register
     sub t1, s0, t3          ; t1 = s0 - t3. Note that the contents of s0 and t3 are unchanged
@@ -42,7 +42,7 @@ global_label:
     
 .local_label:
     lw s2, num(zero)        ; Loads the contents stored at absoulte address "num" into s2 (safe register).
-    mov s2, (num)           ; This instruction has exactly the same effect as the previous one
+    mov s2, [num]           ; This instruction has exactly the same effect as the previous one
     
     mov a0, vector          ; Loads the ADDRESS of vector[0] into a0 (argument register)
     lw a1, 2(a0)            ; Loads the CONTENTS of vector[2] into a1 (argument register)
@@ -50,7 +50,7 @@ global_label:
     
     mov a0, v0              ; The returned value of the subroutine is in v0. Output the result (as an integer) to the output terminal.
     syscall PRINT.Word
-    mov (t0), s2            ; Stores the contents of s2 into the address in t0. The value of s2 has been preserved by the subroutine
+    mov [t0], s2            ; Stores the contents of s2 into the address in t0. The value of s2 has been preserved by the subroutine
     ret                     ; Program ends
     
 
@@ -61,7 +61,7 @@ another_label:              ; From this point, .local_const and .local_label are
     
     mov t0, t1              ; Copy contents of t1 to t0
     sw t2, result(zero)     ; Store contents of t2 in the reserved space in data memory
-    mov (result), t2        ; This instruction has exactly the same effect as the previous one
+    mov [result], t2        ; This instruction has exactly the same effect as the previous one
     
     j global_label
     

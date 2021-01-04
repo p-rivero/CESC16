@@ -23,26 +23,26 @@ INPUT:
 ;          [...], [DetachInterrupt.Released], [5 pop instructions], [DetachInterrupt.Pressed]
 .AttachInterrupt:
 ..Pressed:
-    swap a0, HANDLERS.KEY_PRESSED(zero) ; Attach new interrupt and retrieve old one
-    swap a0, 0(sp) ; Simultaneously pop return address and push old interrupt handler
+    swap a0, [HANDLERS.KEY_PRESSED] ; Attach new interrupt and retrieve old one
+    swap a0, [sp] ; Simultaneously pop return address and push old interrupt handler
     j a0    ; Jump to return address
     
 ..Released:
-    swap a0, HANDLERS.KEY_RELEASED(zero) ; Attach new interrupt and retrieve old one
-    swap a0, 0(sp) ; Simultaneously pop return address and push old interrupt handler
+    swap a0, [HANDLERS.KEY_RELEASED] ; Attach new interrupt and retrieve old one
+    swap a0, [sp] ; Simultaneously pop return address and push old interrupt handler
     j a0    ; Jump to return address
 
 .DetachInterrupt:
 ..Pressed:
     pop a0  ; Pop return address
     pop a1  ; Pop old interrupt handler
-    mov (HANDLERS.KEY_PRESSED), a1  ; Attach old interrupt handler
+    mov [HANDLERS.KEY_PRESSED], a1  ; Attach old interrupt handler
     j a0    ; Jump to return address
     
 ..Released:
     pop a0  ; Pop return address
     pop a1  ; Pop old interrupt handler
-    mov (HANDLERS.KEY_RELEASED), a1 ; Attach old interrupt handler
+    mov [HANDLERS.KEY_RELEASED], a1 ; Attach old interrupt handler
     j a0    ; Jump to return address
 
 
@@ -50,7 +50,7 @@ INPUT:
 ; INTERRUPT HANDLERS: those get called when a key is pressed/released
 ; A key has been pressed down
 .Key_Pressed_Handler:
-    movf t0, (HANDLERS.KEY_PRESSED) ; Load the address of the user interrupt handler
+    movf t0, [HANDLERS.KEY_PRESSED] ; Load the address of the user interrupt handler
     jnz t0  ; If it's not zero, jump to the user handler
     ret     ; If it's zero, don't do anything
 
@@ -62,7 +62,7 @@ INPUT:
     jeq STARTUP.Reset
     ; More keys can be checked here
     
-    movf t0, (HANDLERS.KEY_RELEASED) ; Load the address of the user interrupt handler
+    movf t0, [HANDLERS.KEY_RELEASED] ; Load the address of the user interrupt handler
     jnz t0  ; If it's not zero, jump to the user handler
     ret     ; If it's zero, don't do anything
     
