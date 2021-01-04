@@ -35,17 +35,21 @@ global_label:
     mov s0, .local_const    ; Loads 2 into s0. s0 is a safe register
     sub t1, s0, t3          ; t1 = s0 - t3. Note that the contents of s0 and t3 are unchanged
     sw t1, num(zero)        ; Stores the contents of t1 to the absolute address "num" (global label)
+    mov [num], t1           ; Identical to the previous instruction
     mov a0, t1              
-    syscall PRINT.Char      ; Sends the contents of t1 to the connected output device
+    syscall PRINT.Char      ; Sends the contents of a0 to the connected output device
     jne .local_label        ; jne is a macro that gets expanded to jnz (jump if s0 - t3 != 0, therefore s0 != t3)
     j another_label
     
 .local_label:
     lw s2, num(zero)        ; Loads the contents stored at absoulte address "num" into s2 (safe register).
-    mov s2, [num]           ; This instruction has exactly the same effect as the previous one
+    mov s2, [num]           ; Identical to the previous instruction
     
     mov a0, vector          ; Loads the ADDRESS of vector[0] into a0 (argument register)
     lw a1, 2(a0)            ; Loads the CONTENTS of vector[2] into a1 (argument register)
+    mov a1, [a0+2]          ; Identical to the previous instruction (macro)
+    mov [a0+1], t0          ; Identical to "sw t0, 1(a0)" (macro)
+    
     call subroutine         ; Calls a subroutine. The arguments are in a0-a2.
     
     mov a0, v0              ; The returned value of the subroutine is in v0. Output the result (as an integer) to the output terminal.
