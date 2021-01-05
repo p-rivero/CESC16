@@ -292,7 +292,7 @@ void generate() {
         bool LT = (VF and not SF) or (not VF and SF);   // Less Than = V xor S
         
         // Unconditional jump
-        enable_jmp(flags, 0b000); // J
+        enable_jmp(flags, 0b000); // JMP
 
         // Conditional jumps
         if (ZF) enable_jmp(flags, 0b001); // JZ

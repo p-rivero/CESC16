@@ -32,10 +32,10 @@ PRINT:
 .Word:
     cmp a0, 10
     jltu skip(1)
-    j ..continue
+    jmp ..continue
     ; If the input is a number between 0 and 9, just print it and return
     add a0, a0, "0"
-    j .Char
+    jmp .Char
     
 ..continue:
     ; Implement 16 bit Double dabble algorithm (convert to BCD)
@@ -125,7 +125,7 @@ PRINT:
     syscall .Char
     sub a0, zero, a2
 ..continue:    
-    j .Word  ; Print unsigned integer and return
+    jmp .Word   ; Print unsigned integer and return
 
 
 ; Prints the contents of a1,a0 as an UNSIGNED 32-bit integer (a1 contains upper bits).
@@ -146,7 +146,7 @@ PRINT:
     sub a0, zero, a2    ; Invert a1,a2 and store in a1,a0
     subb a1, zero, a1
 ..continue:    
-    j .Word  ; Print unsigned integer and return
+    jmp .Word   ; Print unsigned integer and return
     ret
 
 .String:

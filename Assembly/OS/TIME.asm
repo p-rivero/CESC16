@@ -5,7 +5,7 @@ TIME:
 
 .Halt:
     ; TODO: Output message indicating that execution is halted
-    j .Halt
+    jmp .Halt
     
     
 .Wait_ms:
@@ -40,13 +40,13 @@ TIME:
 .AttachInterrupt:
     swap a0, [HANDLERS.TMR] ; Attach new interrupt and retrieve old one
     swap a0, [sp] ; Simultaneously pop return address and push old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
 
 .DetachInterrupt:
     pop a0  ; Pop return address
     pop a1  ; Pop old interrupt handler
     mov [HANDLERS.TMR], a1  ; Attach old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
     
     
     

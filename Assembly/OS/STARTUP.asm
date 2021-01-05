@@ -69,7 +69,7 @@ MAIN_INTERRUPT_HANDLER:
     
     ; Key was pressed down
     call INPUT.Key_Pressed_Handler  ; Call the handler and continue
-    j ..continue
+    jmp ..continue
     
     ..key_released:
     ; Key was released

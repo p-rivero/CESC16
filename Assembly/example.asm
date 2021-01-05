@@ -39,7 +39,7 @@ global_label:
     mov a0, t1              
     syscall PRINT.Char      ; Sends the contents of a0 to the connected output device
     jne .local_label        ; jne is a macro that gets expanded to jnz (jump if s0 - t3 != 0, therefore s0 != t3)
-    j another_label
+    jmp another_label
     
 .local_label:
     lw s2, num(zero)        ; Loads the contents stored at absoulte address "num" into s2 (safe register).
@@ -59,15 +59,15 @@ global_label:
     
 
 another_label:              ; From this point, .local_const and .local_label aren't available anymore
-    j skip(2)               ; Skips the next 2 instructions
+    jmp skip(2)             ; Skips the next 2 instructions
 .loop:
-    j .loop                 ; Infinite loop
+    jmp .loop               ; Infinite loop
     
     mov t0, t1              ; Copy contents of t1 to t0
     sw t2, result(zero)     ; Store contents of t2 in the reserved space in data memory
     mov [result], t2        ; This instruction has exactly the same effect as the previous one
     
-    j global_label
+    jmp global_label
     
 
 subroutine:

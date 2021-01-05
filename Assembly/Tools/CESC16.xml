@@ -43,7 +43,7 @@
 		<KeyWord name="peek" />
 		<KeyWord name="call" />
 		<KeyWord name="ret" />
-		<KeyWord name="j" />
+		<KeyWord name="jmp" />
 		<KeyWord name="jz" />
 		<KeyWord name="jnz" />
 		<KeyWord name="jc" />
@@ -61,7 +61,7 @@
 		<KeyWord name="cmp" />
 		<KeyWord name="mask" />
 		<KeyWord name="test" />
-		<KeyWord name="clf" />
+		<KeyWord name="clrf" />
 		<KeyWord name="lbu" />
 		<KeyWord name="sb" />
 		<KeyWord name="jb" />
@@ -73,6 +73,9 @@
 		<KeyWord name="nop" />
         
 		<KeyWord name="include" />
+		<KeyWord name="define" />
+		<KeyWord name="ifndef" />
+		<KeyWord name="endif" />
 		<KeyWord name="bank" />
 		<KeyWord name="str" />
 		<KeyWord name="res" />

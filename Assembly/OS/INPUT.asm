@@ -25,25 +25,25 @@ INPUT:
 ..Pressed:
     swap a0, [HANDLERS.KEY_PRESSED] ; Attach new interrupt and retrieve old one
     swap a0, [sp] ; Simultaneously pop return address and push old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
     
 ..Released:
     swap a0, [HANDLERS.KEY_RELEASED] ; Attach new interrupt and retrieve old one
     swap a0, [sp] ; Simultaneously pop return address and push old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
 
 .DetachInterrupt:
 ..Pressed:
     pop a0  ; Pop return address
     pop a1  ; Pop old interrupt handler
     mov [HANDLERS.KEY_PRESSED], a1  ; Attach old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
     
 ..Released:
     pop a0  ; Pop return address
     pop a1  ; Pop old interrupt handler
     mov [HANDLERS.KEY_RELEASED], a1 ; Attach old interrupt handler
-    j a0    ; Jump to return address
+    jmp a0  ; Jump to return address
 
 
 

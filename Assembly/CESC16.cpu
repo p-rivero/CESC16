@@ -32,7 +32,7 @@
 }
 
 #subruledef JUMP {
-    j    => 0b000
+    jmp  => 0b000
     jz   => 0b001
     jnz  => 0b010
     jc   => 0b011
@@ -142,14 +142,16 @@
     cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
     cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
     
-    mask {rA: REG}, {rB: REG}  => _ALU_REG(0b001, 0, rA, rB)  ; Expands to: and zero, rA, rB
-    mask {rA: REG}, {Imm: i16} => _ALU_IMM(0b001, 0, rA, Imm) ; Expands to: and zero, rA, Imm
+    mask {rA: REG}, {rB: REG}     => _ALU_REG(0b001, 0, rA, rB)   ; Expands to: and zero, rA, rB
+    mask {rA: REG}, {Imm: i16}    => _ALU_IMM(0b001, 0, rA, Imm)  ; Expands to: and zero, rA, Imm
+    mask {rA: REG}, [{Addr: u16}] => _ALU_DIR(0b001, 0, rA, Addr) ; Expands to: and zero, rA, [Addr]
+    mask {rA: REG}, [{rB: REG}]   => _ALU_IND(0b001, 0, rA, rB)   ; Expands to: and zero, rA, [rB]
     
     test {rA: REG}      => _ALU_REG(0b100, 0, 0, rA)    ; Expands to: add zero, zero, rA
     test [{Addr: u16}]  => _ALU_DIR(0b100, 0, 0, Addr)  ; Expands to: add zero, zero, [Addr16]
     test [{rA: REG}]    => _ALU_IND(0b100, 0, 0, rA)    ; Expands to: add zero, zero, [rA]
     
-    clf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
+    clrf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
     
     syscall {Addr: u16} => _CALL(Addr)  ; Expands to: call Addr16
     
