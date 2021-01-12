@@ -58,15 +58,17 @@
 #define _MOV_REG(rD, rA)            0x00 @ rD`4 @ rA`4 @ 0x0000
 #define _ALU_REG(op, rD, rA, rB)    0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 #define _ALU_IMM(op, rD, rA, Imm)   0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
-#define _ALU_DIR(op, rD, rA, Addr)  0b00010 @ op`3 @ rD`4 @ rA`4 @ Addr
-#define _ALU_IND(op, rD, rA, rB)    0b00011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+#define _ALU_DIR(op, rD, rA, Addr)  0b01000 @ op`3 @ rD`4 @ rA`4 @ Addr
+#define _ALU_IND(op, rD, rA, rB)    0b01001 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+#define _ALU_IDX(op, rD, rA, Imm)   0b01010 @ op`3 @ rD`4 @ rA`4 @ Imm
 
-#define _LOAD(rD, rA, Imm)          0x60 @ rD`4 @ rA`4 @ Imm
-#define _LOAD_B(rD, rA, Imm)        0x61 @ rD`4 @ rA`4 @ Imm
-#define _STORE(rB, rA, Imm)         0x62 @ rB`4 @ rA`4 @ Imm
-#define _SWAP(rD, rA, Imm)          0x63 @ rD`4 @ rA`4 @ Imm
+#define _LOAD(rD, rA, Imm)          0x50 @ rD`4 @ rA`4 @ Imm
+#define _STORE(rB, rA, Imm)         0x70 @ rB`4 @ rA`4 @ Imm
 
-#define _CALL(Addr)                 0x7801 @ Addr`16
+#define _LOAD_B(rD, rA, Imm)        0x80 @ rD`4 @ rA`4 @ Imm
+#define _SWAP(rD, rA, Imm)          0x81 @ rD`4 @ rA`4 @ Imm
+
+#define _CALL(Addr)                 0xD001 @ Addr`16
 
 
 #ruledef INSTRUCTIONS {
@@ -77,53 +79,50 @@
     mov {rD: REG}, {Imm: i16} => 0x08 @ rD`4 @ 0x0 @ Imm
     {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => _ALU_IMM(op, rD, rA, Imm)
     
-    mov {rD: REG}, [{Addr: u16}] => 0x10 @ rD`4 @ 0x0 @ Addr
+    mov {rD: REG}, [{Addr: u16}] => 0x40 @ rD`4 @ 0x0 @ Addr
     {op: ALU_OP} {rD: REG}, {rA: REG}, [{Addr: u16}] => _ALU_DIR(op, rD, rA, Addr)
     
-    mov {rD: REG}, [{rB: REG}] => 0x18 @ rD`4 @ 0x0000 @ rB`4
+    mov {rD: REG}, [{rB: REG}] => 0x48 @ rD`4 @ 0x0000 @ rB`4
     {op: ALU_OP} {rD: REG}, {rA: REG}, [{rB: REG}] => _ALU_IND(op, rD, rA, rB)
+
+    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  _LOAD(rD, rA, Imm)
+    {op: ALU_OP} {rD: REG}, [{rA: REG}+{Imm: i16}] => _ALU_IDX(op, rD, rA, Imm)
+
+    mov [{Addr: u16}], {rA: REG} => 0x600 @ rA`4 @ Addr
+    {op: ALU_OP} [{Addr: u16}], {rA: REG} => 0b01100 @ op`3 @ 0x0 @ rA`4 @ Addr
     
-    mov [{Addr: u16}], {rA: REG} => 0x200 @ rA`4 @ Addr
-    {op: ALU_OP} [{Addr: u16}], {rA: REG} => 0b00100 @ op`3 @ 0x0 @ rA`4 @ Addr
+    mov [{rA: REG}], {rB: REG} => 0x680 @ rA`4 @ 0x000 @ rB`4
+    {op: ALU_OP} [{rA: REG}], {rB: REG} => 0b01101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
+
+    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  _STORE(rB, rA, Imm)
+    {op: ALU_OP} [{rA: REG}+{Imm: i16}], {rB: REG} => 0b01110 @ op`3 @ 0x0 @ rA`4 @ Imm
     
-    mov [{rA: REG}], {rB: REG} => 0x280 @ rA`4 @ 0x000 @ rB`4
-    {op: ALU_OP} [{rA: REG}], {rB: REG} => 0b00101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
-    
-    sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
-    srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x4 @ Imm @ rD`4 @ rA`4 @ 0x0000
-    sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x5 @ Imm @ rD`4 @ rA`4 @ 0x0000
+    sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
+    srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x2 @ Imm @ rD`4 @ rA`4 @ 0x0000
+    sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
     
     ; Memory
-    lw   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD(rD, rA, Imm)
-    lb   {rD: REG}, {Imm: i16}({rA: REG}) => _LOAD_B(rD, rA, Imm)
-    sw   {rB: REG}, {Imm: i16}({rA: REG}) => _STORE(rB, rA, Imm)
+    lb   {rD: REG}, [{rA: REG}+{Imm: i16}]  => _LOAD_B(rD, rA, Imm)
+    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => _SWAP(rD, rA, Imm)
+    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: i1}  => 0b1000001 @ W @ rD`4 @ rA`4 @ Imm
     
-    swap {rD: REG}, {Imm: i16}({rA: REG}) => _SWAP(rD, rA, Imm)
-    peek {rD: REG}, {Imm: i16}({rA: REG}), {W: i1}  => 0b0110010 @ W @ rD`4 @ rA`4 @ Imm
-    
-    push  {rB: REG} => 0x6601000 @ rB`4
-    pop   {rD: REG} => 0x67 @ rD`4 @ 0x10000
-    pushf           => 0x7A010000
-    popf            => 0x7B010000
+    push {rB: REG}  => 0x8401000 @ rB`4
+    ; push {Imm: i16} => 0x8501000 @ rB`4
+    pushf           => 0x86010000
+
+    pop  {rD: REG}  => 0x87 @ rD`4 @ 0x10000
+    popf            => 0x88010000
     
     ; Jumps
-    {jmp: JUMP} {Addr: JMP_ADDR} => 0b01101 @ jmp`3 @ 0x00 @ Addr`16
-    {jmp: JUMP} {rA: REG} => 0b01110 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {Addr: JMP_ADDR} => 0b11000 @ jmp`3 @ 0x00 @ Addr`16
+    {jmp: JUMP} {rA: REG} => 0b11001 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
     
     call {Addr: JMP_ADDR} => _CALL(Addr)
-    ret => 0x79010000
+    ret => 0xD4010000
 }
 
 #ruledef MACROS {
-    mov {rD: REG}, [{Imm: i16}+{rA: REG}]   =>  _LOAD(rD, rA, Imm)
-    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  _LOAD(rD, rA, Imm)
-    mov [{Imm: i16}+{rA: REG}], {rB: REG}   =>  _STORE(rB, rA, Imm)
-    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  _STORE(rB, rA, Imm)
-    
-    swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
-    swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
-    
     movf {rD: REG}, {rA: REG}     => _ALU_REG(0b100, rD, 0, rA)     ; Expands to: add rD, zero, rA
     movf {rD: REG}, [{Addr: u16}] => _ALU_DIR(0b100, rD, 0, Addr)   ; Expands to: add rD, zero, [Addr16]
     movf {rD: REG}, {Imm: i16}    => _ALU_IMM(0b100, rD, 0, Imm)    ; Expands to: add rD, zero, Imm16
@@ -136,8 +135,13 @@
     
     sllc {rD: REG}, {rA: REG}   =>  _ALU_REG(0b110, rD, rA, rA)  ; Expands to: addc rD, rA, rA
     
+    lw   {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD(rD, rA, Imm)
+    sw   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)
     lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD_B(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
     sb   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
+    
+    swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
+    swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
     
     cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
     cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
@@ -147,9 +151,10 @@
     mask {rA: REG}, [{Addr: u16}] => _ALU_DIR(0b001, 0, rA, Addr) ; Expands to: and zero, rA, [Addr]
     mask {rA: REG}, [{rB: REG}]   => _ALU_IND(0b001, 0, rA, rB)   ; Expands to: and zero, rA, [rB]
     
-    test {rA: REG}      => _ALU_REG(0b100, 0, 0, rA)    ; Expands to: add zero, zero, rA
-    test [{Addr: u16}]  => _ALU_DIR(0b100, 0, 0, Addr)  ; Expands to: add zero, zero, [Addr16]
-    test [{rA: REG}]    => _ALU_IND(0b100, 0, 0, rA)    ; Expands to: add zero, zero, [rA]
+    test {rA: REG}              => _ALU_REG(0b100, 0, 0, rA)    ; Expands to: add zero, zero, rA
+    test [{Addr: u16}]          => _ALU_DIR(0b100, 0, 0, Addr)  ; Expands to: add zero, zero, [Addr16]
+    test [{rA: REG}]            => _ALU_IND(0b100, 0, 0, rA)    ; Expands to: add zero, zero, [rA]
+    test [{rA: REG}+{Imm: i16}] => _ALU_IDX(0b100, 0, rA, Imm)  ; Expands to: add zero, [rA+Imm16]
     
     clrf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
     

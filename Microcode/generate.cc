@@ -23,7 +23,7 @@ using namespace std;
 #define PCpp            0x000400    // Increment Program Counter (and load Instruction Register)
 #define MemIn           0x000800    // Memory (RAM) in
 #define PcIn            0x001000    // Program Counter in (Jump) [ACTIVE LOW]
-#define LdReg           0x002000    // Load Register (Rd) [ACTIVE LOW]
+#define LdReg           0x002000    // Load Register (rD) [ACTIVE LOW]
 #define LdX             0x004000    // Load temporary register X [ACTIVE LOW]
 #define LdY             0x008000    // Load temporary register Y [ACTIVE LOW]
 
@@ -60,6 +60,7 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define LdFlgBUS    LdFlg|LdImm         // Load flags from the main bus
 
 #define Fetch       PCpp|MemOut|IrIn|LdX|LdY    // First timestep for all instructions
+#define ArgBk       Bank0                       // Argument bank (where instruction arguments are fetched)
 
 // ALU OPERATIONS (from 74HC181 datasheet)
 #define ALU_Y       AluM|AluS3|AluS1                // Output Y
@@ -80,8 +81,8 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 // In case we are generating the microcode for instructions stored in RAM, there are some changes in instruction fetching
 #ifdef RUN_FROM_RAM
-    #undef Bank0
-    #define Bank0       Bank1   // When fetching arguments, access RAM instead of lower bits of ROM
+    #undef ArgBk
+    #define ArgBk       Bank1   // When fetching arguments, access RAM instead of lower bits of ROM
     #undef PcOutAddr
     #define PcOutAddr   AddrOut0|PCpp    // Loading the PC to MAR preincrements it (++PC -> MAR)
     #undef Fetch
@@ -91,22 +92,22 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 // INSTRUCTIONS:
 #define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,  ZEROx14
-#define ALU_REG(OP)  Fetch,  MemOut|Bank0|LdY,                   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
+#define ALU_REG(OP)  Fetch,  MemOut|ArgBk|LdY,                   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
 
-#define MOV_IMM      Fetch,  MemOut|Bank0|LdReg|PcOutAddr|CLR,   ZEROx14
-#define ALU_IMM(OP)  Fetch,  MemOut|Bank0|LdImm|LdY,             OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
+#define MOV_IMM      Fetch,  MemOut|ArgBk|LdReg|PcOutAddr|CLR,   ZEROx14
+#define ALU_IMM(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY,             OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
 
-#define MOV_DIRA     Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_DIRA(OP) Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define MOV_DIRA     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
+#define ALU_DIRA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_INDA     Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_INDA(OP) Fetch,  MemOut|Bank0|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define MOV_INDA     Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
+#define ALU_INDA(OP) Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_DIRD     Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_DIRD(OP) Fetch,  MemOut|Bank0|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define MOV_DIRD     Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define ALU_DIRD(OP) Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
-#define MOV_INDD     Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_INDD(OP) Fetch,  MemOut|Bank0|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define MOV_INDD     Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define ALU_INDD(OP) Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define SLL_STEP    ALU_add|AluOutD|LdImm|LdX|LdY
 #define SLL_END     ALU_add|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR
@@ -121,13 +122,13 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define SRA_STEP_4  SRA_STEP, SRA_STEP, SRA_STEP, SRA_STEP
 
 
-#define LOAD(Bank)  Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
+#define LOAD(Bank)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
 
-#define STORE       Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
+#define STORE       Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
 
-#define SWAP        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
+#define SWAP        Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
 
-#define PUSH        Fetch,  SPmm|MemOut|Bank0|LdY|ALU_Xminus1|AluOutAddr,   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define PUSH        Fetch,  SPmm|MemOut|ArgBk|LdY|ALU_Xminus1|AluOutAddr,   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 
 #define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
 
@@ -135,13 +136,13 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 #define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,   ZEROx13
 
-#define CALL        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
+#define CALL        Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
 
 #define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,   ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 
-#define JMP_IMM     Fetch,  MemOut|Bank0/*|PcIn*/|PcOutAddr|CLR,    ZEROx14
+#define JMP_IMM     Fetch,  MemOut|ArgBk/*|PcIn*/|PcOutAddr|CLR,    ZEROx14
 
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
@@ -149,32 +150,20 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 const vector<uint32_t> JMP_INT = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR,    ZEROx13};
 
 
-// 4 bit flags + 7 bit opcode + 4 bit timestep + 1 bit IRQ
-const unsigned int SIZE = 16 * 128 * 16 * 2;
+// 4 bit flags + 8 bit opcode + 4 bit timestep + 1 bit IRQ
+const unsigned int SIZE = 16 * 256 * 16 * 2;
 vector<uint32_t> content(SIZE);
 
-// Size of template: 7 bit opcode + 4 bit timestep
-const unsigned int TEMPL_SIZE = 128 * 16;
+// Size of template: 8 bit opcode + 4 bit timestep
+const unsigned int TEMPL_SIZE = 256 * 16;
 const vector<uint32_t> TEMPLATE = {
-    // 0000FFF - [ALU] Rd, Ra, Rb
+    // 00000FFF - ALU rD, rA, rB
     MOV_REG, ALU_REG(ALU_and), ALU_REG(ALU_or), ALU_REG(ALU_xor), ALU_REG(ALU_add), ALU_REG(ALU_sub), ALU_REG(ALU_add), ALU_REG(ALU_sub),
 
-    // 0001FFF - [ALU] Rd, Ra, Imm16
+    // 00001FFF - ALU rD, rA, Imm16
     MOV_IMM, ALU_IMM(ALU_and), ALU_IMM(ALU_or), ALU_IMM(ALU_xor), ALU_IMM(ALU_add), ALU_IMM(ALU_sub), ALU_IMM(ALU_add), ALU_IMM(ALU_sub),
 
-    // 0010FFF - [ALU] (Addr16), Ra
-    MOV_DIRA, ALU_DIRA(ALU_and), ALU_DIRA(ALU_or), ALU_DIRA(ALU_xor), ALU_DIRA(ALU_add), ALU_DIRA(ALU_sub), ALU_DIRA(ALU_add), ALU_DIRA(ALU_sub),
-
-    // 0011FFF - [ALU] (Ra), Rb
-    MOV_INDA, ALU_INDA(ALU_and), ALU_INDA(ALU_or), ALU_INDA(ALU_xor), ALU_INDA(ALU_add), ALU_INDA(ALU_sub), ALU_INDA(ALU_add), ALU_INDA(ALU_sub),
-
-    // 0100FFF - [ALU] (Addr16), Ra
-    MOV_DIRD, ALU_DIRD(ALU_and), ALU_DIRD(ALU_or), ALU_DIRD(ALU_xor), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub),
-
-    // 0101FFF - [ALU] (Ra), Rb
-    MOV_INDD, ALU_INDD(ALU_and), ALU_INDD(ALU_or), ALU_INDD(ALU_xor), ALU_INDD(ALU_add), ALU_INDD(ALU_sub), ALU_INDD(ALU_add), ALU_INDD(ALU_sub),
-
-    // 011iiii - sll Rd, Ra, Imm3
+    // 0001iiii - sll rD, rA, Imm4
     NOP,    // Shift 0 positions
     Fetch,                                                          SLL_END, ZEROx14,   // Shift 1 position
     Fetch, SLL_STEP,                                                SLL_END, ZEROx13,   // Shift 2 positions
@@ -192,7 +181,7 @@ const vector<uint32_t> TEMPLATE = {
     Fetch, SLL_STEP_4, SLL_STEP_4, SLL_STEP_4, SLL_STEP,            SLL_END, 0,
     Fetch, SLL_STEP_4, SLL_STEP_4, SLL_STEP_4, SLL_STEP, SLL_STEP,  SLL_END,            // Shift 15 positions
 
-    // 100iiii - srl Rd, Ra, Imm3
+    // 0010iiii - srl rD, rA, Imm4
     NOP,    // Shift 0 positions
     Fetch,                                                          SRL_END, ZEROx14,   // Shift 1 position
     Fetch, SRL_STEP,                                                SRL_END, ZEROx13,   // Shift 2 positions
@@ -210,7 +199,7 @@ const vector<uint32_t> TEMPLATE = {
     Fetch, SRL_STEP_4, SRL_STEP_4, SRL_STEP_4, SRL_STEP,            SRL_END, 0,
     Fetch, SRL_STEP_4, SRL_STEP_4, SRL_STEP_4, SRL_STEP, SRL_STEP,  SRL_END,            // Shift 15 positions
 
-    // 101iiii - srl Rd, Ra, Imm3
+    // 0011iiii - srl rD, rA, Imm4
     NOP,    // Shift 0 positions
     Fetch,                                                          SRA_END, ZEROx14,   // Shift 1 position
     Fetch, SRA_STEP,                                                SRA_END, ZEROx13,   // Shift 2 positions
@@ -228,59 +217,100 @@ const vector<uint32_t> TEMPLATE = {
     Fetch, SRA_STEP_4, SRA_STEP_4, SRA_STEP_4, SRA_STEP,            SRA_END, 0,
     Fetch, SRA_STEP_4, SRA_STEP_4, SRA_STEP_4, SRA_STEP, SRA_STEP,  SRA_END,            // Shift 15 positions
 
+    // 01000FFF - ALU rD, rA, [Addr16]
+    MOV_DIRA, ALU_DIRA(ALU_and), ALU_DIRA(ALU_or), ALU_DIRA(ALU_xor), ALU_DIRA(ALU_add), ALU_DIRA(ALU_sub), ALU_DIRA(ALU_add), ALU_DIRA(ALU_sub),
 
-    LOAD(Bank1),        // 1100000 - lw
-    LOAD(Bank1|Bank0),  // 1100001 - lb
+    // 01001FFF - ALU rD, rA, [rB]
+    MOV_INDA, ALU_INDA(ALU_and), ALU_INDA(ALU_or), ALU_INDA(ALU_xor), ALU_INDA(ALU_add), ALU_INDA(ALU_sub), ALU_INDA(ALU_add), ALU_INDA(ALU_sub),
 
-    STORE,      // 1100010 - sw
+    // TODO: 0101xFFF - ALU rD, [rA+Imm16]
+    LOAD(Bank1) /* lw */, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    LOAD(Bank1) /* lw */, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
 
-    SWAP,       // 1100011 - swap
+    // 01100FFF - ALU [Addr16], rA
+    MOV_DIRD, ALU_DIRD(ALU_and), ALU_DIRD(ALU_or), ALU_DIRD(ALU_xor), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub),
 
-    LOAD(Bank0), LOAD(0),    // 110010W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
+    // 01101FFF - ALU [rA], rB
+    MOV_INDD, ALU_INDD(ALU_and), ALU_INDD(ALU_or), ALU_INDD(ALU_xor), ALU_INDD(ALU_add), ALU_INDD(ALU_sub), ALU_INDD(ALU_add), ALU_INDD(ALU_sub),
+
+    // TODO: 0111xFFF - ALU [rA+Imm16], rB
+    STORE, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    STORE, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+
+
+    LOAD(Bank1|Bank0),  // 10000000 - lb
+
+    SWAP,       // 10000001 - swap
+
+    LOAD(Bank0), LOAD(0),    // 1000001W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
     
-    PUSH,       // 1100110 - push
-    POP,        // 1100111 - pop
+    PUSH,   // 10000100 - push rB
+    /*PUSH_I*/ NOP,       // TODO: 10000101 - push Imm16
+    PUSHF,  // 10000110 - pushf
 
-    // 1101FFF - [JUMP] Addr
+    POP,    // 10000111 - pop
+    POPF,   // 10001000 - popf
+
+    // 10001001-10001111 - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    // 1001xxxx - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    // 101xxxxx - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+
+    // 11000FFF - [JUMP] Addr
     JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM,
 
-    // 1110FFF - [JUMP] Ra
+    // 11001FFF - [JUMP] rA
     JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG,
 
-    CALL,   // 1111000 - call
+    CALL,   // 11010000 - call Addr16
+    /*CALL_R*/ NOP,   // TODO: 11010001 - call rB
+    /*SYSCALL*/ NOP,   // TODO: 11010010 - syscall Addr16
 
-    RET,    // 1111001 - ret
+    /*RUN*/ NOP,    // TODO: 11010011 - run
 
-    PUSHF,  // 1111010 - pushf
-    POPF,   // 1111011 - popf
+    RET,    // 11010100 - ret
     
-    NOP, NOP, NOP, NOP    // 1111100-1111111 - Unused
+    // 11010101-11010111 - Unused
+    NOP, NOP, NOP,
+    // 11011xxx - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    // 111xxxxx - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
 };
 
 
 void enable_jmp(int flags, int funct) {
     // Invert the PcIn signal from a given conditional jump ("enable" the jump)
-    // The affected opcodes are 0b1101FFF (imm) and 0b1110FFF (reg) -> 0b1101000+funct and 0b1101000+8+funct
+    // The affected opcodes are 0b11000FFF (imm) and 0b11000000 (reg) -> 0b11000000+funct and 0b11000000+8+funct
 
-    int address = TEMPL_SIZE * flags + 16 * (0b1101000 + funct) + 1; // 16*(0x61+funct) points to first microinstruction, +1 skips Fetch
+    int address = TEMPL_SIZE * flags + 16 * (0b11000000 + funct) + 1; // 16*(0xC0+funct) points to first microinstruction, +1 skips Fetch
 
-    content[address] ^= PcIn;       // IMM variant (base address)
+    content[address] ^= PcIn;        // IMM variant (base address)
     content[address + 8*16] ^= PcIn; // REG variant: Add 8 to opcode -> add 8*16 to address
 }
 
 void switchCarry(int flags, int funct) {
     // ALU_REG and ALU_IMM perform the ALU operation on the second time step (excluding the fetch cycle). Invert the carry bit on that microinstruction.
-    // The affected opcodes are: 0b0000FFF (REG), 0b0001FFF (IMM), 0b0010FFF (DIR_arg), 0b0011FFF (IND_arg), 0b0100FFF (DIR_dest), 0b0101FFF (IND_dest)
+    // The affected opcodes are: 0b00000FFF (REG), 0b00001FFF (IMM), 0b010xxFFF (Arg), 0b011xxFFF (Dest)
 
-    int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|Bank0|LdY
+    int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|ArgBk|LdY
     content[address] ^= AluCIn;         // REG variant (base address)
     content[address + 8*16] ^= AluCIn;  // Disable IMM variant (add 8 to opcode -> add 8*16 to address)
     
-    // Direct and Indirect modes must skip an extra timestep!
-    content[address + 16*16 + 1] ^= AluCIn; // Disable DIR_arg variant (add 16 to opcode -> add 16*16 to address) 
-    content[address + 24*16 + 1] ^= AluCIn; // Disable IND_arg variant (add 24 to opcode -> add 24*16 to address) 
-    content[address + 32*16 + 1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address) 
-    content[address + 40*16 + 1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address) 
+    // Base address for memory variants (must skip an extra timestep!)
+    address = TEMPL_SIZE * flags + 16 * (0b01000000 + funct) + 2;
+    content[address + 0x00*16] ^= AluCIn; // Disable DIR_arg variant
+    content[address + 0x08*16] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
+    content[address + 0x10*16] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
+    content[address + 0x18*16] ^= AluCIn; // Disable IDX_arg variant
+    content[address + 0x20*16] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
+    content[address + 0x28*16] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
+    content[address + 0x30*16] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
+    content[address + 0x38*16] ^= AluCIn; // Disable IDX_dest variant
 }
 
 void generate() {

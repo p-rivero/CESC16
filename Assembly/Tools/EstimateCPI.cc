@@ -2,6 +2,8 @@
 #include <cassert>
 using namespace std;
 
+// TODO: This program is now outdated, new instructions need to be added
+
 // Given some assembled CESC16 code, this small program attempts to estimate the true average CPI of
 // the architecture by computing the mean of the provided code. This approach is flawed, since
 // it ignores the effects of loops, but at least it's better than just blindly guessing.
