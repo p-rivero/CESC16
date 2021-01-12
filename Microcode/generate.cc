@@ -37,7 +37,7 @@ using namespace std;
 #define AluCIn          0x800000    // Carry In input for 74HC181 ALU
 
 // Selective inverter for active low lines
-const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn | PcIn | CLR_IRQ;
+const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn | PcIn | CLR_IRQ;
 
 
 
@@ -57,7 +57,8 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 #define IrIn        AddrOut1|AddrOut0   // Load Instruction Register (@Bus is never used in fetch)
 #define SPmm        SPpp|AluS0          // SP--
 #define PCpp        IrIn                // IrIn signal also causes PC++
-#define LdFlgALU    LdFlg|LdReg         // Generate flags from ALU
+#define LdFlgALU    LdFlg               // Generate flags from ALU
+#define LdFlgBUS    LdFlg|LdImm         // Load flags from the main bus
 
 #define Fetch       PCpp|MemOut|IrIn|LdX|LdY    // First timestep for all instructions
 
@@ -124,7 +125,7 @@ const unsigned int ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | Ad
 
 #define PUSHF       Fetch,  SPmm|ALU_Xminus1|AluOutAddr,                    FlagsOut|MemIn|Bank1|PcOutAddr|CLR,         ZEROx13
 
-#define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlg|PcOutAddr|CLR,      ZEROx13
+#define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,   ZEROx13
 
 #define CALL        Fetch,  MemOut|Bank0|LdImm|LdY|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,  ZEROx12
 
