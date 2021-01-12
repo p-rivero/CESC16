@@ -68,8 +68,6 @@
 #define _LOAD_B(rD, rA, Imm)        0x80 @ rD`4 @ rA`4 @ Imm
 #define _SWAP(rD, rA, Imm)          0x81 @ rD`4 @ rA`4 @ Imm
 
-#define _CALL(Addr)                 0xD001 @ Addr`16
-
 
 #ruledef INSTRUCTIONS {
     ; ALU
@@ -101,14 +99,13 @@
     srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x2 @ Imm @ rD`4 @ rA`4 @ 0x0000
     sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
-    
     ; Memory
     lb   {rD: REG}, [{rA: REG}+{Imm: i16}]  => _LOAD_B(rD, rA, Imm)
     swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => _SWAP(rD, rA, Imm)
     peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: i1}  => 0b1000001 @ W @ rD`4 @ rA`4 @ Imm
     
     push {rB: REG}  => 0x8401000 @ rB`4
-    ; push {Imm: i16} => 0x8501000 @ rB`4
+    push {Imm: i16} => 0x8501 @ Imm
     pushf           => 0x86010000
 
     pop  {rD: REG}  => 0x87 @ rD`4 @ 0x10000
@@ -116,10 +113,13 @@
     
     ; Jumps
     {jmp: JUMP} {Addr: JMP_ADDR} => 0b11000 @ jmp`3 @ 0x00 @ Addr`16
-    {jmp: JUMP} {rA: REG} => 0b11001 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {rA: REG}        => 0b11001 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
     
-    call {Addr: JMP_ADDR} => _CALL(Addr)
-    ret => 0xD4010000
+    call {Addr: JMP_ADDR}     => 0xD001 @ Addr`16
+    call {rB: REG}            => 0xD101 @ 0x000 @ rB`4
+    syscall {Addr: JMP_ADDR}  => 0xD201 @ Addr`16
+    ret     => 0xD3010000
+    sysret  => 0xD4010000
 }
 
 #ruledef MACROS {
@@ -157,8 +157,6 @@
     test [{rA: REG}+{Imm: i16}] => _ALU_IDX(0b100, 0, rA, Imm)  ; Expands to: add zero, [rA+Imm16]
     
     clrf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
-    
-    syscall {Addr: u16} => _CALL(Addr)  ; Expands to: call Addr16
     
     nop => _MOV_REG(0, 0)   ; Encoded as 0x00000000, Expands to: mov zero, zero
 }
