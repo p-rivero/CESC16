@@ -18,9 +18,9 @@ using namespace std;
 #define Bank0           0x000040    // Memory bank select:
 #define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = RAM (Sign extended)
 
-#define CLR_IRQ         0x000100    // TODO: Clear IRQ latch
+#define TglRun          0x000100    // TODO: Toggle run mode (fetch from ROM or RAM)
 #define SPpp            0x000200    // Increment Stack Pointer (SP-- if AluS3 = 1) [ACTIVE LOW]
-#define AddrIn          0x000400    // Memory Address register in [ACTIVE LOW]
+#define PCpp            0x000400    // Increment Program Counter (and load Instruction Register)
 #define MemIn           0x000800    // Memory (RAM) in
 #define PcIn            0x001000    // Program Counter in (Jump) [ACTIVE LOW]
 #define LdReg           0x002000    // Load Register (Rd) [ACTIVE LOW]
@@ -37,7 +37,7 @@ using namespace std;
 #define AluCIn          0x800000    // Carry In input for 74HC181 ALU
 
 // Selective inverter for active low lines
-const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn | PcIn | CLR_IRQ;
+const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 
 
@@ -51,12 +51,11 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn
 #define FlagsOut    Dout2|Dout1         // Flags -> Data Bus
 #define ConstOut    Dout2|Dout1|Dout0   // Constant 0x0011 -> Data Bus
 
-#define PcOutAddr   AddrOut0|AddrIn     // PC -> MAR
-#define AluOutAddr  AddrOut1|AddrIn     // ALU -> MAR
+#define PcOutAddr   AddrOut0            // PC -> MAR
+#define AluOutAddr  AddrOut1            // ALU -> MAR
 
-#define IrIn        AddrOut1|AddrOut0   // Load Instruction Register (@Bus is never used in fetch)
+#define IrIn        PCpp                // PCpp also loads Instruction Register
 #define SPmm        SPpp|AluS0          // SP--
-#define PCpp        IrIn                // IrIn signal also causes PC++
 #define LdFlgALU    LdFlg               // Generate flags from ALU
 #define LdFlgBUS    LdFlg|LdImm         // Load flags from the main bus
 
@@ -79,6 +78,15 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn
 #define ZEROx13     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 #define ZEROx14     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
+// In case we are generating the microcode for instructions stored in RAM, there are some changes in instruction fetching
+#ifdef RUN_FROM_RAM
+    #undef Bank0
+    #define Bank0       Bank1   // When fetching arguments, access RAM instead of lower bits of ROM
+    #undef PcOutAddr
+    #define PcOutAddr   AddrOut0|PCpp    // Loading the PC to MAR preincrements it (++PC -> MAR)
+    #undef Fetch
+    #define Fetch       PcOutAddr|MemOut|Bank1|IrIn|LdX|LdY    // Fetch is done from RAM and increments PC
+#endif
 
 
 // INSTRUCTIONS:
@@ -138,16 +146,16 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | AddrIn
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
 // Jump to interrupt vector
-const vector<unsigned int> JMP_INT = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR_IRQ|CLR,    ZEROx13};
+const vector<uint32_t> JMP_INT = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR,    ZEROx13};
 
 
 // 4 bit flags + 7 bit opcode + 4 bit timestep + 1 bit IRQ
 const unsigned int SIZE = 16 * 128 * 16 * 2;
-vector<unsigned int> content(SIZE);
+vector<uint32_t> content(SIZE);
 
 // Size of template: 7 bit opcode + 4 bit timestep
 const unsigned int TEMPL_SIZE = 128 * 16;
-const vector<unsigned int> TEMPLATE = {
+const vector<uint32_t> TEMPLATE = {
     // 0000FFF - [ALU] Rd, Ra, Rb
     MOV_REG, ALU_REG(ALU_and), ALU_REG(ALU_or), ALU_REG(ALU_xor), ALU_REG(ALU_add), ALU_REG(ALU_sub), ALU_REG(ALU_add), ALU_REG(ALU_sub),
 
@@ -327,7 +335,12 @@ void write_file(int filenum) {
     ofstream outputFile;
     
     cout << "Writing HEX file " << filenum << endl;
-    outputFile.open("output" + to_string(filenum) + ".hex");
+    #ifndef RUN_FROM_RAM
+        outputFile.open("output" + to_string(filenum) + ".hex", fstream::out);
+    #else
+        // When generating instructions that run from RAM, append to the end of the file
+        outputFile.open("output" + to_string(filenum) + ".hex", fstream::out|ifstream::app);
+    #endif
     
     for (int i = 0; i < SIZE/32; i++) {
         for (int j = 0; j < 32; j++) {
@@ -347,7 +360,9 @@ int main() {
     for (int i = 0; i < 3; i++)
         write_file(i);
     
-    cout << "File 0 contains CLR, D_Out...,  File 1 contains CLR_IRQ, SP++..., File 2 contains LdImm, LdFlg..." << endl;
-    
     cout << "Done." << endl;
+
+    #ifdef RUN_FROM_RAM
+        cout << "File 0 contains CLR, D_Out...\nFile 1 contains TglRun, SP++...\nFile 2 contains LdImm, LdFlg..." << endl;
+    #endif
 }
