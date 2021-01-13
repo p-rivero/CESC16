@@ -109,8 +109,8 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define MOV_INDD     Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 #define ALU_INDD(OP) Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
-#define ALU_IDXA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|PcOutAddr|CLR,        ZEROx11
-#define ALU_IDXD(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdY,   MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|PcOutAddr|CLR,  ZEROx11
+#define ALU_IDXA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,       ZEROx11
+#define ALU_IDXD(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdY,   MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
 
 #define SLL_STEP    ALU_add|AluOutD|LdImm|LdX|LdY
 #define SLL_END     ALU_add|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR
@@ -314,16 +314,16 @@ void switchCarry(int flags, int funct) {
     content[address] ^= AluCIn;         // REG variant (base address)
     content[address + 8*16] ^= AluCIn;  // Disable IMM variant (add 8 to opcode -> add 8*16 to address)
     
-    // Base address for memory variants (must skip an extra timestep!)
+    // Base address for memory variants (direct and indirect must skip must skip 1 extra timestep, indexed must skip 2!)
     address = TEMPL_SIZE * flags + 16 * (0b01000000 + funct) + 2;
-    content[address + 0x00*16] ^= AluCIn; // Disable DIR_arg variant
-    content[address + 0x08*16] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
-    content[address + 0x10*16] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
-    content[address + 0x18*16] ^= AluCIn; // Disable IDX_arg variant
-    content[address + 0x20*16] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
-    content[address + 0x28*16] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
-    content[address + 0x30*16] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
-    content[address + 0x38*16] ^= AluCIn; // Disable IDX_dest variant
+    content[address + 0x00*16+1] ^= AluCIn; // Disable DIR_arg variant
+    content[address + 0x08*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
+    content[address + 0x10*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
+    content[address + 0x18*16+2] ^= AluCIn; // Disable IDX_arg variant
+    content[address + 0x20*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
+    content[address + 0x28*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
+    content[address + 0x30*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
+    content[address + 0x38*16+2] ^= AluCIn; // Disable IDX_dest variant
 }
 
 void generate() {
