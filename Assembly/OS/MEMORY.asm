@@ -15,14 +15,14 @@ MEMORY:
     jleu ..return   ; then return (nothing to copy)
     
 ..loop:
-    peek v0, [a0+0], 1  ; Read upper 16-bit word / opcode
-    mov [a2], v0        ; Store to lower address (big endian)
-    peek v0, [a0+0], 0  ; Read lower 16-bit word / argument
-    mov [a2+1], v0      ; Store to upper address (big endian)
-    add a0, a0, 1       ; Increment program memory pointer
-    add a2, a2, 2       ; Increment data memory pointer
+    peek v0, [a0+0], Up     ; Read upper 16-bit word / opcode
+    mov [a2], v0            ; Store to lower address (big endian)
+    peek v0, [a0+0], Low    ; Read lower 16-bit word / argument
+    mov [a2+1], v0          ; Store to upper address (big endian)
+    add a0, a0, 1           ; Increment program memory pointer
+    add a2, a2, 2           ; Increment data memory pointer
     
-    cmp a0, a1          ; Keep looping until there are no more words
+    cmp a0, a1              ; Keep looping until there are no more words
     jne ..loop
     
 ..return:

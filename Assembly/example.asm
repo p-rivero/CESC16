@@ -72,8 +72,8 @@ another_label:              ; From this point, .local_const and .local_label are
     jmp .loop               ; Infinite loop
     
     mov t0, t1              ; Copy contents of t1 to t0
-    sw t2, result(zero)     ; Store contents of t2 in the reserved space in data memory
-    mov [result], t2        ; This instruction has exactly the same effect as the previous one
+    mov [result], t2        ; Store contents of t2 in the reserved space in data memory
+    sw t2, result(zero)     ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
     
     jmp global_label
     
