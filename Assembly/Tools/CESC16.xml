@@ -55,6 +55,7 @@
 		<KeyWord name="jle" />
         
 		<KeyWord name="movf" />
+		<KeyWord name="movb" />
 		<KeyWord name="not" />
 		<KeyWord name="nand" />
 		<KeyWord name="nor" />

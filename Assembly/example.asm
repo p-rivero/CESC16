@@ -53,7 +53,7 @@ global_label:
     mov a1, [a0+2]          ; Loads the CONTENTS of vector[2] into a1 (argument register)
     lw a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
 
-    mov a2, [a0+2], B       ; Loads THE LOWER 8 BITS of vector[2] into a1
+    movb a1, [a0+2]         ; Move byte: loads THE LOWER 8 BITS of vector[2] into a1
     lb a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
 
     add [a0+1], t0          ; vector[1] += t0. There is no equivalent instruction in MIPS/RISC-V syntax
