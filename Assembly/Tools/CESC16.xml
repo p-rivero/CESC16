@@ -42,7 +42,9 @@
 		<KeyWord name="swap" />
 		<KeyWord name="peek" />
 		<KeyWord name="call" />
+		<KeyWord name="syscall" />
 		<KeyWord name="ret" />
+		<KeyWord name="sysret" />
 		<KeyWord name="jmp" />
 		<KeyWord name="jz" />
 		<KeyWord name="jnz" />
@@ -69,7 +71,6 @@
 		<KeyWord name="jeq" />
 		<KeyWord name="jne" />
 		<KeyWord name="jltu" />
-		<KeyWord name="syscall" />
 		<KeyWord name="nop" />
         
 		<KeyWord name="include" />
@@ -84,8 +85,8 @@
 		<KeyWord name="d32" />
 		<KeyWord name="pc" />
 		<KeyWord name="offset" />
-		<KeyWord name="PROGMEM" />
-		<KeyWord name="SIZEOF" />
+		<KeyWord name="progmem" />
+		<KeyWord name="sizeof" />
         
 	</AutoComplete>
 </NotepadPlus>

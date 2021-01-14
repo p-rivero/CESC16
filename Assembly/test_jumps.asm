@@ -12,11 +12,11 @@
 ; Data in program memory:
 args: ; Arguments to be tested
 #d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
-.size = SIZEOF(args)
+.size = sizeof(args)
 
 outputs: ; Expected outputs
 #d16    0x55,      0x55,        0x55,       0x7a,       0x7a,        0x1a,       0x1a,       0x06,       0x66,       0x66,       0x06,        0x7a
-.size = SIZEOF(outputs)
+.size = sizeof(outputs)
 
 progmem_end:
 

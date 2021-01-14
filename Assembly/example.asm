@@ -33,22 +33,30 @@ global_label:
     mov [vector+2], zero    ; Initialize vector[2] to 0
     mov t3, constant        ; Loads 0x0FF1 into t3 (0x10 - (2 * 4 + 0x07) evaluates to 0x0FF1).
     mov s0, .local_const    ; Loads 2 into s0. s0 is a safe register
+    
     sub t1, s0, t3          ; t1 = s0 - t3. Note that the contents of s0 and t3 are unchanged
-    sw t1, num(zero)        ; Stores the contents of t1 to the absolute address "num" (global label)
-    mov [num], t1           ; Identical to the previous instruction
-    mov a0, t1              
+    sub a0, t1, 15          ; a0 = t1 - 15
+    mov a0, t1              ; a0 = t1 (move contents from register t1 to register a0)
+    
     syscall PRINT.Char      ; Sends the contents of a0 to the connected output device
     jne .local_label        ; jne is a macro that gets expanded to jnz (jump if s0 - t3 != 0, therefore s0 != t3)
     jmp another_label
     
 .local_label:
-    lw s2, num(zero)        ; Loads the contents stored at absoulte address "num" into s2 (safe register).
-    mov s2, [num]           ; Identical to the previous instruction
+    mov [num], t1           ; Stores the contents of t1 to the absolute address "num" (global label)
+    sw t1, num(zero)        ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+
+    mov s2, [num]           ; Loads the contents stored at absoulte address "num" into s2 (safe register).
+    lw s2, num(zero)        ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
     
     mov a0, vector          ; Loads the ADDRESS of vector[0] into a0 (argument register)
-    lw a1, 2(a0)            ; Loads the CONTENTS of vector[2] into a1 (argument register)
-    mov a1, [a0+2]          ; Identical to the previous instruction (macro)
-    mov [a0+1], t0          ; Identical to "sw t0, 1(a0)" (macro)
+    mov a1, [a0+2]          ; Loads the CONTENTS of vector[2] into a1 (argument register)
+    lw a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+
+    mov a2, [a0+2], B       ; Loads THE LOWER 8 BITS of vector[2] into a1
+    lb a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+
+    add [a0+1], t0          ; vector[1] += t0. There is no equivalent instruction in MIPS/RISC-V syntax
     
     call subroutine         ; Calls a subroutine. The arguments are in a0-a2.
     
@@ -77,7 +85,7 @@ subroutine:
     
     ; ... rest of the subroutine
     
-    call MATH.Mult32             ; Calls a subroutine from the MATH library.
+    call MATH.Mult32        ; Calls a subroutine from the MATH library.
     ; As long as the stack isn't full, there is no limit in the depth of subroutine calls.
     
     ; ... rest of the subroutine

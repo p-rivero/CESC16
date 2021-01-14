@@ -101,8 +101,8 @@
     sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
     ; Memory
-    lb   {rD: REG}, [{rA: REG}+{Imm: i16}]  => _LOAD_B(rD, rA, Imm)
-    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => _SWAP(rD, rA, Imm)
+    mov  {rD: REG}, [{rA: REG}+{Imm: i16}], B   => _LOAD_B(rD, rA, Imm)
+    swap {rD: REG}, [{rA: REG}+{Imm: i16}]      => _SWAP(rD, rA, Imm)
     peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: i1}  => 0b1000001 @ W @ rD`4 @ rA`4 @ Imm
     
     push {rB: REG}  => 0x8401000 @ rB`4
@@ -138,6 +138,7 @@
     
     lw   {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD(rD, rA, Imm)
     sw   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)
+    lb   {rB: REG}, {Imm: i16}({rA: REG})   => _LOAD_B(rD, rA, Imm)
     lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD_B(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
     sb   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
     
@@ -163,8 +164,8 @@
 }
 
 ; Utilities
-#define SIZEOF(Begin) (pc - Begin)*2    ; Returns the data size between Begin and the current spot
-#define PROGMEM(Begin, End) #res (End - Begin)*2    ; Reserve space to fit program memory between Begin and End
+#define sizeof(Begin) (pc - Begin)*2    ; Returns the data size between Begin and the current spot
+#define progmem(Begin, End) #res (End - Begin)*2    ; Reserve space to fit program memory between Begin and End
 
 ; Banks
 #bankdef program {

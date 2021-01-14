@@ -24,7 +24,7 @@ TMR_ACTIVE:     #res 1
 #include "MEMORY.asm"
 #include "MATH.asm"
 #include "INPUT.asm"
-#include "TERMINAL_OUT.asm"
+#include "TERMINAL_OUT.asm" ; TODO: Rename to OUTPUT.asm
 #include "TIME.asm"
     
 _OS_END:
