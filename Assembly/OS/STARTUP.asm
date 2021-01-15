@@ -89,8 +89,18 @@ MAIN_INTERRUPT_HANDLER:
     pop a2
     pop a1
     pop a0
+    ; If the interrupt was called from ROM: [sp] = flags, [sp+1] = return address
+    ; If it was called from RAM: [sp] = flags, [sp+1] = 0x0000, [sp+2] = actual return address
+    test [sp+1]
+    jz ..return_RAM
     popf
-    ret
+    ret     ; Return to ROM
+
+..return_RAM:
+    popf
+    pop zero    ; Remove the 0x0000
+    sysret      ; Return to RAM
+
 
 ; In order to call OS subroutines (or any subroutine stored in ROM) from a program running in RAM,
 ; this call gate must be used (otherwise the ret instruction would stay in ROM).

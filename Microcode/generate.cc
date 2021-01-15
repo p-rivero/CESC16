@@ -150,19 +150,23 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
+// Jump to interrupt vector
+const vector<uint32_t> JMP_INT_ROM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR,        ZEROx13};
+const vector<uint32_t> JMP_INT_RAM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    // Push the PC to the stack
+                                      ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|       MemIn|Bank1,    // Push the 0x0000 to the stack (pull-down)
+                                      ConstOut|PcIn|PcOutAddr|CLR|TglRun,   ZEROx11};                   // Jump to ROM
+
 #ifdef RUN_FROM_RAM
     // When executed from RAM, sysret works like a regular ret instruction
     #undef SYSRET
     #define SYSRET RET
+    #define JMP_INT JMP_INT_RAM
 #else
     // When executed from ROM, syscall works like a regular call instruction
     #undef SYSCALL
     #define SYSCALL CALL_I
+    #define JMP_INT JMP_INT_ROM
 #endif
-
-// Jump to interrupt vector
-const vector<uint32_t> JMP_INT = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR,    ZEROx13};
-
 
 // 4 bit flags + 8 bit opcode + 4 bit timestep + 1 bit IRQ
 const unsigned int SIZE = 16 * 256 * 16 * 2;
