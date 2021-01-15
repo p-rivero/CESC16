@@ -14,11 +14,11 @@ GPIO_3_ADDR = 0xFFC0
 
 #bank data
 HANDLERS:
-.KEY_PRESSED:   #res 1
-.KEY_RELEASED:  #res 1
-.TMR:           #res 1
+.KEY_PRESSED:   #res 1  ; Address of the subroutine to be called when a key is pressed
+.KEY_RELEASED:  #res 1  ; Address of the subroutine to be called when a key is released
+.TMR:           #res 1  ; Address of the subroutine to be called when the timer overflows
 
-TMR_ACTIVE:     #res 1
+TMR_ACTIVE:     #res 1  ; A non-zero value indicates that the timer is currently active
 
 #include "STARTUP.asm"
 #include "MEMORY.asm"

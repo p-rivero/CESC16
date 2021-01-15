@@ -14,9 +14,11 @@ TIME:
     ret
     
 ; Start a timer using the value stored in a0. The timer will tick (get incremented) every 16 clock cycles. Once it
-; overflows, it will trigger an interrupt AND IT WILL STOP COUNTING (for perioding interrupts, the handler has to 
+; overflows, it will trigger an interrupt AND IT WILL STOP COUNTING (for periodic interrupts, the handler has to 
 ; call TIME.SetTimer again).
-; Warning: The latency from the overflow occurring to the user interrupt being called can be as high as 55 clock cycles.
+; Warning: The latency from the overflow occurring to the user interrupt being called can be as high as 55 clock 
+; cycles. Also, no assumptions can be made about the time it will take to return to the main program, since
+; I/O handlers could also be called.
 .SetTimer:
     mov [TIMER_ADDR], a0    ; Send char to timer. The timer starts counting automatically
     mov [TMR_ACTIVE], sp    ; Mark timer as active (any non-zero value means "true", and sp is guaranteed to never be 0)
