@@ -20,7 +20,6 @@
     s3   => 0xE
     s4   => 0xF
 }
-
 #subruledef ALU_OP {
     and  => 0b001
     or   => 0b010
@@ -30,7 +29,6 @@
     addc => 0b110
     subb => 0b111
 }
-
 #subruledef JUMP {
     jmp  => 0b000
     jz   => 0b001
@@ -48,7 +46,6 @@
     jb   => 0b100
     jltu => 0b100
 }
-
 #subruledef PEEK_OPTIONS {
     {num: u1} => num ; 1 or 0
     Up  =>  1
@@ -56,7 +53,6 @@
     Op  =>  1
     Arg =>  0
 }
-
 #subruledef JMP_ADDR {
     skip({Off: i16})   =>  pc+Off+1  ; Skips a number of instructions
     skipRAM({Off: i16}) =>  pc+2*(Off+1) ; Skips a number of instructions in RAM
@@ -71,8 +67,8 @@
 #define _ALU_IND(op, rD, rA, rB)    0b01001 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 #define _ALU_IDX(op, rD, rA, Imm)   0b01010 @ op`3 @ rD`4 @ rA`4 @ Imm
 
-#define _LOAD(rD, rA, Imm)          0x50 @ rD`4 @ rA`4 @ Imm
-#define _STORE(rB, rA, Imm)         0x70 @ rB`4 @ rA`4 @ Imm
+#define _MOV_IDX_A(rD, rA, Imm)     0x50 @ rD`4 @ rA`4 @ Imm
+#define _MOV_IDX_D(rB, rA, Imm)     0x70 @ rB`4 @ rA`4 @ Imm
 
 #define _MOVB(rD, rA, Imm)          0x80 @ rD`4 @ rA`4 @ Imm
 #define _SWAP(rD, rA, Imm)          0x81 @ rD`4 @ rA`4 @ Imm
@@ -92,7 +88,7 @@
     mov {rD: REG}, [{rB: REG}] => 0x48 @ rD`4 @ 0x0000 @ rB`4
     {op: ALU_OP} {rD: REG}, {rA: REG}, [{rB: REG}] => _ALU_IND(op, rD, rA, rB)
 
-    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  _LOAD(rD, rA, Imm)
+    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  _MOV_IDX_A(rD, rA, Imm)
     {op: ALU_OP} {rD: REG}, [{rA: REG}+{Imm: i16}] => _ALU_IDX(op, rD, rA, Imm)
 
     mov [{Addr: u16}], {rA: REG} => 0x600 @ rA`4 @ Addr
@@ -101,7 +97,7 @@
     mov [{rA: REG}], {rB: REG} => 0x680 @ rA`4 @ 0x000 @ rB`4
     {op: ALU_OP} [{rA: REG}], {rB: REG} => 0b01101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
 
-    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  _STORE(rB, rA, Imm)
+    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  _MOV_IDX_D(rB, rA, Imm)
     {op: ALU_OP} [{rA: REG}+{Imm: i16}], {rB: REG} => 0b01110 @ op`3 @ rB`4 @ rA`4 @ Imm
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
@@ -139,9 +135,9 @@
 
     movb {rD: REG}, [{Imm: i16}]            => _MOVB(rD, 0, Imm)    ; Expands to: movb rD, [zero+Imm16]
     movb {rD: REG}, [{rA: REG}]             => _MOVB(rD, rA, 0)     ; Expands to: movb rD, [rA+0]
-    movb [{rA: REG}+{Imm: i16}], {rB: REG}  => _STORE(rB, rA, Imm)  ; Same as regular store
-    movb [{Imm: i16}], {rB: REG}            => _STORE(rB, 0, Imm)
-    movb [{rA: REG}], {rB: REG}             => _STORE(rB, rA, 0)
+    movb [{rA: REG}+{Imm: i16}], {rB: REG}  => _MOV_IDX_D(rB, rA, Imm)  ; Same as regular store
+    movb [{Imm: i16}], {rB: REG}            => _MOV_IDX_D(rB, 0, Imm)
+    movb [{rA: REG}], {rB: REG}             => _MOV_IDX_D(rB, rA, 0)
     
     not  {rD: REG}, {rA: REG}   =>  _ALU_IMM(0b011, rD, rA, 0xFFFF) ; Expands to: xor rD, rA, 0xFFFF
     nand {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b001, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: and rD, rA, rB; xor rD, rD, 0xFFFF
@@ -150,11 +146,11 @@
     
     sllc {rD: REG}, {rA: REG}   =>  _ALU_REG(0b110, rD, rA, rA)  ; Expands to: addc rD, rA, rA
     
-    lw   {rD: REG}, {Imm: i16}({rA: REG})   => _LOAD(rD, rA, Imm)
-    sw   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)
+    lw   {rD: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_A(rD, rA, Imm)
+    sw   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)
     lb   {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm)
     lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
-    sb   {rB: REG}, {Imm: i16}({rA: REG})   => _STORE(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
+    sb   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
     
     swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
     swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
