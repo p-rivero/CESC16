@@ -102,11 +102,3 @@ MAIN_INTERRUPT_HANDLER:
     sysret      ; Return to RAM
 
 
-; In order to call OS subroutines (or any subroutine stored in ROM) from a program running in RAM,
-; this call gate must be used (otherwise the ret instruction would stay in ROM).
-; If the subroutine will never return (STARTUP.Reset, TIME.Halt), then syscall can be used directly.
-; Usage example:  mov v0, MATH.Mult
-;                 syscall CALL_GATE
-CALL_GATE:
-    call v0
-    sysret
