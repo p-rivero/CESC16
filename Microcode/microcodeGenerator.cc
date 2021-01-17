@@ -138,14 +138,18 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
 #define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,   ZEROx13
 
-#define CALL_R      Fetch,  MemOut|ArgBk|LdY|ALU_Xminus1|AluOutAddr,            SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define CALL_R_RAM  Fetch,  MemOut|ArgBk|LdY|ALU_Xminus1|AluOutAddr|PCpp,       SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
+#define CALL_R      Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
+#define ENTER_R     Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
+#define CALL_R_RAM  Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
+#define SYSCALL_R   Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
 #define CALL_I      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
+#define ENTER_I     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
 #define CALL_I_RAM  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define SYSCALL     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
+#define SYSCALL_I   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
 
 #define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,           ZEROx13
 #define SYSRET      Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
+#define LEAVE       Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 #define JMP_IMM     Fetch,  MemOut|ArgBk /*|PcIn*/|PcOutAddr|CLR,   ZEROx14
@@ -159,9 +163,15 @@ const vector<uint32_t> JMP_INT_RAM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm
                                       ConstOut|PcIn|PcOutAddr|CLR|TglRun,   ZEROx11};                   // Jump to ROM
 
 #ifdef RUN_FROM_RAM
+    // When executed from RAM, enter works like a regular call instruction
+    #undef ENTER_R
+    #define ENTER_R CALL_R
+    #undef ENTER_I
+    #define ENTER_I CALL_I
     // When executed from RAM, sysret works like a regular ret instruction
     #undef SYSRET
     #define SYSRET RET
+    // Push 0x0000 when jumping to an interrupt
     #define JMP_INT JMP_INT_RAM
     // Add PC++ to 2nd timestep of CALL instructions (push PC+2 instead of PC+1)
     #undef CALL_R
@@ -170,8 +180,14 @@ const vector<uint32_t> JMP_INT_RAM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm
     #define CALL_I CALL_I_RAM
 #else
     // When executed from ROM, syscall works like a regular call instruction
-    #undef SYSCALL
-    #define SYSCALL CALL_I
+    #undef SYSCALL_I
+    #define SYSCALL_I CALL_I
+    #undef SYSCALL_R
+    #define SYSCALL_R CALL_R
+    // When executed from ROM, leave works like a regular ret instruction
+    #undef LEAVE
+    #define LEAVE RET
+    // Just push PC when jumping to an interrupt
     #define JMP_INT JMP_INT_ROM
 #endif
 
@@ -263,13 +279,13 @@ const vector<uint32_t> TEMPLATE = {
     STORE, ALU_IDXD(ALU_and), ALU_IDXD(ALU_or), ALU_IDXD(ALU_xor), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub),
 
 
-    LOAD(Bank1|Bank0),  // 10000000 - lb
+    LOAD(Bank1|Bank0),  // 10000000 - movb
 
     SWAP,       // 10000001 - swap
 
     LOAD(Bank0), LOAD(0),    // 1000001W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
     
-    PUSH_R,   // 10000100 - push rB
+    PUSH_R, // 10000100 - push rB
     PUSH_I, // 10000101 - push Imm16
     PUSHF,  // 10000110 - pushf
 
@@ -284,23 +300,25 @@ const vector<uint32_t> TEMPLATE = {
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
 
-    // 11000FFF - [JUMP] Addr
+    // 11000FFF - [JUMP] rA
+    JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG,
+    
+    // 11001FFF - [JUMP] Addr
     JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM,
 
-    // 11001FFF - [JUMP] rA
-    JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG,
+    CALL_R,     // 11010000 - call rB
+    CALL_I,     // 11010001 - call Addr16
+    SYSCALL_R,  // 11010010 - syscall rB
+    SYSCALL_I,  // 11010011 - syscall Addr16
+    ENTER_R,    // 11010100 - enter rB
+    ENTER_I,    // 11010101 - enter Addr16
 
-    CALL_I,     // 11010000 - call Addr16
-    CALL_R,     // 11010001 - call rB
-    SYSCALL,    // 11010010 - syscall Addr16
-
-    RET,        // 11010011 - ret
-    SYSRET,     // 11010100 - sysret
+    RET,        // 11010110 - ret
+    SYSRET,     // 11010111 - sysret
+    LEAVE,      // 11011000 - leave
     
-    // 11010101-11010111 - Unused
-    NOP, NOP, NOP,
-    // 11011xxx - Unused
-    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    // 11011001-11011111 - Unused
+    NOP, NOP, NOP, NOP, NOP, NOP, NOP,
     // 111xxxxx - Unused
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,

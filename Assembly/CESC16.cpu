@@ -55,7 +55,6 @@
 }
 #subruledef JMP_ADDR {
     skip({Off: i16})   =>  pc+Off+1  ; Skips a number of instructions
-    skipRAM({Off: i16}) =>  pc+2*(Off+1) ; Skips a number of instructions in RAM
     {Imm: u16}   =>   Imm
 }
 
@@ -117,14 +116,18 @@
     popf            => 0x88010000
     
     ; Jumps
-    {jmp: JUMP} {Addr: JMP_ADDR} => 0b11000 @ jmp`3 @ 0x00 @ Addr`16
-    {jmp: JUMP} {rA: REG}        => 0b11001 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {rA: REG}        => 0b11000 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {Addr: JMP_ADDR} => 0b11001 @ jmp`3 @ 0x00 @ Addr`16
     
-    call {Addr: JMP_ADDR}     => 0xD001 @ Addr`16
-    call {rB: REG}            => 0xD101 @ 0x000 @ rB`4
-    syscall {Addr: JMP_ADDR}  => 0xD201 @ Addr`16
-    ret     => 0xD3010000
-    sysret  => 0xD4010000
+    call {rB: REG}            => 0xD001 @ 0x000 @ rB`4
+    call {Addr: JMP_ADDR}     => 0xD101 @ Addr`16
+    syscall {rB: REG}         => 0xD201 @ 0x000 @ rB`4
+    syscall {Addr: JMP_ADDR}  => 0xD301 @ Addr`16
+    enter {rB: REG}           => 0xD401 @ 0x000 @ rB`4
+    enter {Addr: JMP_ADDR}    => 0xD501 @ Addr`16
+    ret     => 0xD6010000
+    sysret  => 0xD7010000
+    leave   => 0xD8010000
 }
 
 #ruledef MACROS {
