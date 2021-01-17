@@ -40,11 +40,11 @@ MAIN_PROGRAM:
     mov s1, s2  ; Pointer to start of outputs
 
 ..loop:
-    lw a0, 0(s0)    ; Load arguments
-    lw a1, 1(s0)
+    mov a0, [s0]    ; Load arguments
+    mov a1, [s0+1]
     call .test_cond ; Call test
     
-    lw t0, 0(s1)    ; Load output
+    mov t0, [s1]    ; Load output
     cmp v0, t0
     jne .error      ; If outputs don't match, display error
     
@@ -54,9 +54,12 @@ MAIN_PROGRAM:
     cmp s0, s2      ; Check if all tests have been performed
     jne ..loop
     
-    mov a0, "K"     ; All tests passed!
-    syscall PRINT.Char
+    ; Previously, the success message was displayed here, but this could cause problems in the case that jumps
+    ; don't work at all (the success message would be shown even though jumps would clearly not work).
+    ; Moving .success under .error can solve this edge case
+    jeq .success
     
+..end:
     add sp, sp, args.size + outputs.size    ; Free space in stack
     pop s2
     pop s1
@@ -70,6 +73,11 @@ MAIN_PROGRAM:
     syscall PRINT.Char
     syscall TIME.Halt
 
+; Called if all tests succeed
+.success:
+    mov a0, "K"     ; All tests passed!
+    syscall PRINT.Char
+    jmp .main.end
 
 ; Arguments: a0, a1 are tests
 ; Returns: v0 is the test result
