@@ -1,8 +1,23 @@
 # Assembly tools
 
+## Syntax highlighting on VSCode
+
+`asm.json` provides custom syntax highlighting in Visual Studio Code, which makes programming in CESC16 assembly much easier. How to use:
+
+ 1. Install the `ASM Code Lens` extension, which provides many useful features for coding in assembly
+ 2. Navigate to the VSCode extensions folder:
+    - Windows: `%USERPROFILE%\.vscode\extensions`
+    - Windows WSL: `~/.vscode-server/extensions`
+    - Linux and macOS: `~/.vscode/extensions`
+ 3. Navigate to `maziac.asm-code-lens-x.x.x/grammar` (replace `x.x.x` with the version number)
+ 4. Replace the `asm.json` file in the extension folder with the custom version in *this* folder.
+ 
+Now .asm files in VSCode use the CESC16 syntax highlighting.
+
+
 ## Syntax highlighting on Notepad++
 
-`syntax.xml` provides custom syntax highlighting, which makes programming in CESC16 assembly much easier. How to use:
+`syntax.xml` provides custom syntax highlighting in Notepad++. How to use:
 
  1. Open Notepad++ and go to Language -> User Defined Language -> Define your language
  2. Click "Import..." and select `syntax.xml`

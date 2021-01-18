@@ -1,0 +1,171 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "asm",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#mnemonics"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#labels"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.block.asm",
+                    "begin": ";\\*",
+                    "end": "\\*;"
+                },
+                {
+                    "name": "comment.line.asm",
+                    "begin": ";",
+                    "end": "\\n"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.asm",
+                    "match": "(?i:(?<=\\s)(?:MAIN_PROGRAM|STARTUP|MEMORY|MATH|INPUT|OUTPUT|TIME|CALL_GATE)\\b)"
+                },
+                {
+                    "name": "keyword.control.asm",
+                    "match": "(?i:(?<=\\s)(?:sizeof|progmem|Up|Low|Op|Arg)\\b)"
+                },
+                {
+                    "name": "keyword.control.asm",
+                    "match": "#\\w\\w+"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single.asm",
+                    "begin": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.asm"
+                        }
+                    },
+                    "end": "(\\')|((?:[^\\\\\\n])$)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.end.asm"
+                        },
+                        "2": {
+                            "name": "invalid.illegal.newline.asm"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#string-character-escape"
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.double.asm",
+                    "begin": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.asm"
+                        }
+                    },
+                    "end": "(\")|((?:[^\\\\\\n])$)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.end.asm"
+                        },
+                        "2": {
+                            "name": "invalid.illegal.newline.asm"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#string-character-escape"
+                        }
+                    ]
+                }
+            ]
+        },
+        "string-character-escape": {
+            "patterns": [
+                {
+                    "name": "constant.character.escape.asm",
+                    "match": "\\\\(x[0-9A-Fa-f]{2}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+                }
+            ]
+        },
+        "mnemonics": {
+            "patterns": [
+                {
+                    "name": "support.type.register.x86.asm",
+                    "match": "\\b(?i:pc|zero|sp|t0|t1|t2|t3|t4|v0|a0|a1|a2|s0|s1|s2|s3|s4)\\b"
+                },
+                {
+                    "name": "keyword.mnemonic.x86.asm",
+                    "match": "\\s(?i:mov|and|or|xor|add|sub|addc|subb|nand|not|nor|xnor|jmp|jz|jnz|jc|jnc|jleu|jlt|jle|jeq|jne|jnb|jb|jltu|sll|sllc|srl|sra|movb|movf|swap|peek|push|pushf|pop|popf|call|syscall|enter|ret|sysret|exit|cmp|test|mask|clrf|lw|sw|lb|lbu|sb|nop)\\s"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "invalid",
+                    "match": "^\\{5}"
+                },
+                {
+                    "name": "constant.numeric.integer.hexadecimal.asm",
+                    "match": "(\\-?[0-9a-fA-F]+[hH])\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.hexadecimal.asm",
+                    "match": "(\\-?0x[0-9a-fA-F]+)\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.binary.asm",
+                    "match": "\\b[01'_]+[bB]\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.binary.asm",
+                    "match": "(\\-?0b[01]+)\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.decimal.asm",
+                    "match": "\\-?\\d+"
+                }
+            ]
+        },
+        "labels": {
+            "patterns": [
+                {
+                    "match": "^\\@?((\\$\\$(?!\\.))?[\\w\\.]+)[:\\s]",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.function.asm"
+                        }
+                    }
+                },
+                {
+                    "match": "\\b([a-zA-Z][\\w\\.]+)\\b",
+                    "name": "variable.parameter.label.asm"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.asm"
+}
