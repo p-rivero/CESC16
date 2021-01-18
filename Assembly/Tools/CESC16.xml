@@ -46,7 +46,7 @@
 		<KeyWord name="enter" />
 		<KeyWord name="ret" />
 		<KeyWord name="sysret" />
-		<KeyWord name="leave" />
+		<KeyWord name="exit" />
 		<KeyWord name="jmp" />
 		<KeyWord name="jz" />
 		<KeyWord name="jnz" />

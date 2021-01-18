@@ -127,7 +127,7 @@
     enter {Addr: JMP_ADDR}    => 0xD501 @ Addr`16
     ret     => 0xD6010000
     sysret  => 0xD7010000
-    leave   => 0xD8010000
+    exit    => 0xD8010000
 }
 
 #ruledef MACROS {

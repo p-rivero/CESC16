@@ -149,7 +149,7 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 #define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,           ZEROx13
 #define SYSRET      Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
-#define LEAVE       Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
+#define EXIT        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 #define JMP_IMM     Fetch,  MemOut|ArgBk /*|PcIn*/|PcOutAddr|CLR,   ZEROx14
@@ -184,9 +184,9 @@ const vector<uint32_t> JMP_INT_RAM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm
     #define SYSCALL_I CALL_I
     #undef SYSCALL_R
     #define SYSCALL_R CALL_R
-    // When executed from ROM, leave works like a regular ret instruction
-    #undef LEAVE
-    #define LEAVE RET
+    // When executed from ROM, exit works like a regular ret instruction
+    #undef EXIT
+    #define EXIT RET
     // Just push PC when jumping to an interrupt
     #define JMP_INT JMP_INT_ROM
 #endif
@@ -315,7 +315,7 @@ const vector<uint32_t> TEMPLATE = {
 
     RET,        // 11010110 - ret
     SYSRET,     // 11010111 - sysret
-    LEAVE,      // 11011000 - leave
+    EXIT,       // 11011000 - exit
     
     // 11011001-11011111 - Unused
     NOP, NOP, NOP, NOP, NOP, NOP, NOP,
