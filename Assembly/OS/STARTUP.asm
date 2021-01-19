@@ -17,7 +17,7 @@ STARTUP:
     
     ; Initialize I/O:
     mov [KEYBOARD_ADDR], zero   ; Acknowledge any leftover input
-    syscall PRINT.Reset   ; Clear screen
+    syscall OUTPUT.Reset   ; Clear screen
     
     ; User code execution
     call MAIN_PROGRAM

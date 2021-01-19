@@ -38,7 +38,7 @@ global_label:
     sub a0, t1, 15          ; a0 = t1 - 15
     mov a0, t1              ; a0 = t1 (move contents from register t1 to register a0)
     
-    syscall PRINT.Char      ; Sends the contents of a0 to the connected output device
+    syscall OUTPUT.Char     ; Sends the contents of a0 to the connected output device
     jne .local_label        ; jne is a macro that gets expanded to jnz (jump if s0 - t3 != 0, therefore s0 != t3)
     jmp another_label
     
@@ -61,7 +61,7 @@ global_label:
     call subroutine         ; Calls a subroutine. The arguments are in a0-a2.
     
     mov a0, v0              ; The returned value of the subroutine is in v0. Output the result (as an integer) to the output terminal.
-    syscall PRINT.Word
+    syscall OUTPUT.Word
     mov [t0], s2            ; Stores the contents of s2 into the address in t0. The value of s2 has been preserved by the subroutine
     ret                     ; Program ends
     

@@ -7,7 +7,7 @@ Print_Buffer: #res 8
 
 #bank program
 
-PRINT:
+OUTPUT:
 
 ; -------------------------------
 ; OUTPUTTING DIFFERENT DATA TYPES
@@ -19,7 +19,7 @@ PRINT:
     test [TERMINAL_ADDR]    ; Read flag
     jnz .Char               ; Poll until it's 0 (terminal ready)
     ; Arduino Terminal accepts 1 byte every 32 us.
-    ; (shortest access loop: 18 cycles, when [syscall PRINT.Char; mov a0, x; syscall PRINT.Char] is performed)
+    ; (shortest access loop: 18 cycles, when [syscall OUTPUT.Char; mov a0, x; syscall OUTPUT.Char] is performed)
     ; - 1 MHz: At most, the polling loops 4 times (with polling every 6 us)
     ; - 2 MHz: At most, the polling loops 9 times (with polling every 3 us)
     
@@ -164,7 +164,7 @@ PRINT:
     ret
     
 
-; Call with PRINT.SetColor.Red
+; Call with OUTPUT.SetColor.Red
 .SetColor:
 ..Red:
 ..White:

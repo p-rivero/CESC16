@@ -24,8 +24,7 @@ TMR_ACTIVE:     #res 1  ; A non-zero value indicates that the timer is currently
 #include "MEMORY.asm"
 #include "MATH.asm"
 #include "INPUT.asm"
-; TODO: Rename to TERMINAL_OUT to OUTPUT.asm
-#include "TERMINAL_OUT.asm"
+#include "OUTPUT.asm"
 #include "TIME.asm"
     
 _OS_END:

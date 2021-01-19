@@ -70,13 +70,13 @@ MAIN_PROGRAM:
 ; Called if a test fails
 .error:
     mov a0, "F"
-    syscall PRINT.Char
+    syscall OUTPUT.Char
     syscall TIME.Halt
 
 ; Called if all tests succeed
 .success:
     mov a0, "K"     ; All tests passed!
-    syscall PRINT.Char
+    syscall OUTPUT.Char
     jmp .main.end
 
 ; Arguments: a0, a1 are tests
