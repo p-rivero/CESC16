@@ -12,7 +12,7 @@ using namespace std;
 #define CLR             0x000001    // Clear microcode counter (start next instruction) [ACTIVE LOW]
 #define Dout0           0x000002    // Output select (data/main bus):
 #define Dout1           0x000004    //     000 = No output,  001 = ALU,  010 = ALU (Shifted),  011 = Memory
-#define Dout2           0x000008    //     100 = PC,  101 = IR,  110 = Flags,  111 = Constant 0x0011
+#define Dout2           0x000008    //     100 = PC,  101 = IR,  110 = Flags,  111 = Generate constant
 #define AddrOut0        0x000010    // Output select (address bus):
 #define AddrOut1        0x000020    //     00 = No output,  01 = PC,  10 = ALU,  11 = SP
 #define Bank0           0x000040    // Memory bank select:
@@ -49,7 +49,7 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define PcOutD      Dout2               // PC -> Data Bus
 #define IrOut       Dout2|Dout0         // IR -> Data Bus
 #define FlagsOut    Dout2|Dout1         // Flags -> Data Bus
-#define ConstOut    Dout2|Dout1|Dout0   // Constant 0x0011 -> Data Bus
+#define ConstOut    Dout2|Dout1|Dout0   // Generated constant -> Data Bus
 
 #define PcOutAddr   AddrOut0            // PC -> MAR
 #define AluOutAddr  AddrOut1            // ALU -> MAR
@@ -60,6 +60,9 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 #define Fetch       PCpp|MemOut|LdX|LdY // First timestep for all instructions (LdX|LdY also loads Instruction Register)
 #define ArgBk       Bank0               // Argument bank (where instruction arguments are fetched)
+
+#define Gen11       AluS1|AluS2         // Generate 0x0011 (must be compatible with ALU_Xminus1)
+#define Gen13       AluS1|AluS2|AluM    // Generate 0x0013
 
 // ALU OPERATIONS (from 74HC181 datasheet)
 #define ALU_Y       AluM|AluS3|AluS1                // Output Y
@@ -157,10 +160,8 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
 // Jump to interrupt vector
-const vector<uint32_t> JMP_INT_ROM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    ConstOut|PcIn|PcOutAddr|CLR,        ZEROx13};
-const vector<uint32_t> JMP_INT_RAM = {ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|PcOutD|MemIn|Bank1,    // Push the PC to the stack
-                                      ConstOut|LdX|ALU_Xminus1|AluOutAddr,  SPmm|       MemIn|Bank1,    // Push the 0x0000 to the stack (pull-down)
-                                      ConstOut|PcIn|PcOutAddr|CLR|TglRun,   ZEROx11};                   // Jump to ROM
+const vector<uint32_t> JMP_INT_ROM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen13|ConstOut|PcIn|PcOutAddr|CLR,        ZEROx13};
+const vector<uint32_t> JMP_INT_RAM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen11|ConstOut|PcIn|PcOutAddr|CLR|TglRun, ZEROx13};
 
 #ifdef RUN_FROM_RAM
     // When executed from RAM, enter works like a regular call instruction

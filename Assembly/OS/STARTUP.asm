@@ -2,8 +2,9 @@
 
 #bank program
 STARTUP:
-    .Reset:
-    ; Reset vector (hardware entry point): nop ensures that a reset is performed correctly, regardless of the clock state
+; Reset vector (hardware entry point):
+.Reset:
+    ; A nop ensures that a reset is performed correctly, regardless of the clock state
     nop
     ; Disable timer
     mov [TMR_ACTIVE], zero
@@ -26,7 +27,13 @@ STARTUP:
     
     #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector (hardware entry point)
     
-    
+RAM_INT_HANDLER:
+    ; This handler gets called when an interrupt occurs while running a program from RAM.
+    ; Its only job is to call the main interrupt handler below and then return to RAM.
+    ; Warning: this code MUST be located at 0x0011 and be 2 instructions long (main handler must be at 0x0013)
+    call MAIN_INTERRUPT_HANDLER
+    sysret
+
 MAIN_INTERRUPT_HANDLER:
     ; This handler gets called whenever any interrupt occurs. Its job is to call the correct specialized handlers
     ; Save+Restore context: ~60 clock cycles
@@ -71,7 +78,7 @@ MAIN_INTERRUPT_HANDLER:
     call INPUT.Key_Pressed_Handler  ; Call the handler and continue
     jmp ..continue
     
-    ..key_released:
+..key_released:
     ; Key was released
     call INPUT.Key_Released_Handler ; Call the handler and continue
 ..continue:
@@ -89,16 +96,5 @@ MAIN_INTERRUPT_HANDLER:
     pop a2
     pop a1
     pop a0
-    ; If the interrupt was called from ROM: [sp] = flags, [sp+1] = return address
-    ; If it was called from RAM: [sp] = flags, [sp+1] = 0x0000, [sp+2] = actual return address
-    test [sp+1]
-    jz ..return_RAM
     popf
-    ret     ; Return to ROM
-
-..return_RAM:
-    popf
-    pop zero    ; Remove the 0x0000
-    sysret      ; Return to RAM
-
-
+    ret
