@@ -34,7 +34,7 @@ MAIN_PROGRAM:
     
 ..wait:             ; Wait until the timer overflows and Sync gets set to 1.
     test [Sync]     ; Even if main program is halted, keystrokes will still trigger
-    jz ..wait       ; interrupts and call OUTPUT.Char
+    jz ..wait       ; interrupts and call OUTPUT.char
     
     ; Remember to pop the old handlers in the correct order (stack = LIFO)
     syscall TIME.DetachInterrupt
@@ -48,13 +48,13 @@ MAIN_PROGRAM:
 ; Routine that will get called whenever a key is pressed down. The ASCII is stored in a0
 .KeyP_Handler:
     add a0, a0, 2
-    syscall OUTPUT.Char
+    syscall OUTPUT.char
     ret
     
 ; Routine that will get called whenever a key is released. The ASCII is stored in a0
 .KeyR_Handler:
     sub a0, a0, 2
-    syscall OUTPUT.Char
+    syscall OUTPUT.char
     ret
    
 ; Routine that will get called whenever the timer overflows.

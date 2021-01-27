@@ -15,11 +15,11 @@ OUTPUT:
 
 ; Waits until the terminal is available and prints
 ; a char stored in the lower bits of a0.
-.Char:
+.char:
     test [TERMINAL_ADDR]    ; Read flag
-    jnz .Char               ; Poll until it's 0 (terminal ready)
+    jnz .char               ; Poll until it's 0 (terminal ready)
     ; Arduino Terminal accepts 1 byte every 32 us.
-    ; (shortest access loop: 18 cycles, when [syscall OUTPUT.Char; mov a0, x; syscall OUTPUT.Char] is performed)
+    ; (shortest access loop: 18 cycles, when [syscall OUTPUT.char; mov a0, x; syscall OUTPUT.char] is performed)
     ; - 1 MHz: At most, the polling loops 4 times (with polling every 6 us)
     ; - 2 MHz: At most, the polling loops 9 times (with polling every 3 us)
     
@@ -29,13 +29,13 @@ OUTPUT:
     
 ; Prints the contents of a0 as an UNSIGNED integer.
 ; TODO: calculate time of division method
-.Word:
+.uint16:
     cmp a0, 10
     jltu skip(1)
     jmp ..continue
     ; If the input is a number between 0 and 9, just print it and return
     add a0, a0, "0"
-    jmp .Char
+    jmp .char
     
 ..continue:
     ; Implement 16 bit Double dabble algorithm (convert to BCD)
@@ -104,7 +104,7 @@ OUTPUT:
 ; Print number from first non-zero digit onward
 ..print:        
     add a0, a0, "0"
-    call .Char
+    call .char
     add s0, s0, 1
     mov a0, [s0]
     cmp s0, Print_Buffer+4
@@ -115,36 +115,36 @@ OUTPUT:
     
     
 ; Prints the contents of a0 as a SIGNED integer.
-.Signed:
+.int16:
     cmp zero, a0
-    jle .Word   ; If 0 <= n, print n as an unsigned integer
+    jle .uint16   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
     mov a2, a0
     mov a0, "-"
-    syscall .Char
+    syscall .char
     sub a0, zero, a2
-    jmp .Word   ; Print unsigned integer and return
+    jmp .uint16   ; Print unsigned integer and return
 
 
 ; Prints the contents of a1,a0 as an UNSIGNED 32-bit integer (a1 contains upper bits).
-.DWord:
+.uint32:
     ; TODO: 32 bit Double dabble
     ret
     
     
 ; Prints the contents of a1,a0 as a SIGNED 32-bit integer (a1 contains upper bits).
-.DSigned:
+.int32:
     cmp zero, a1
-    jle .DWord   ; If 0 <= n, print n as an unsigned integer
+    jle .uint32   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
     mov a2, a0
     mov a0, "-"
-    syscall .Char
+    syscall .char
     sub a0, zero, a2    ; Negate a1,a2 and store in a1,a0
     subb a1, zero, a1
-    jmp .DWord   ; Print unsigned integer and return
+    jmp .uint32   ; Print unsigned integer and return
 
 
 
@@ -152,11 +152,11 @@ OUTPUT:
 ; WARNING: each 16-bit word contains A SINGLE 8-bit char (upper 8 bits must be 0x00)
 ; TODO: Find better name. If utf16be support gets added to customasm, make this the default .string routine
 .string:
-    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .char)
 ..loop:
     movf a0, [a1]   ; Load next char
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
     add a1, a1, 1   ; Increment pointer
     jmp ..loop
 ..return:
@@ -165,16 +165,16 @@ OUTPUT:
 ; Prints a null-terminated string (stored in RAM). a0 points at the first char of the string
 ; WARNING: each 16-bit word contains TWO 8-bit chars (no bits are ignored)
 .string_RAM:
-    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .char)
 ..loop:
     mov a2, [a1]    ; Load next pair of chars
     srl a0, a2, 8   ; Get upper bits (lower address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     add a1, a1, 1   ; Increment pointer
     jmp ..loop
@@ -184,25 +184,25 @@ OUTPUT:
 ; Prints a null-terminated string (stored in ROM). a0 points at the first char of the string
 ; WARNING: each 32-bit word contains FOUR 8-bit chars (no bits are ignored)
 .string_ROM:
-    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .char)
 ..loop:
     peek a2, [a1], Up   ; Load next pair of chars (upper bits -> lower address in big endian)
     srl a0, a2, 8   ; Get upper bits (lower address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     peek a2, [a1], Low  ; Load next pair of chars (lower bits -> upper address in big endian)
     srl a0, a2, 8   ; Get upper bits (lower address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
     jz ..return     ; If it's the null character, return
-    call .Char      ; Else, print the char
+    call .char      ; Else, print the char
 
     add a1, a1, 1   ; Increment pointer
     jmp ..loop
