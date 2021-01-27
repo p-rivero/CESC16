@@ -117,14 +117,13 @@ OUTPUT:
 ; Prints the contents of a0 as a SIGNED integer.
 .Signed:
     cmp zero, a0
-    jle ..continue
+    jle .Word   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
     mov a2, a0
     mov a0, "-"
     syscall .Char
     sub a0, zero, a2
-..continue:    
     jmp .Word   ; Print unsigned integer and return
 
 
@@ -136,21 +135,78 @@ OUTPUT:
     
 ; Prints the contents of a1,a0 as a SIGNED 32-bit integer (a1 contains upper bits).
 .DSigned:
-    cmp a1, zero
-    jle ..continue
+    cmp zero, a1
+    jle .DWord   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
     mov a2, a0
     mov a0, "-"
     syscall .Char
-    sub a0, zero, a2    ; Invert a1,a2 and store in a1,a0
+    sub a0, zero, a2    ; Negate a1,a2 and store in a1,a0
     subb a1, zero, a1
-..continue:    
-    jmp .Word   ; Print unsigned integer and return
+    jmp .DWord   ; Print unsigned integer and return
+
+
+
+; Prints a null-terminated string (constructed in RAM). a0 points at the first char of the string
+; WARNING: each 16-bit word contains A SINGLE 8-bit char (upper 8 bits must be 0x00)
+; TODO: Find better name. If utf16be support gets added to customasm, make this the default .string routine
+.string:
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+..loop:
+    movf a0, [a1]   ; Load next char
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+    add a1, a1, 1   ; Increment pointer
+    jmp ..loop
+..return:
     ret
 
-.String:
-    ; TODO: Print chars and increment pointer until null char
+; Prints a null-terminated string (stored in RAM). a0 points at the first char of the string
+; WARNING: each 16-bit word contains TWO 8-bit chars (no bits are ignored)
+.string_RAM:
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+..loop:
+    mov a2, [a1]    ; Load next pair of chars
+    srl a0, a2, 8   ; Get upper bits (lower address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    add a1, a1, 1   ; Increment pointer
+    jmp ..loop
+..return:
+    ret
+
+; Prints a null-terminated string (stored in ROM). a0 points at the first char of the string
+; WARNING: each 32-bit word contains FOUR 8-bit chars (no bits are ignored)
+.string_ROM:
+    mov a1, a0      ; Move pointer to a1 (use a0 as argument of .Char)
+..loop:
+    peek a2, [a1], Up   ; Load next pair of chars (upper bits -> lower address in big endian)
+    srl a0, a2, 8   ; Get upper bits (lower address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    peek a2, [a1], Low  ; Load next pair of chars (lower bits -> upper address in big endian)
+    srl a0, a2, 8   ; Get upper bits (lower address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    and a0, a2, 0x00FF  ; Get lower bits (upper address in big endian)
+    jz ..return     ; If it's the null character, return
+    call .Char      ; Else, print the char
+
+    add a1, a1, 1   ; Increment pointer
+    jmp ..loop
+..return:
     ret
 
 ; ----------------
@@ -160,6 +216,7 @@ OUTPUT:
 ; Clears entire screen and moves the cursor to the top-left
 ; corner (row 1, column 1).
 .Reset:
+    ; PLACEHOLDER
     ;call .SetColor.White
     ret
     
@@ -168,6 +225,6 @@ OUTPUT:
 .SetColor:
 ..Red:
 ..White:
-; ...
+    ; PLACEHOLDER
     ret
     

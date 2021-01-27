@@ -71,6 +71,7 @@
 
 #define _MOVB(rD, rA, Imm)          0x80 @ rD`4 @ rA`4 @ Imm
 #define _SWAP(rD, rA, Imm)          0x81 @ rD`4 @ rA`4 @ Imm
+#define _PEEK(rD, rA, Imm, W)       0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
 
 
 #ruledef INSTRUCTIONS {
@@ -106,7 +107,7 @@
     ; Memory
     movb {rD: REG}, [{rA: REG}+{Imm: i16}]  => _MOVB(rD, rA, Imm)
     swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => _SWAP(rD, rA, Imm)
-    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => 0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
+    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => _PEEK(rD, rA, Imm, W)
     
     push {rB: REG}  => 0x8401000 @ rB`4
     push {Imm: i16} => 0x8501 @ Imm
@@ -157,6 +158,8 @@
     
     swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
     swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
+    peek {rD: REG}, [{Imm: i16}], {W: PEEK_OPTIONS} => _PEEK(rD, 0, Imm, W)
+    peek {rD: REG}, [{rA: REG}],  {W: PEEK_OPTIONS} => _PEEK(rD, rA, 0x0000, W)
     
     cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
     cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
@@ -179,6 +182,7 @@
 ; Utilities
 #define sizeof(Begin) (pc - Begin)*2    ; Returns the data size between Begin and the current spot
 #define progmem(Begin, End) #res (End - Begin)*2    ; Reserve space to fit program memory between Begin and End
+#define str(text)   #d text, "\0"       ; Remember to use "#align 32" afterwards
 
 ; Banks
 #bankdef program {
