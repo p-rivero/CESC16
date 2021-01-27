@@ -18,7 +18,7 @@ using namespace std;
 #define Bank0           0x000040    // Memory bank select:
 #define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = RAM (Sign extended)
 
-#define TglRun          0x000100    // Toggle run mode (fetch from ROM or RAM)
+#define TglRun          0x000100    // Toggle run mode (fetch from ROM or RAM) (also load flags from bus)
 #define SPpp            0x000200    // Increment Stack Pointer (SP-- if AluS3 = 1) [ACTIVE LOW]
 #define PCpp            0x000400    // Increment Program Counter (and load Instruction Register)
 #define MemIn           0x000800    // Memory (RAM) in
@@ -56,11 +56,12 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 #define SPmm        SPpp|AluS0          // SP--
 #define LdFlgALU    LdFlg               // Generate flags from ALU
-#define LdFlgBUS    LdFlg|LdImm         // Load flags from the main bus
+#define LdFlgBUS    LdFlg|TglRun        // Load flags from the main bus
 
 #define Fetch       PCpp|MemOut|LdX|LdY // First timestep for all instructions (LdX|LdY also loads Instruction Register)
 #define ArgBk       Bank0               // Argument bank (where instruction arguments are fetched)
 
+#define ToggleRun   TglRun|LdImm        // Toggle run mode (fetch from ROM or RAM)
 #define Gen11       AluS1|AluS2         // Generate 0x0011 (must be compatible with ALU_Xminus1)
 #define Gen13       AluS1|AluS2|AluM    // Generate 0x0013
 
@@ -141,18 +142,18 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
 #define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,   ZEROx13
 
-#define CALL_R      Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define ENTER_R     Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
-#define CALL_R_RAM  Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define SYSCALL_R   Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
-#define CALL_I      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define ENTER_I     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
-#define CALL_I_RAM  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,          ZEROx12
-#define SYSCALL_I   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|TglRun,   ZEROx12
+#define CALL_R      Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
+#define ENTER_R     Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
+#define CALL_R_RAM  Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
+#define SYSCALL_R   Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
+#define CALL_I      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
+#define ENTER_I     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
+#define CALL_I_RAM  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
+#define SYSCALL_I   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
 
 #define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,           ZEROx13
-#define SYSRET      Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
-#define EXIT        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|TglRun,    ZEROx13
+#define SYSRET      Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|ToggleRun, ZEROx13
+#define EXIT        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|ToggleRun, ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 #define JMP_IMM     Fetch,  MemOut|ArgBk /*|PcIn*/|PcOutAddr|CLR,   ZEROx14
@@ -160,8 +161,8 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
 // Jump to interrupt vector
-const vector<uint32_t> JMP_INT_ROM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen13|ConstOut|PcIn|PcOutAddr|CLR,        ZEROx13};
-const vector<uint32_t> JMP_INT_RAM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen11|ConstOut|PcIn|PcOutAddr|CLR|TglRun, ZEROx13};
+const vector<uint32_t> JMP_INT_ROM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen13|ConstOut|PcIn|PcOutAddr|CLR,           ZEROx13};
+const vector<uint32_t> JMP_INT_RAM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen11|ConstOut|PcIn|PcOutAddr|CLR|ToggleRun, ZEROx13};
 
 #ifdef RUN_FROM_RAM
     // When executed from RAM, enter works like a regular call instruction
