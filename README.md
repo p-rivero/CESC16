@@ -9,7 +9,7 @@ This repository contains the following:
 - A basic OS, including libraries for Math, I/O, and Flow control
 
 ## Computer:
-- C code for generating the computer microcode
+- C++ code for generating the computer microcode
 - Code for the Arduino I/O controllers **(not yet)**
 - Schematics and PCBs **(not yet)**
 - Pictures of the finished build **(not yet)**
