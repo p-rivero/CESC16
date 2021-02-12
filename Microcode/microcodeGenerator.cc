@@ -158,7 +158,7 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 #define JMP_IMM     Fetch,  MemOut|ArgBk /*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 
-#define NOP         Fetch, PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
+#define NOP         Fetch,  PcOutAddr|CLR,   ZEROx14     // Only used for illegal instructions
 
 // Jump to interrupt vector
 const vector<uint32_t> JMP_INT_ROM = {Gen11|ConstOut|LdX|ALU_Xminus1|AluOutAddr,    SPmm|PcOutD|MemIn|Bank1,    Gen13|ConstOut|PcIn|PcOutAddr|CLR,           ZEROx13};
