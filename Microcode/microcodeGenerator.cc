@@ -9,32 +9,32 @@ using namespace std;
 
 
 // CONTROL SIGNALS
-#define CLR             0x000001    // Clear microcode counter (start next instruction) [ACTIVE LOW]
-#define Dout0           0x000002    // Output select (data/main bus):
-#define Dout1           0x000004    //     000 = No output,  001 = ALU,  010 = ALU (Shifted),  011 = Memory
-#define Dout2           0x000008    //     100 = PC,  101 = IR,  110 = Flags,  111 = Generate constant
-#define AddrOut0        0x000010    // Output select (address bus):
-#define AddrOut1        0x000020    //     00 = No output,  01 = PC,  10 = ALU,  11 = SP
-#define Bank0           0x000040    // Memory bank select:
-#define Bank1           0x000080    //     00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = RAM (Sign extended)
+#define AluM        0x000001    // Mode input for 74HC181 ALU
+#define AddrOut0    0x000002    // Output select (address bus):
+#define AddrOut1    0x000004    //     00 = No output,  01 = PC,  10 = ALU,  11 = SP
+#define AluS0       0x000008    // Select input 0 for 74HC181 ALU
+#define AluS1       0x000010    // Select input 1 for 74HC181 ALU
+#define AluS2       0x000020    // Select input 2 for 74HC181 ALU
+#define AluS3       0x000040    // Select input 3 for 74HC181 ALU
+#define AluCIn      0x000080    // Carry In input for 74HC181 ALU
 
-#define TglRun          0x000100    // Toggle run mode (fetch from ROM or RAM) (also load flags from bus)
-#define SPpp            0x000200    // Increment Stack Pointer (SP-- if AluS3 = 1) [ACTIVE LOW]
-#define PCpp            0x000400    // Increment Program Counter (and load Instruction Register)
-#define MemIn           0x000800    // Memory (RAM) in
-#define PcIn            0x001000    // Program Counter in (Jump) [ACTIVE LOW]
-#define LdReg           0x002000    // Load Register (rD) [ACTIVE LOW]
-#define LdX             0x004000    // Load temporary register X [ACTIVE LOW]
-#define LdY             0x008000    // Load temporary register Y [ACTIVE LOW]
+#define Dout2       0x000100    // Output select (data/main bus)
+#define LdFlg       0x000200    // Load flags register [ACTIVE LOW]
+#define TglRun      0x000400    // Toggle run mode (fetch from ROM or RAM) (also load flags from bus)
+#define Dout1       0x000800    // Output select (data/main bus):
+#define Dout0       0x001000    //    000=No output, 001=ALU, 010=ALU (Shifted), 011=Memory, 100=PC, 101=IR, 110=Flags, 111=Generate constant
+#define LdX         0x002000    // Load temporary register X [ACTIVE LOW]
+#define LdY         0x004000    // Load temporary register Y [ACTIVE LOW]
+#define CLR         0x008000    // Clear microcode counter (start next instruction) [ACTIVE LOW]
 
-#define LdImm           0x010000    // Load Immediate to temp register
-#define LdFlg           0x020000    // Load flags register [ACTIVE LOW]
-#define AluM            0x040000    // Mode input for 74HC181 ALU
-#define AluS0           0x080000    // Select input 0 for 74HC181 ALU
-#define AluS1           0x100000    // Select input 1 for 74HC181 ALU
-#define AluS2           0x200000    // Select input 2 for 74HC181 ALU
-#define AluS3           0x400000    // Select input 3 for 74HC181 ALU
-#define AluCIn          0x800000    // Carry In input for 74HC181 ALU
+#define LdImm       0x010000    // Load Immediate to temp register
+#define SPpp        0x020000    // Increment Stack Pointer (SP-- if AluS0 = 1) [ACTIVE LOW]
+#define PCpp        0x040000    // Increment Program Counter (and load Instruction Register)
+#define PcIn        0x080000    // Program Counter in (Jump) [ACTIVE LOW]
+#define MemIn       0x100000    // Memory (RAM) in
+#define LdReg       0x200000    // Load Register (rD) [ACTIVE LOW]
+#define Bank0       0x400000    // Memory bank select:
+#define Bank1       0x800000    //    00 = Opcode,  01 = Argument,  10 = RAM (Data and Stack),  11 = RAM (Sign extended)
 
 // Selective inverter for active low lines
 const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
