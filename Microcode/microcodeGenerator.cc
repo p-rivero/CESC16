@@ -375,24 +375,14 @@ void switchCarry(int flags, int funct) {
     assert(get_opcode(address + 5*OFFS*16+1) <  0b01110000); // 0b01110000 = ALU_IDX_dest
     assert(get_opcode(address + 7*OFFS*16+2) <  0b10000000); // 0b10000000 = MOVB
 
-    content[address + 0x00*16+1] ^= AluCIn; // Disable DIR_arg variant
-    content[address + 0x08*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
-    content[address + 0x10*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
-    content[address + 0x18*16+2] ^= AluCIn; // Disable IDX_arg variant
-    content[address + 0x20*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
-    content[address + 0x28*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
-    content[address + 0x30*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
-    content[address + 0x38*16+2] ^= AluCIn; // Disable IDX_dest variant
-
-    // TODO: Uncomment and make sure it's the same
-    // content[address + 0*OFFS*16+1] ^= AluCIn; // Disable DIR_arg variant
-    // content[address + 1*OFFS*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
-    // content[address + 2*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
-    // content[address + 3*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant
-    // content[address + 4*OFFS*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
-    // content[address + 5*OFFS*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
-    // content[address + 6*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
-    // content[address + 7*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant
+    content[address + 0*OFFS*16+1] ^= AluCIn; // Disable DIR_arg variant
+    content[address + 1*OFFS*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
+    content[address + 2*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
+    content[address + 3*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant
+    content[address + 4*OFFS*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
+    content[address + 5*OFFS*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
+    content[address + 6*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
+    content[address + 7*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant
 }
 
 void generate() {
@@ -409,8 +399,7 @@ void generate() {
         bool CF = flags & 0b0010;   // Carry flag
         bool VF = flags & 0b0100;   // Overflow flag
         bool SF = flags & 0b1000;   // Sign flag
-        // Todo: LT = (VF != SF)
-        bool LT = (VF and not SF) or (not VF and SF);   // Less Than = V xor S
+        bool LT = (VF != SF);       // Less Than
         
         // Unconditional jump
         enable_jmp(flags, 0b0000); // JMP
