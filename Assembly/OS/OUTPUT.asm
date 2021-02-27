@@ -31,7 +31,7 @@ OUTPUT:
 ; TODO: calculate time of division method
 .uint16:
     cmp a0, 10
-    jltu skip(1)
+    jb skip(1)
     jmp ..continue
     ; If the input is a number between 0 and 9, just print it and return
     add a0, a0, "0"
@@ -50,25 +50,25 @@ OUTPUT:
     ; Test lowest BCD digit
     and v0, a1, 0x000F
     cmp v0, 0x0005
-    jltu skip(1)
+    jb skip(1)
     add a1, a1, 0x0003
     
     ; Test 2nd BCD digit
     and v0, a1, 0x00F0
     cmp v0, 0x0050
-    jltu skip(1)
+    jb skip(1)
     add a1, a1, 0x0030
     
     ; Test 3rd BCD digit
     and v0, a1, 0x0F00
     cmp v0, 0x0500
-    jltu skip(1)
+    jb skip(1)
     add a1, a1, 0x0300
     
     ; Test 4th BCD digit
     and v0, a1, 0xF000
     cmp v0, 0x5000
-    jltu skip(1)
+    jb skip(1)
     add a1, a1, 0x3000
     
     ; The 5th BCD digit (lower bits of a2) doesn't need to be tested, since it will never be more than 3
@@ -108,7 +108,7 @@ OUTPUT:
     add s0, s0, 1
     mov a0, [s0]
     cmp s0, Print_Buffer+4
-    jleu ..print ; Loop while pointer is less or equal than address of last digit
+    jbe ..print ; Loop while pointer is below or equal the address of last digit
     
     pop s0  ; Restore context and return
     ret

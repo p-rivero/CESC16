@@ -12,7 +12,7 @@ MEMORY:
 ;          This ensures that the #d16 get stored in the order that they were typed.
 .MemCopy:
     cmp a1, a0      ; If (address of last element) <= (address of first element),
-    jleu ..return   ; then return (nothing to copy)
+    jbe ..return    ; then return (nothing to copy)
     
 ..loop:
     peek v0, [a0+0], Up     ; Read upper 16-bit word / opcode

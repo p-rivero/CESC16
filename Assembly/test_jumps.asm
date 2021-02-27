@@ -15,7 +15,7 @@ args: ; Arguments to be tested
 .size = sizeof(args)
 
 outputs: ; Expected outputs
-#d16    0x55,      0x55,        0x55,       0x7a,       0x7a,        0x1a,       0x1a,       0x06,       0x66,       0x66,       0x06,        0x7a
+#d16    0x59,      0x59,        0x59,       0x76,       0x76,        0x16,       0x16,       0x0a,       0x6a,       0x6a,       0x0a,        0x76
 .size = sizeof(outputs)
 
 progmem_end:
@@ -29,7 +29,7 @@ MAIN_PROGRAM:
     push s2
 
     ; Copy progmem to data memory (stack)
-    sub sp, sp, args.size + outputs.size    ; Reserve space in stack
+    sub sp, sp, args.size+outputs.size  ; Reserve space in stack
     mov a0, args
     mov a1, progmem_end
     mov a2, sp              ; Destination is the stack
@@ -57,7 +57,7 @@ MAIN_PROGRAM:
     ; Previously, the success message was displayed here, but this could cause problems in the case that jumps
     ; don't work at all (the success message would be shown even though jumps would clearly not work).
     ; Moving .success under .error can solve this edge case
-    jeq .success
+    je .success
     
 ..end:
     add sp, sp, args.size + outputs.size    ; Free space in stack
@@ -101,11 +101,11 @@ MAIN_PROGRAM:
     or v0, v0, 0b00001000
     
     cmp a0, a1
-    jleu skip(1)
+    jbe skip(1)
     or v0, v0, 0b00010000
     
     cmp a0, a1
-    jlt skip(1)
+    jl skip(1)
     or v0, v0, 0b00100000
     
     cmp a0, a1

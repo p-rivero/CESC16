@@ -59,7 +59,7 @@ INPUT:
 .Key_Released_Handler:
     xor a0, a0, INPUT.MASK_BREAK    ; Remove break bit
     cmp a0, INPUT.HOME              ; If "Home" key was released, reset computer
-    jeq STARTUP.Reset
+    je STARTUP.Reset
     ; More keys can be checked here
     
     movf t0, [HANDLERS.KEY_RELEASED] ; Load the address of the user interrupt handler

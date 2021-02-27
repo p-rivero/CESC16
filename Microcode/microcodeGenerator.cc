@@ -302,39 +302,50 @@ const vector<uint32_t> TEMPLATE = {
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
 
-    // 11000FFF - [JUMP] rA
-    JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG,
+    // 1100FFFF - [JUMP] rA
+    JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG, JMP_REG,
     
-    // 11001FFF - [JUMP] Addr
-    JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM,
+    // 1101FFFF - [JUMP] Addr
+    JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM, JMP_IMM,
 
-    CALL_R,     // 11010000 - call rB
-    CALL_I,     // 11010001 - call Addr16
-    SYSCALL_R,  // 11010010 - syscall rB
-    SYSCALL_I,  // 11010011 - syscall Addr16
-    ENTER_R,    // 11010100 - enter rB
-    ENTER_I,    // 11010101 - enter Addr16
+    CALL_R,     // 11100000 - call rB
+    CALL_I,     // 11100001 - call Addr16
+    SYSCALL_R,  // 11100010 - syscall rB
+    SYSCALL_I,  // 11100011 - syscall Addr16
+    ENTER_R,    // 11100100 - enter rB
+    ENTER_I,    // 11100101 - enter Addr16
 
-    RET,        // 11010110 - ret
-    SYSRET,     // 11010111 - sysret
-    EXIT,       // 11011000 - exit
+    RET,        // 11100110 - ret
+    SYSRET,     // 11100111 - sysret
+    EXIT,       // 11101000 - exit
     
-    // 11011001-11011111 - Unused
+    // 11101001-11101111 - Unused
     NOP, NOP, NOP, NOP, NOP, NOP, NOP,
-    // 111xxxxx - Unused
-    NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
+    // 1111xxxx - Unused
     NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,
 };
 
 
+// Extract the opcode from an address (remove flags and timesteps)
+inline int get_opcode(int address) {
+    return (address & 0xFF0) >> 4;
+}
+
 void enable_jmp(int flags, int funct) {
     // Invert the PcIn signal from a given conditional jump ("enable" the jump)
-    // The affected opcodes are 0b11000FFF (imm) and 0b11000000 (reg) -> 0b11000000+funct and 0b11000000+8+funct
+    // The affected opcodes are 0b1100FFFF (reg) and 0b1101FFFF (imm) -> 0b11000000+funct and 0b11000000+16+funct
+    const int OFFS = 16; // 4 funct bits
 
     int address = TEMPL_SIZE * flags + 16 * (0b11000000 + funct) + 1; // 16*(0xC0+funct) points to first microinstruction, +1 skips Fetch
 
-    content[address] ^= PcIn;        // IMM variant (base address)
-    content[address + 8*16] ^= PcIn; // REG variant: Add 8 to opcode -> add 8*16 to address
+    // Assert that we stay in the correct address range
+    assert(get_opcode(address) >= 0b11000000); // 11000000 = JUMP_REG
+    assert(get_opcode(address) <  0b11010000); // 11010000 = JUMP_IMM
+    assert(get_opcode(address + OFFS*16) >= 0b11010000); // 0b11100000 = JUMP_IMM
+    assert(get_opcode(address + OFFS*16) <  0b11100000); // 0b11100000 = CALL
+
+    content[address] ^= PcIn;           // REG variant (base address)
+    content[address + OFFS*16] ^= PcIn; // IMM variant: Add OFFS to opcode -> add OFFS*16 to address
 }
 
 void switchCarry(int flags, int funct) {
@@ -342,11 +353,28 @@ void switchCarry(int flags, int funct) {
     // The affected opcodes are: 0b00000FFF (REG), 0b00001FFF (IMM), 0b010xxFFF (Arg), 0b011xxFFF (Dest)
 
     int address = TEMPL_SIZE * flags + 16 * funct + 2; // 16*funct points to fetch, +2 skips Fetch and MemOut|ArgBk|LdY
-    content[address] ^= AluCIn;         // REG variant (base address)
-    content[address + 8*16] ^= AluCIn;  // Disable IMM variant (add 8 to opcode -> add 8*16 to address)
+    const int OFFS = 8; // 3 funct bits
+
+    // Assert that we stay in the correct address range
+    assert(get_opcode(address) >= 0b00000000); // 0b00000000 = ALU_REG
+    assert(get_opcode(address) <  0b00001000); // 0b00001000 = ALU_IMM
+    assert(get_opcode(address + OFFS*16) >= 0b00001000); // 0b00001000 = ALU_IMM
+    assert(get_opcode(address + OFFS*16) <  0b00010000); // 0b00010000 = SLL
+
+    content[address] ^= AluCIn;             // REG variant (base address)
+    content[address + OFFS*16] ^= AluCIn;   // Disable IMM variant (add OFFS to opcode -> add 8*16 to address)
     
+
     // Base address for memory variants (direct and indirect must skip must skip 1 extra timestep, indexed must skip 2!)
     address = TEMPL_SIZE * flags + 16 * (0b01000000 + funct) + 2;
+
+    // Assert that we stay in the correct address range
+    assert(get_opcode(address) >= 0b01000000); // 0b01000000 = ALU_DIR_arg
+    assert(get_opcode(address) <  0b01001000); // 0b01001000 = ALU_IND_arg
+    assert(get_opcode(address + 5*OFFS*16+1) >= 0b01101000); // 0b01101000 = ALU_IND_dest
+    assert(get_opcode(address + 5*OFFS*16+1) <  0b01110000); // 0b01110000 = ALU_IDX_dest
+    assert(get_opcode(address + 7*OFFS*16+2) <  0b10000000); // 0b10000000 = MOVB
+
     content[address + 0x00*16+1] ^= AluCIn; // Disable DIR_arg variant
     content[address + 0x08*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
     content[address + 0x10*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
@@ -355,6 +383,16 @@ void switchCarry(int flags, int funct) {
     content[address + 0x28*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
     content[address + 0x30*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
     content[address + 0x38*16+2] ^= AluCIn; // Disable IDX_dest variant
+
+    // TODO: Uncomment and make sure it's the same
+    // content[address + 0*OFFS*16+1] ^= AluCIn; // Disable DIR_arg variant
+    // content[address + 1*OFFS*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
+    // content[address + 2*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
+    // content[address + 3*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant
+    // content[address + 4*OFFS*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
+    // content[address + 5*OFFS*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
+    // content[address + 6*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
+    // content[address + 7*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant
 }
 
 void generate() {
@@ -368,31 +406,43 @@ void generate() {
     // FLAG MODIFICATIONS: Enable jump instructions and addc/subb
     for (int flags = 0; flags <= 0b1111; flags++) {
         bool ZF = flags & 0b0001;   // Zero flag
-        bool BF = flags & 0b0010;   // Borrow flag
+        bool CF = flags & 0b0010;   // Carry flag
         bool VF = flags & 0b0100;   // Overflow flag
         bool SF = flags & 0b1000;   // Sign flag
-        bool CF = not BF;           // Carry = not Borrow
+        // Todo: LT = (VF != SF)
         bool LT = (VF and not SF) or (not VF and SF);   // Less Than = V xor S
         
         // Unconditional jump
-        enable_jmp(flags, 0b000); // JMP
+        enable_jmp(flags, 0b0000); // JMP
 
         // Conditional jumps
-        if (ZF) enable_jmp(flags, 0b001); // JZ
-        else    enable_jmp(flags, 0b010); // JNZ
+        if (ZF) enable_jmp(flags, 0b0001);  // JZ
+        else    enable_jmp(flags, 0b0010);  // JNZ
         
-        if (CF) enable_jmp(flags, 0b011); // JC
-        else    enable_jmp(flags, 0b100); // JNC
+        if (CF) enable_jmp(flags, 0b0011);  // JC
+        else    enable_jmp(flags, 0b0100);  // JNC
+
+        if (VF) enable_jmp(flags, 0b0101);  // JO
+        else    enable_jmp(flags, 0b0110);  // JNO
+
+        if (SF) enable_jmp(flags, 0b0111);  // JS
+        else    enable_jmp(flags, 0b1000);  // JNS
         
-        if (ZF or BF) enable_jmp(flags, 0b101); // JLEU
+        if (ZF or CF) enable_jmp(flags, 0b1001); // JBE
+        else    enable_jmp(flags, 0b1010);  // JA
         
-        if (LT) enable_jmp(flags, 0b110);       // JLT
-        if (ZF or LT) enable_jmp(flags, 0b111); // JLE
+        if (LT) enable_jmp(flags, 0b1011);  // JL
+        else    enable_jmp(flags, 0b1110);  // JGE
+
+        if (ZF or LT) enable_jmp(flags, 0b1100); // JLE
+        else    enable_jmp(flags, 0b1101);  // JG
         
         
         // ALU operations with carry
-        if (CF) switchCarry(flags, 0b110);  // ADDC
-        else    switchCarry(flags, 0b111);  // SUBB
+        if (CF) {
+            switchCarry(flags, 0b110);  // ADDC
+            switchCarry(flags, 0b111);  // SUBB
+        }
     }
 
 

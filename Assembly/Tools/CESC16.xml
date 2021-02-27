@@ -49,12 +49,31 @@
 		<KeyWord name="exit" />
 		<KeyWord name="jmp" />
 		<KeyWord name="jz" />
+		<KeyWord name="je" />
 		<KeyWord name="jnz" />
+		<KeyWord name="jne" />
 		<KeyWord name="jc" />
+		<KeyWord name="jb" />
+		<KeyWord name="jnae" />
 		<KeyWord name="jnc" />
-		<KeyWord name="jleu" />
-		<KeyWord name="jlt" />
+		<KeyWord name="jae" />
+		<KeyWord name="jnb" />
+		<KeyWord name="jo" />
+		<KeyWord name="jno" />
+		<KeyWord name="js" />
+		<KeyWord name="jns" />
+		<KeyWord name="ja" />
+		<KeyWord name="jnbe" />
+		<KeyWord name="jbe" />
+		<KeyWord name="jna" />
+		<KeyWord name="jl" />
+		<KeyWord name="jnge" />
 		<KeyWord name="jle" />
+		<KeyWord name="jng" />
+		<KeyWord name="jg" />
+		<KeyWord name="jnle" />
+		<KeyWord name="jge" />
+		<KeyWord name="jnl" />
         
 		<KeyWord name="movf" />
 		<KeyWord name="movb" />
@@ -69,11 +88,6 @@
 		<KeyWord name="clrf" />
 		<KeyWord name="lbu" />
 		<KeyWord name="sb" />
-		<KeyWord name="jb" />
-		<KeyWord name="jnb" />
-		<KeyWord name="jeq" />
-		<KeyWord name="jne" />
-		<KeyWord name="jltu" />
 		<KeyWord name="nop" />
         
 		<KeyWord name="include" />

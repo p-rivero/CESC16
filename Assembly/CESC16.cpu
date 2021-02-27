@@ -30,21 +30,36 @@
     subb => 0b111
 }
 #subruledef JUMP {
-    jmp  => 0b000
-    jz   => 0b001
-    jnz  => 0b010
-    jc   => 0b011
-    jnc  => 0b100
-    jleu => 0b101
-    jlt  => 0b110
-    jle  => 0b111
+    ; Most of the x86 jump conditions
+    jmp  => 0b0000
+    jz   => 0b0001
+    jnz  => 0b0010
+    jc   => 0b0011
+    jnc  => 0b0100
+    jo   => 0b0101
+    jno  => 0b0110
+    js   => 0b0111
+    jns  => 0b1000
+    jbe  => 0b1001
+    ja   => 0b1010
+    jl   => 0b1011
+    jle  => 0b1100
+    jg   => 0b1101
+    jge  => 0b1110
     
     ; Macros
-    jeq  => 0b001
-    jne  => 0b010
-    jnb  => 0b011
-    jb   => 0b100
-    jltu => 0b100
+    je   => 0b0001   ; jz
+    jne  => 0b0010   ; jnz
+    jb   => 0b0011   ; jc
+    jnae => 0b0011   ; jc
+    jnb  => 0b0100   ; jnc
+    jae  => 0b0100   ; jnc
+    jna  => 0b1001   ; jbe
+    jnbe => 0b1010   ; ja
+    jnge => 0b1011   ; jl
+    jng  => 0b1100   ; jle
+    jnle => 0b1101   ; jg
+    jnl  => 0b1110   ; jge
 }
 #subruledef PEEK_OPTIONS {
     {num: u1} => num ; 1 or 0
@@ -117,18 +132,18 @@
     popf            => 0x88010000
     
     ; Jumps
-    {jmp: JUMP} {rA: REG}        => 0b11000 @ jmp`3 @ 0x0 @ rA`4 @ 0x0000
-    {jmp: JUMP} {Addr: JMP_ADDR} => 0b11001 @ jmp`3 @ 0x00 @ Addr`16
+    {jmp: JUMP} {rA: REG}        => 0b1100 @ jmp`4 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {Addr: JMP_ADDR} => 0b1101 @ jmp`4 @ 0x00 @ Addr`16
     
-    call {rB: REG}            => 0xD001 @ 0x000 @ rB`4
-    call {Addr: JMP_ADDR}     => 0xD101 @ Addr`16
-    syscall {rB: REG}         => 0xD201 @ 0x000 @ rB`4
-    syscall {Addr: JMP_ADDR}  => 0xD301 @ Addr`16
-    enter {rB: REG}           => 0xD401 @ 0x000 @ rB`4
-    enter {Addr: JMP_ADDR}    => 0xD501 @ Addr`16
-    ret     => 0xD6010000
-    sysret  => 0xD7010000
-    exit    => 0xD8010000
+    call {rB: REG}            => 0xE001 @ 0x000 @ rB`4
+    call {Addr: JMP_ADDR}     => 0xE101 @ Addr`16
+    syscall {rB: REG}         => 0xE201 @ 0x000 @ rB`4
+    syscall {Addr: JMP_ADDR}  => 0xE301 @ Addr`16
+    enter {rB: REG}           => 0xE401 @ 0x000 @ rB`4
+    enter {Addr: JMP_ADDR}    => 0xE501 @ Addr`16
+    ret     => 0xE6010000
+    sysret  => 0xE7010000
+    exit    => 0xE8010000
 }
 
 #ruledef MACROS {
@@ -150,12 +165,14 @@
     
     sllc {rD: REG}, {rA: REG}   =>  _ALU_REG(0b110, rD, rA, rA)  ; Expands to: addc rD, rA, rA
     
-    lw   {rD: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_A(rD, rA, Imm)
-    sw   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)
-    lb   {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm)
-    lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
-    sb   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
+    ; lw   {rD: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_A(rD, rA, Imm)
+    ; sw   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)
+    ; lb   {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm)
+    ; lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
+    ; sb   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
     
+    ; No-Temp Swap. Expands to: xor rA, rA, rB; xor rB, rA, rB; xor rA, rA, rB
+    swap {rA: REG}, {rA: REG}       => _ALU_REG(0b011, rA, rA, rB) @  _ALU_REG(0b011, rB, rA, rB) @ _ALU_REG(0b011, rA, rA, rB)
     swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
     swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
     peek {rD: REG}, [{Imm: i16}], {W: PEEK_OPTIONS} => _PEEK(rD, 0, Imm, W)
