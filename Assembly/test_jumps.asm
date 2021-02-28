@@ -15,7 +15,7 @@ args: ; Arguments to be tested
 .size = sizeof(args)
 
 outputs: ; Expected outputs
-#d16    0x59,      0x59,        0x59,       0x76,       0x76,        0x16,       0x16,       0x0a,       0x6a,       0x6a,       0x0a,        0x76
+#d16    0x1559,    0x1559,      0x1559,     0x0376,     0x0376,      0x1d16,     0x1a96,     0x3d0a,     0x236a,     0x24ea,     0x3d0a,      0x0376
 .size = sizeof(outputs)
 
 progmem_end:
@@ -86,33 +86,60 @@ MAIN_PROGRAM:
     
     cmp a0, a1
     jz skip(1)
-    or v0, v0, 0b00000001
+    or v0, v0, 0x0001
     
     cmp a0, a1
     jnz skip(1)
-    or v0, v0, 0b00000010
+    or v0, v0, 0x0002
     
     cmp a0, a1
     jc skip(1)
-    or v0, v0, 0b00000100
+    or v0, v0, 0x0004
     
     cmp a0, a1
     jnc skip(1)
-    or v0, v0, 0b00001000
+    or v0, v0, 0x0008
     
     cmp a0, a1
     jbe skip(1)
-    or v0, v0, 0b00010000
+    or v0, v0, 0x0010
     
     cmp a0, a1
     jl skip(1)
-    or v0, v0, 0b00100000
+    or v0, v0, 0x0020
     
     cmp a0, a1
     jle skip(1)
-    or v0, v0, 0b01000000
+    or v0, v0, 0x0040
+
+    cmp a0, a1
+    jo skip(1)
+    or v0, v0, 0x0080
+
+    cmp a0, a1
+    jno skip(1)
+    or v0, v0, 0x0100
+
+    cmp a0, a1
+    js skip(1)
+    or v0, v0, 0x0200
+
+    cmp a0, a1
+    jns skip(1)
+    or v0, v0, 0x0400
+
+    cmp a0, a1
+    jg skip(1)
+    or v0, v0, 0x0800
+
+    cmp a0, a1
+    jge skip(1)
+    or v0, v0, 0x1000
+
+    cmp a0, a1
+    ja skip(1)
+    or v0, v0, 0x2000
     
-    xor v0, v0, 0b01111111  ; Invert the results
+    xor v0, v0, 0x3FFF  ; Invert the results (convert to active high)
     
     ret
-    
