@@ -129,92 +129,234 @@ AUTOMATED_TEST:
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
     jz FAILURE
     jnc FAILURE
-    jl FAILURE
+    jo FAILURE
+    js FAILURE
     cmp t0, 0x0003
     jne FAILURE
 
     add t0, t0, t2      ; t0 = 0x0005, flags: none
     jz FAILURE
     jc FAILURE
-    jl FAILURE
+    jo FAILURE
+    js FAILURE
     cmp t0, 0x0005
     jne FAILURE
 
     add sp, sp, 0xE123  ; sp = 0x6124, flags: Carry, oVerflow
     jz FAILURE
     jnc FAILURE
-    jl skip(1)
-    jmp FAILURE
+    jno FAILURE
+    js FAILURE
     pushf
     cmp sp, 0x6123  ; pushf decrements sp: 0x6124 -> 0x6123
     jne FAILURE
-
     popf
+
     mov sp, v0          ; sp = 0x1000, flags unchanged
     jz FAILURE
     jnc FAILURE
-    jl skip(1)
-    jmp FAILURE
+    jno FAILURE
+    js FAILURE
     cmp sp, 0x1000
     jne FAILURE
 
     sll sp, sp, 3       ; sp = 0x8000, flags: Sign
     jz FAILURE
     jc FAILURE
-    jl skip(1)
-    jmp FAILURE
+    jo FAILURE
+    jns FAILURE
     cmp sp, 0x8000
     jne FAILURE
 
-    jmp SUCCESS
-
     sra v0, sp, 9       ; v0 = 0xFFC0, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp v0, 0xFFC0
+    jne FAILURE
 
     srl v0, sp, 9       ; v0 = 0x0040, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp v0, 0x0040
+    jne FAILURE
 
     sra v0, v0, 1       ; v0 = 0x0020, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp v0, 0x0020
+    jne FAILURE
 
     sll sp, sp, 1       ; sp = 0x0000, flags: Zero, Carry
+    jnz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp sp, zero
+    jne FAILURE
 
     movf sp, 0x0001     ; sp = 0x0001, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp sp, 0x0001
+    jne FAILURE
 
     sra v0, sp, 1       ; v0 = 0x0000, flags: Zero (Carry)
+    jnz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp v0, zero
+    jne FAILURE
 
     srl sp, sp, 1       ; sp = 0x0000, flags: Zero
+    jnz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp sp, zero
+    jne FAILURE
 
     mov sp, 0x1234      ; sp = 0x1234, flags unchanged
+    jnz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp sp, 0x1234
+    jne FAILURE
 
     mov v0, sp          ; v0 = 0x1234, flags unchanged
+    jnz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp v0, sp
+    jne FAILURE
 
     push 0b1111         ; sp = 0x1233, flags unchanged
+    jnz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp sp, 0x1233
+    jne FAILURE
     
     popf                ; sp = 0x1234, flags: Zero, Carry, oVerflow, Sign
+    jnz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    jns FAILURE
 
     addc v0, v0, 0x20   ; v0 = 0x1255, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp v0, 0x1255
+    jne FAILURE
+    popf
 
     addc v0, sp, 0x20   ; v0 = 0x1254, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp v0, 0x1254
+    jne FAILURE
+    popf
 
     mov t0, 0xAAAA      ; t0 = 0xAAAA, flags unchanged
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp t0, 0xAAAA
+    jne FAILURE
 
     xor t1, v0, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
+    jz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    jns FAILURE
+    cmp t1, 0xB8FE
+    jne FAILURE
 
     clrf                ; registers unchanged, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
 
     xor t1, v0, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
+    jz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    jns FAILURE
+    cmp t1, 0xB8FE
+    jne FAILURE
 
     add t2, t0, t1      ; t2 = 0x63A8, flags: oVerflow, Carry
+    jz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    js FAILURE
+    cmp t2, 0x63A8
+    jne FAILURE
 
     sub t2, t0, t1      ; t2 = 0xF1AC, flags: Sign, Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    jns FAILURE
+    pushf
+    cmp t2, 0xF1AC
+    jne FAILURE
+    popf
 
     subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: None
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp t2, 0x71AA
+    jne FAILURE
+    popf
 
     subb t2, t2, 0x8001 ; t2 = 0xF1A9, flags: oVerflow, Sign, Carry
+    jz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    jns FAILURE
+    pushf
+    cmp t2, 0xF1A9
+    jne FAILURE
+    popf
 
     subb t3, t2, zero   ; t3 = 0xF1A8, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp t3, 0xF1A8
+    jne FAILURE
 
     xor t3, t3, t3      ; t3 = 0x0000, flags: Zero
-
-    ; TODO: Do rest of manual test
+    jnz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp t3, zero
+    jne FAILURE
 
 
     mov t0, 0x0002
@@ -269,7 +411,12 @@ AUTOMATED_TEST:
     jmp SUCCESS
 
 
+TERMINAL_ADDR = 0xFF40
+
 FAILURE:
+    mov a0, "F"
+    mov [TERMINAL_ADDR], a0
+
     mov t0, [FAILURE_CAUSE]
     mov t1, 0xFFFF
     mov t2, 0xFFFF
@@ -293,8 +440,6 @@ FAILURE:
     mov v0, .loop
     jmp v0
 
-
-TERMINAL_ADDR = 0xFF40
 SUCCESS:
     ; TODO: Improve success message
     mov a0, "K"
