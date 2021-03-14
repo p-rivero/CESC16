@@ -1,3 +1,4 @@
 Assembly/*.exe
 Assembly/*.preprocessed
 Assembly/*.hex
+Assembly/Tools/GenerateSymbols
