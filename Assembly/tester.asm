@@ -415,7 +415,7 @@ TERMINAL_ADDR = 0xFF40
 
 FAILURE:
     mov a0, "F"
-    mov [TERMINAL_ADDR], a0
+    call Output_char
 
     mov t0, [FAILURE_CAUSE]
     mov t1, 0xFFFF
@@ -442,8 +442,10 @@ FAILURE:
 
 SUCCESS:
     ; TODO: Improve success message
+    mov a0, "O"
+    call Output_char
     mov a0, "K"
-    mov [TERMINAL_ADDR], a0
+    call Output_char
 
     ; Make checkerboard pattern to indicate success
     mov t0, 0x0000
@@ -462,3 +464,11 @@ SUCCESS:
     mov v0, 0x0000
     mov sp, 0xFFFF
     jmp pc
+
+
+Output_char:
+    test [TERMINAL_ADDR]    ; Read flag
+    jnz Output_char         ; Poll until it's 0 (terminal ready)
+    
+    mov [TERMINAL_ADDR], a0     ; Send char to terminal
+    ret
