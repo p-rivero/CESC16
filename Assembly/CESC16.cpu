@@ -2,6 +2,9 @@
 #define _RULEDEF
 ; Include ruledef file only once
 
+#define OS_RAM_SZ 0x100     ; 256 bytes
+#define CALL_GATE_ADDR 0    ; todo
+
 #subruledef REG {
     zero => 0x0
     sp   => 0x1
@@ -69,7 +72,11 @@
     Arg =>  0
 }
 #subruledef JMP_ADDR {
-    skip({Off: i16})   =>  pc+Off+1  ; Skips a number of instructions
+    #ifdef RAM_PROGRAM
+        skip({Off: i16})   =>  pc+(Off+1)*2 ; Skips a number of instructions (RAM)
+    #else 
+        skip({Off: i16})   =>  pc+Off+1  ; Skips a number of instructions (ROM)
+    #endif
     {Imm: u16}   =>   Imm
 }
 
@@ -197,11 +204,18 @@
 }
 
 ; Utilities
-#define sizeof(Begin) (pc - Begin)*2    ; Returns the data size between Begin and the current spot
+#ifdef RAM_PROGRAM
+    #define sizeof(Begin) (pc - Begin)    ; Returns the data size between Begin and the current spot (RAM)
+#else 
+    #define sizeof(Begin) (pc - Begin)*2  ; Returns the data size between Begin and the current spot (ROM)
+#endif
+
 #define progmem(Begin, End) #res (End - Begin)*2    ; Reserve space to fit program memory between Begin and End
 #define str(text)   #d text, "\0"       ; Remember to use "#align 32" afterwards
 
 ; Banks
+#ifndef RAM_PROGRAM
+; BANKS FOR OS (ROM)
 #bankdef program {
     #addr 0
     #size 0x10000   ; 64k
@@ -213,6 +227,25 @@
     #size 0x10000   ; 64k
     #bits 16
 }
+
+#else
+; BANKS FOR USER PROGRAMS (RAM)
+#bankdef program_labels {
+    #addr 0
+    #size 0x10000   ; 64k
+    #bits 32
+}
+#bankdef mem {
+    #addr OS_RAM_SZ ; Reserve memory for OS global variables
+    #size 0x10000   ; 64k
+    #bits 16
+    #outp 0
+}
+#endif
+
+#ifdef RAM_PROGRAM
+    #include "OS/symbols.inc"
+#endif
 
 ; End ruledef
 #endif
