@@ -80,38 +80,22 @@
     {Imm: u16}   =>   Imm
 }
 
-; Instruction definitions needed for macros
-#define _MOV_REG(rD, rA)            0x00 @ rD`4 @ rA`4 @ 0x0000
-#define _ALU_REG(op, rD, rA, rB)    0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
-#define _ALU_IMM(op, rD, rA, Imm)   0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
-#define _ALU_DIR(op, rD, rA, Addr)  0b01000 @ op`3 @ rD`4 @ rA`4 @ Addr
-#define _ALU_IND(op, rD, rA, rB)    0b01001 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
-#define _ALU_IDX(op, rD, rA, Imm)   0b01010 @ op`3 @ rD`4 @ rA`4 @ Imm
-
-#define _MOV_IDX_A(rD, rA, Imm)     0x50 @ rD`4 @ rA`4 @ Imm
-#define _MOV_IDX_D(rB, rA, Imm)     0x70 @ rB`4 @ rA`4 @ Imm
-
-#define _MOVB(rD, rA, Imm)          0x80 @ rD`4 @ rA`4 @ Imm
-#define _SWAP(rD, rA, Imm)          0x81 @ rD`4 @ rA`4 @ Imm
-#define _PEEK(rD, rA, Imm, W)       0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
-
-
 #ruledef INSTRUCTIONS {
     ; ALU
-    mov {rD: REG}, {rA: REG} => _MOV_REG(rD, rA)
-    {op: ALU_OP} {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(op, rD, rA, rB)
+    mov {rD: REG}, {rA: REG} => 0x00 @ rD`4 @ rA`4 @ 0x0000
+    {op: ALU_OP} {rD: REG}, {rA: REG}, {rB: REG} => 0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 
     mov {rD: REG}, {Imm: i16} => 0x08 @ rD`4 @ 0x0 @ Imm
-    {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => _ALU_IMM(op, rD, rA, Imm)
+    {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => 0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
     
     mov {rD: REG}, [{Addr: u16}] => 0x40 @ rD`4 @ 0x0 @ Addr
-    {op: ALU_OP} {rD: REG}, {rA: REG}, [{Addr: u16}] => _ALU_DIR(op, rD, rA, Addr)
+    {op: ALU_OP} {rD: REG}, {rA: REG}, [{Addr: u16}] => 0b01000 @ op`3 @ rD`4 @ rA`4 @ Addr
     
     mov {rD: REG}, [{rB: REG}] => 0x48 @ rD`4 @ 0x0000 @ rB`4
-    {op: ALU_OP} {rD: REG}, {rA: REG}, [{rB: REG}] => _ALU_IND(op, rD, rA, rB)
+    {op: ALU_OP} {rD: REG}, {rA: REG}, [{rB: REG}] => 0b01001 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 
-    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  _MOV_IDX_A(rD, rA, Imm)
-    {op: ALU_OP} {rD: REG}, [{rA: REG}+{Imm: i16}] => _ALU_IDX(op, rD, rA, Imm)
+    mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  0x50 @ rD`4 @ rA`4 @ Imm
+    {op: ALU_OP} {rD: REG}, [{rA: REG}+{Imm: i16}] => 0b01010 @ op`3 @ rD`4 @ rA`4 @ Imm
 
     mov [{Addr: u16}], {rA: REG} => 0x600 @ rA`4 @ Addr
     {op: ALU_OP} [{Addr: u16}], {rA: REG} => 0b01100 @ op`3 @ 0x0 @ rA`4 @ Addr
@@ -119,7 +103,7 @@
     mov [{rA: REG}], {rB: REG} => 0x680 @ rA`4 @ 0x000 @ rB`4
     {op: ALU_OP} [{rA: REG}], {rB: REG} => 0b01101 @ op`3 @ 0x0 @ rA`4 @ 0x000 @ rB`4
 
-    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  _MOV_IDX_D(rB, rA, Imm)
+    mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  0x70 @ rB`4 @ rA`4 @ Imm
     {op: ALU_OP} [{rA: REG}+{Imm: i16}], {rB: REG} => 0b01110 @ op`3 @ rB`4 @ rA`4 @ Imm
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
@@ -127,9 +111,9 @@
     sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
     ; Memory
-    movb {rD: REG}, [{rA: REG}+{Imm: i16}]  => _MOVB(rD, rA, Imm)
-    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => _SWAP(rD, rA, Imm)
-    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => _PEEK(rD, rA, Imm, W)
+    movb {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0x80 @ rD`4 @ rA`4 @ Imm
+    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0x81 @ rD`4 @ rA`4 @ Imm
+    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => 0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
     
     push {rB: REG}  => 0x8401000 @ rB`4
     push {Imm: i16} => 0x8501 @ Imm
@@ -154,53 +138,53 @@
 }
 
 #ruledef MACROS {
-    movf {rD: REG}, {rA: REG}     => _ALU_REG(0b100, rD, 0, rA)     ; Expands to: add rD, zero, rA
-    movf {rD: REG}, [{Addr: u16}] => _ALU_DIR(0b100, rD, 0, Addr)   ; Expands to: add rD, zero, [Addr16]
-    movf {rD: REG}, {Imm: i16}    => _ALU_IMM(0b100, rD, 0, Imm)    ; Expands to: add rD, zero, Imm16
-    movf {rD: REG}, [{rA: REG}]   => _ALU_IND(0b100, rD, 0, rA)     ; Expands to: add rD, zero, [rA]
+    movf {rD: REG}, {rA: REG}               => asm { add {rD}, zero, {rA} }
+    movf {rD: REG}, [{Addr: u16}]           => asm { add {rD}, zero, [Addr] }
+    movf {rD: REG}, {Imm: i16}              => asm { add {rD}, zero, Imm }
+    movf {rD: REG}, [{rA: REG}]             => asm { add {rD}, zero, [{rA}] }
+    movf {rD: REG}, [{rA: REG}+{Imm: i16}]  => asm { mov {rD}, [{rA}+Imm] } @ asm { test {rD} }
 
-    movb {rD: REG}, [{Imm: i16}]            => _MOVB(rD, 0, Imm)    ; Expands to: movb rD, [zero+Imm16]
-    movb {rD: REG}, [{rA: REG}]             => _MOVB(rD, rA, 0)     ; Expands to: movb rD, [rA+0]
-    movb [{rA: REG}+{Imm: i16}], {rB: REG}  => _MOV_IDX_D(rB, rA, Imm)  ; Same as regular store
-    movb [{Imm: i16}], {rB: REG}            => _MOV_IDX_D(rB, 0, Imm)
-    movb [{rA: REG}], {rB: REG}             => _MOV_IDX_D(rB, rA, 0)
+    movb {rD: REG}, [{Imm: i16}]            => asm { movb {rD}, [zero+Imm] }
+    movb {rD: REG}, [{rA: REG}]             => asm { movb {rD}, [{rA}+0] }
+    movb [{rA: REG}+{Imm: i16}], {rB: REG}  => asm { mov [{rA}+Imm], {rB} }
+    movb [{Imm: i16}], {rB: REG}            => asm { mov [Imm], {rB} }
+    movb [{rA: REG}], {rB: REG}             => asm { mov [{rA}], {rB} }
     
-    not  {rD: REG}, {rA: REG}   =>  _ALU_IMM(0b011, rD, rA, 0xFFFF) ; Expands to: xor rD, rA, 0xFFFF
-    nand {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b001, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: and rD, rA, rB; xor rD, rD, 0xFFFF
-    nor  {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b010, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: or rD, rA, rB; xor rD, rD, 0xFFFF
-    xnor {rD: REG}, {rA: REG}, {rB: REG} => _ALU_REG(0b011, rD, rA, rB) @ _ALU_IMM(0b011, rD, rD, 0xFFFF) ; Expands to: xor rD, rA, rB; xor rD, rD, 0xFFFF
+    not  {rD: REG}, {rA: REG}               => asm { xor {rD}, {rA}, 0xFFFF }
+    nand {rD: REG}, {rA: REG}, {rB: REG}    => asm { and {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
+    nor  {rD: REG}, {rA: REG}, {rB: REG}    => asm { or {rD}, {rA}, {rB} }  @ asm { not {rD}, {rD} }
+    xnor {rD: REG}, {rA: REG}, {rB: REG}    => asm { xor {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
     
-    sllc {rD: REG}, {rA: REG}   =>  _ALU_REG(0b110, rD, rA, rA)  ; Expands to: addc rD, rA, rA
+    sllc {rD: REG}, {rA: REG}               => asm { addc {rD}, {rA}, {rA} }
     
-    ; lw   {rD: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_A(rD, rA, Imm)
-    ; sw   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)
-    ; lb   {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm)
-    ; lbu  {rD: REG}, {Imm: i16}({rA: REG})   => _MOVB(rD, rA, Imm) @ _ALU_IMM(0b001, rD, rD, 0x00FF) ; Expands to: lb rD, Imm16(rA); and rD, rD, 0x00FF
-    ; sb   {rB: REG}, {Imm: i16}({rA: REG})   => _MOV_IDX_D(rB, rA, Imm)  ; Expands to: sw rD, Imm16(rA)
+    ; lw   {rD: REG}, {Imm: i16}({rA: REG})   => asm { mov {rD}, [{rA}+Imm] }
+    ; sw   {rB: REG}, {Imm: i16}({rA: REG})   => asm { mov [{rA}+Imm], {rB} }
+    ; lb   {rD: REG}, {Imm: i16}({rA: REG})   => asm { movb {rD}, [{rA}+Imm] }
+    ; lbu  {rD: REG}, {Imm: i16}({rA: REG})   => asm { movb {rD}, [{rA}+Imm] } @ asm { and {rD}, {rD}, 0x00FF }
+    ; sb   {rB: REG}, {Imm: i16}({rA: REG})   => asm { mov [{rA}+Imm], {rB} }
     
-    ; No-Temp Swap. Expands to: xor rA, rA, rB; xor rB, rA, rB; xor rA, rA, rB
-    swap {rA: REG}, {rA: REG}       => _ALU_REG(0b011, rA, rA, rB) @  _ALU_REG(0b011, rB, rA, rB) @ _ALU_REG(0b011, rA, rA, rB)
-    swap {rD: REG}, [{Imm: i16}]    => _SWAP(rD, 0, Imm)
-    swap {rD: REG}, [{rA: REG}]     => _SWAP(rD, rA, 0x0000)
-    peek {rD: REG}, [{Imm: i16}], {W: PEEK_OPTIONS} => _PEEK(rD, 0, Imm, W)
-    peek {rD: REG}, [{rA: REG}],  {W: PEEK_OPTIONS} => _PEEK(rD, rA, 0x0000, W)
+    swap {rA: REG}, {rB: REG}   => asm { xor {rA},{rA},{rB} } @ asm { xor {rB},{rA},{rB} } @ asm { xor {rA},{rA},{rB} }
+    swap {rD: REG}, [{Imm: i16}]            => asm { swap {rD}, [zero+Imm] }
+    swap {rD: REG}, [{rA: REG}]             => asm { swap {rD}, [{rA}+0] }
+    peek {rD: REG}, [{Imm: i16}], {W: PEEK_OPTIONS} => asm { peek {rD}, [zero+Imm], {W} }
+    peek {rD: REG}, [{rA: REG}],  {W: PEEK_OPTIONS} => asm { peek {rD}, [{rA}+0], {W} }
     
-    cmp {rA: REG}, {rB: REG}  => _ALU_REG(0b101, 0, rA, rB)   ; Expands to: sub zero, rA, rB
-    cmp {rA: REG}, {Imm: i16} => _ALU_IMM(0b101, 0, rA, Imm)  ; Expands to: sub zero, rA, Imm
+    cmp {rA: REG}, {rB: REG}                => asm { sub zero, {rA}, {rB} }
+    cmp {rA: REG}, {Imm: i16}               => asm { sub zero, {rA}, Imm }
     
-    mask {rA: REG}, {rB: REG}     => _ALU_REG(0b001, 0, rA, rB)   ; Expands to: and zero, rA, rB
-    mask {rA: REG}, {Imm: i16}    => _ALU_IMM(0b001, 0, rA, Imm)  ; Expands to: and zero, rA, Imm
-    mask {rA: REG}, [{Addr: u16}] => _ALU_DIR(0b001, 0, rA, Addr) ; Expands to: and zero, rA, [Addr]
-    mask {rA: REG}, [{rB: REG}]   => _ALU_IND(0b001, 0, rA, rB)   ; Expands to: and zero, rA, [rB]
+    mask {rA: REG}, {rB: REG}               => asm { and zero, {rA}, {rB} }
+    mask {rA: REG}, {Imm: i16}              => asm { and zero, {rA}, Imm }
+    mask {rA: REG}, [{Addr: u16}]           => asm { and zero, {rA}, [Addr] }
+    mask {rA: REG}, [{rB: REG}]             => asm { and zero, {rA}, [{rB}] }
     
-    test {rA: REG}              => _ALU_REG(0b100, 0, 0, rA)    ; Expands to: add zero, zero, rA
-    test [{Addr: u16}]          => _ALU_DIR(0b100, 0, 0, Addr)  ; Expands to: add zero, zero, [Addr16]
-    test [{rA: REG}]            => _ALU_IND(0b100, 0, 0, rA)    ; Expands to: add zero, zero, [rA]
-    test [{rA: REG}+{Imm: i16}] => _ALU_IDX(0b100, 0, rA, Imm)  ; Expands to: add zero, [rA+Imm16]
+    test {rA: REG}                          => asm { movf zero, {rA} }
+    test [{Addr: u16}]                      => asm { movf zero, [Addr] }
+    test [{rA: REG}]                        => asm { movf zero, [{rA}] }
+    test [{rA: REG}+{Imm: i16}]             => asm { add zero, [{rA}+Imm] }
     
-    clrf => _ALU_IMM(0b100, 0, 0, 0x0001)    ; Expands to: add zero, zero, 0x0001
+    clrf    => asm { movf zero, 0x0001 }
     
-    nop => _MOV_REG(0, 0)   ; Encoded as 0x00000000, Expands to: mov zero, zero
+    nop     => asm { mov zero, zero }
 }
 
 ; Utilities
