@@ -84,8 +84,17 @@ MANUAL_TEST:
     
 
     ; Test unconditional and conditional jumps
-    ; TODO
+    mov t0, 0x5555
+    jmp skip(1)
+    mov t0, 0xFFFF      ; Not executed
 
+    add t0, t0, 0xAAAB  ; t0 = 0x0000, flags: Zero, Carry
+    jnz skip(2)
+    mov a0, 0x1234      ; a0 = 0x0000
+    jc skip(1)
+    jmp FAILURE         ; Not executed
+    ; Todo: test JMP and JZ more thoroughly
+    
 
     ; Test load/store + memory operations
     ; TODO
@@ -424,6 +433,16 @@ AUTOMATED_TEST:
 
     mov t0, 0x0010
     mov [FAILURE_CAUSE], t0
+    ; Test jumps
+    mov sp, 0x8000
+    call TEST_JUMPS ; Call the jumps tester subroutine
+
+    cmp sp, 0x8000  ; Make sure the subroutine has deallocated all its memory
+    jne FAILURE
+
+
+    mov t0, 0x0020
+    mov [FAILURE_CAUSE], t0
     ; Test I/O
     ; TODO
 
@@ -498,4 +517,159 @@ Output_char:
     jnz Output_char         ; Poll until it's 0 (terminal ready)
     
     mov [TERMINAL_ADDR], a0     ; Send char to terminal
+    ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; CODE FROM THE FORMER TEST_JUMPS.ASM
+
+; Data in program memory:
+args: ; Arguments to be tested
+#d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
+.size = sizeof(args)
+
+outputs: ; Expected outputs
+#d16    0x1559,    0x1559,      0x1559,     0x0376,     0x0376,      0x1d16,     0x1a96,     0x3d0a,     0x236a,     0x24ea,     0x3d0a,      0x0376
+.size = sizeof(outputs)
+
+progmem_end:
+
+
+; User program entry point
+TEST_JUMPS:
+.main:
+    push s0
+    push s1
+    push s2
+
+    ; Copy progmem to data memory (stack)
+    sub sp, sp, args.size+outputs.size  ; Reserve space in stack
+    mov a0, args
+    mov a1, progmem_end
+    mov a2, sp              ; Destination is the stack
+    syscall MEMORY.MemCopy
+    
+    mov s0, sp  ; Pointer to start of arguments
+    add s2, sp, args.size   ; End of arguments
+    mov s1, s2  ; Pointer to start of outputs
+
+..loop:
+    mov a0, [s0]    ; Load arguments
+    mov a1, [s0+1]
+    call .test_cond ; Call test
+    
+    mov t0, [s1]    ; Load output
+    cmp v0, t0
+    jne FAILURE     ; If outputs don't match, display error
+    
+    add s0, s0, 2
+    add s1, s1, 1
+    
+    cmp s0, s2      ; Check if all tests have been performed
+    jne ..loop
+    
+
+    ; This point is reached only if all the jump tests succeed
+    add sp, sp, args.size + outputs.size    ; Free space in stack
+    pop s2
+    pop s1
+    pop s0
+    ret     ; Return to the main tester program
+
+
+; Arguments: a0, a1 are tests
+; Returns: v0 is the test result
+.test_cond:     
+    mov v0, 0
+    
+    cmp a0, a1
+    jz skip(1)
+    or v0, v0, 0x0001
+    
+    cmp a0, a1
+    jnz skip(1)
+    or v0, v0, 0x0002
+    
+    cmp a0, a1
+    jc skip(1)
+    or v0, v0, 0x0004
+    
+    cmp a0, a1
+    jnc skip(1)
+    or v0, v0, 0x0008
+    
+    cmp a0, a1
+    jbe skip(1)
+    or v0, v0, 0x0010
+    
+    cmp a0, a1
+    jl skip(1)
+    or v0, v0, 0x0020
+    
+    cmp a0, a1
+    jle skip(1)
+    or v0, v0, 0x0040
+
+    cmp a0, a1
+    jo skip(1)
+    or v0, v0, 0x0080
+
+    cmp a0, a1
+    jno skip(1)
+    or v0, v0, 0x0100
+
+    cmp a0, a1
+    js skip(1)
+    or v0, v0, 0x0200
+
+    cmp a0, a1
+    jns skip(1)
+    or v0, v0, 0x0400
+
+    cmp a0, a1
+    jg skip(1)
+    or v0, v0, 0x0800
+
+    cmp a0, a1
+    jge skip(1)
+    or v0, v0, 0x1000
+
+    cmp a0, a1
+    ja skip(1)
+    or v0, v0, 0x2000
+    
+    xor v0, v0, 0x3FFF  ; Invert the results (convert to active high)
+    
+    ret
+
+
+; From the OS libraries
+MEMORY:
+.MemCopy:
+    cmp a1, a0      ; If (address of last element) <= (address of first element),
+    jbe ..return    ; then return (nothing to copy)
+    
+..loop:
+    peek v0, [a0+0], Up     ; Read upper 16-bit word / opcode
+    mov [a2], v0            ; Store to lower address (big endian)
+    peek v0, [a0+0], Low    ; Read lower 16-bit word / argument
+    mov [a2+1], v0          ; Store to upper address (big endian)
+    add a0, a0, 1           ; Increment program memory pointer
+    add a2, a2, 2           ; Increment data memory pointer
+    
+    cmp a0, a1              ; Keep looping until there are no more words
+    jne ..loop
+    
+..return:
     ret
