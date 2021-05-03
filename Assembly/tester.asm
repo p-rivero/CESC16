@@ -78,17 +78,20 @@ MANUAL_TEST:
     subb t2, t2, 0x8001 ; t2 = 0xF1A9, flags: oVerflow, Sign, Carry
     subb t3, t2, zero   ; t3 = 0xF1A8, flags: Sign
     xor t3, t3, t3      ; t3 = 0x0000, flags: Zero
+    sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
+    srl s4, t4, 15      ; s4 = 0x0001, flags: none
+    sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
+    
+
+    ; Test unconditional and conditional jumps
+    ; TODO
 
 
-    ; Test load/store
+    ; Test load/store + memory operations
     ; TODO
 
 
     ; Test basic I/O
-    ; TODO
-    
-
-    ; Test unconditional and conditional jumps
     ; TODO
 
 
@@ -358,6 +361,30 @@ AUTOMATED_TEST:
     cmp t3, zero
     jne FAILURE
 
+    sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp t4, 0x8000
+    jne FAILURE
+
+    srl s4, t4, 15      ; s4 = 0x0001, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp s4, 0x0001
+    jne FAILURE
+
+    sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp s4, 0xFFFF
+    jne FAILURE
+
 
     mov t0, 0x0002
     mov [FAILURE_CAUSE], t0
@@ -414,9 +441,6 @@ AUTOMATED_TEST:
 TERMINAL_ADDR = 0xFF40
 
 FAILURE:
-    mov a0, "F"
-    call Output_char
-
     mov t0, [FAILURE_CAUSE]
     mov t1, 0xFFFF
     mov t2, 0xFFFF
@@ -427,11 +451,14 @@ FAILURE:
     mov s2, 0xFFFF
     mov s3, 0xFFFF
     mov s4, 0xFFFF
-    mov a0, 0xFFFF
     mov a1, 0xFFFF
     mov a2, 0xFFFF
     mov v0, 0xFFFF
     mov sp, 0xFFFF
+
+    mov a0, "F"
+    call Output_char
+    mov a0, 0xFFFF
 
     ; Infinite loop. The first jump should be enough, but it could fail in very high clock speeds
 .loop:
@@ -441,12 +468,6 @@ FAILURE:
     jmp v0
 
 SUCCESS:
-    ; TODO: Improve success message
-    mov a0, "O"
-    call Output_char
-    mov a0, "K"
-    call Output_char
-
     ; Make checkerboard pattern to indicate success
     mov t0, 0x0000
     mov t1, 0xFFFF
@@ -458,12 +479,18 @@ SUCCESS:
     mov s2, 0x0000
     mov s3, 0x0000
     mov s4, 0xFFFF
-    mov a0, 0xFFFF
     mov a1, 0x0000
     mov a2, 0x0000
     mov v0, 0x0000
     mov sp, 0xFFFF
     jmp pc
+
+    ; TODO: Improve success message
+    mov a0, "O"
+    call Output_char
+    mov a0, "K"
+    call Output_char
+    mov a0, 0xFFFF
 
 
 Output_char:
