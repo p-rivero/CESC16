@@ -114,8 +114,12 @@ AUTOMATED_TEST:
 
     mov t0, 0x0100
     mov [FAILURE_CAUSE], t0
-    ; Test conditional jumps
-    ; TODO: Copy and delete test_jumps.asm
+; Test conditional jumps
+    mov sp, 0x8000
+    call TEST_JUMPS ; Call the jumps tester subroutine
+
+    cmp sp, 0x8000  ; Make sure the subroutine has deallocated all its memory
+    jne FAILURE
 
 
     mov t0, 0x0001
@@ -397,57 +401,47 @@ AUTOMATED_TEST:
 
     mov t0, 0x0002
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (direct)
+; Test ALU addressing modes (direct)
     ; TODO
 
 
     mov t0, 0x0003
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (indirect)
+; Test ALU addressing modes (indirect)
     ; TODO
     
 
     mov t0, 0x0004
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (indexed)
+; Test ALU addressing modes (indexed)
     ; TODO
 
 
     mov t0, 0x0005
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (direct destination)
+; Test ALU addressing modes (direct destination)
     ; TODO
 
 
     mov t0, 0x0006
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (indirect destination)
+; Test ALU addressing modes (indirect destination)
     ; TODO
 
 
     mov t0, 0x0007
     mov [FAILURE_CAUSE], t0
-    ; Test ALU addressing modes (indexed destination)
+; Test ALU addressing modes (indexed destination)
     ; TODO
 
 
     mov t0, 0x0010
     mov [FAILURE_CAUSE], t0
-    ; Test jumps
-    mov sp, 0x8000
-    call TEST_JUMPS ; Call the jumps tester subroutine
-
-    cmp sp, 0x8000  ; Make sure the subroutine has deallocated all its memory
-    jne FAILURE
-
-
-    mov t0, 0x0020
-    mov [FAILURE_CAUSE], t0
-    ; Test I/O
+; Test I/O
     ; TODO
 
 
-    ; Copy to RAM and repeat
+; Copy to RAM and repeat
     ; TODO: Jump addresses need to be recalculated
     ; todo  Change error messages
     ; todo  syscall FAILURE instead of jumping
@@ -501,38 +495,26 @@ SUCCESS:
     mov a1, 0x0000
     mov a2, 0x0000
     mov v0, 0x0000
-    mov sp, 0xFFFF
-    jmp pc
+    mov sp, 0x8000
 
     ; TODO: Improve success message
     mov a0, "O"
     call Output_char
     mov a0, "K"
     call Output_char
+    
+    mov sp, 0xFFFF
     mov a0, 0xFFFF
 
+    jmp pc
 
-Output_char:
-    test [TERMINAL_ADDR]    ; Read flag
-    jnz Output_char         ; Poll until it's 0 (terminal ready)
     
-    mov [TERMINAL_ADDR], a0     ; Send char to terminal
-    ret
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-; CODE FROM THE FORMER TEST_JUMPS.ASM
+; CODE FROM THE FORMER JUMPS TEST PROGRAM (TEST_JUMPS.ASM)
 
 ; Data in program memory:
 args: ; Arguments to be tested
@@ -654,7 +636,8 @@ TEST_JUMPS:
     ret
 
 
-; From the OS libraries
+; CODE FROM THE OS LIBRARIES:
+
 MEMORY:
 .MemCopy:
     cmp a1, a0      ; If (address of last element) <= (address of first element),
@@ -672,4 +655,11 @@ MEMORY:
     jne ..loop
     
 ..return:
+    ret
+
+Output_char:
+    test [TERMINAL_ADDR]    ; Read flag
+    jnz Output_char         ; Poll until it's 0 (terminal ready)
+    
+    mov [TERMINAL_ADDR], a0     ; Send char to terminal
     ret
