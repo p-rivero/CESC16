@@ -1,6 +1,13 @@
 #include "CESC16.cpu"
 
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
+;#define STRICT_FLG    ; Remove this comment to force the correct flag values, even for undefined flags
+
+#ifdef STRICT_FLG
+    #define FAILURE_UNDEFINED FAILURE   ; Mismatch on undefined flag jumps to FAILURE
+#else
+    #define FAILURE_UNDEFINED skip(0)   ; Mismatch on undefined flag continues execution
+#endif
 
 #bank data
 FAILURE_CAUSE: #res 1
@@ -48,6 +55,7 @@ MANUAL_TEST:
     mov a2, 0x0800
     mov v0, 0x1000
     mov sp, 0x8001
+    mov zero, 0x2000    ; This shouldn't do anything
 
     ; Test basic ALU instructions and flags
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
@@ -81,17 +89,18 @@ MANUAL_TEST:
     sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
     srl s4, t4, 15      ; s4 = 0x0001, flags: none
     sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
+    sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
     
 
     ; Test unconditional and conditional jumps
     mov t0, 0x5555
-    jmp skip(1)
+    jmp skip(1)         ; Taken
     mov t0, 0xFFFF      ; Not executed
 
     add t0, t0, 0xAAAB  ; t0 = 0x0000, flags: Zero, Carry
-    jnz skip(2)
-    mov a0, 0x1234      ; a0 = 0x0000
-    jc skip(1)
+    jnz skip(2)         ; Not taken
+    mov a0, 0x1234      ; a0 = 0x1234
+    jc skip(1)          ; Taken
     jmp FAILURE         ; Not executed
     ; Todo: test JMP and JZ more thoroughly
     
@@ -144,8 +153,8 @@ AUTOMATED_TEST:
 
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
     jz FAILURE
-    jnc FAILURE
-    jo FAILURE
+    jnc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp t0, 0x0003
     jne FAILURE
@@ -179,31 +188,31 @@ AUTOMATED_TEST:
     sll sp, sp, 3       ; sp = 0x8000, flags: Sign
     jz FAILURE
     jc FAILURE
-    jo FAILURE
+    jo FAILURE_UNDEFINED
     jns FAILURE
     cmp sp, 0x8000
     jne FAILURE
 
     sra v0, sp, 9       ; v0 = 0xFFC0, flags: Sign
     jz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     jns FAILURE
     cmp v0, 0xFFC0
     jne FAILURE
 
     srl v0, sp, 9       ; v0 = 0x0040, flags: none
     jz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp v0, 0x0040
     jne FAILURE
 
     sra v0, v0, 1       ; v0 = 0x0020, flags: none
     jz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp v0, 0x0020
     jne FAILURE
@@ -211,7 +220,7 @@ AUTOMATED_TEST:
     sll sp, sp, 1       ; sp = 0x0000, flags: Zero, Carry
     jnz FAILURE
     jnc FAILURE
-    jo FAILURE
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp sp, zero
     jne FAILURE
@@ -226,40 +235,40 @@ AUTOMATED_TEST:
 
     sra v0, sp, 1       ; v0 = 0x0000, flags: Zero (Carry)
     jnz FAILURE
-    jnc FAILURE
-    jo FAILURE
+    jnc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp v0, zero
     jne FAILURE
 
     srl sp, sp, 1       ; sp = 0x0000, flags: Zero
     jnz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp sp, zero
     jne FAILURE
 
     mov sp, 0x1234      ; sp = 0x1234, flags unchanged
     jnz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp sp, 0x1234
     jne FAILURE
 
     mov v0, sp          ; v0 = 0x1234, flags unchanged
     jnz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp v0, sp
     jne FAILURE
 
     push 0b1111         ; sp = 0x1233, flags unchanged
     jnz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp sp, 0x1233
     jne FAILURE
@@ -300,8 +309,8 @@ AUTOMATED_TEST:
 
     xor t1, v0, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
     jz FAILURE
-    jnc FAILURE
-    jno FAILURE
+    jnc FAILURE_UNDEFINED
+    jno FAILURE_UNDEFINED
     jns FAILURE
     cmp t1, 0xB8FE
     jne FAILURE
@@ -314,8 +323,8 @@ AUTOMATED_TEST:
 
     xor t1, v0, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
     jz FAILURE
-    jnc FAILURE
-    jno FAILURE
+    jnc FAILURE_UNDEFINED
+    jno FAILURE_UNDEFINED
     jns FAILURE
     cmp t1, 0xB8FE
     jne FAILURE
@@ -368,8 +377,8 @@ AUTOMATED_TEST:
 
     xor t3, t3, t3      ; t3 = 0x0000, flags: Zero
     jnz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp t3, zero
     jne FAILURE
@@ -377,26 +386,35 @@ AUTOMATED_TEST:
     sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
     jz FAILURE
     jc FAILURE
-    jo FAILURE
+    jo FAILURE_UNDEFINED
     jns FAILURE
     cmp t4, 0x8000
     jne FAILURE
 
     srl s4, t4, 15      ; s4 = 0x0001, flags: none
     jz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     js FAILURE
     cmp s4, 0x0001
     jne FAILURE
 
     sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
     jz FAILURE
-    jc FAILURE
-    jo FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
     jns FAILURE
     cmp s4, 0xFFFF
     jne FAILURE
+    
+    sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
+    jz FAILURE
+    jnc FAILURE
+    jno FAILURE
+    jns FAILURE
+    cmp t0, 0x8000
+    jne FAILURE
+
 
 
     mov t0, 0x0002
