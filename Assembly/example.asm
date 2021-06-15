@@ -45,18 +45,14 @@ global_label:
     jmp another_label
     
 .local_label:
-    mov [num], t1           ; Stores the contents of t1 to the absolute address "num" (global label)
-    sw t1, num(zero)        ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+    mov [num], t1           ; Stores the contents of t1 to the absolute address "num" (global label). Identical to "sw t1, num(zero)"
 
-    mov s2, [num]           ; Loads the contents stored at absoulte address "num" into s2 (safe register).
-    lw s2, num(zero)        ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+    mov s2, [num]           ; Loads the contents stored at absoulte address "num" into s2 (safe register). Identical to "lw s2, num(zero)"
     
     mov a0, vector          ; Loads the ADDRESS of vector[0] into a0 (argument register)
-    mov a1, [a0+2]          ; Loads the CONTENTS of vector[2] into a1 (argument register)
-    lw a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+    mov a1, [a0+2]          ; Loads the CONTENTS of vector[2] into a1 (argument register). Identical to "lw a1, 2(a0)"
 
-    movb a1, [a0+2]         ; Move byte: loads THE LOWER 8 BITS of vector[2] into a1
-    lb a1, 2(a0)            ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+    movb a1, [a0+2]         ; Move byte: loads THE LOWER 8 BITS of vector[2] into a1. Identical to "lb a1, 2(a0)"
 
     add [a0+1], t0          ; vector[1] += t0. There is no equivalent instruction in MIPS/RISC-V syntax
     
@@ -74,8 +70,7 @@ another_label:              ; From this point, .local_const and .local_label are
     jmp .loop               ; Infinite loop
     
     mov t0, t1              ; Copy contents of t1 to t0
-    mov [result], t2        ; Store contents of t2 in the reserved space in data memory
-    sw t2, result(zero)     ; Alternative MIPS/RISC-V syntax. Identical to the previous instruction
+    mov [result], t2        ; Store contents of t2 in the reserved space in data memory. Identical to "sw t2, result(zero)"
     
     jmp global_label
     

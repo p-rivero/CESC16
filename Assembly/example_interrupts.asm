@@ -12,6 +12,12 @@ Sync:   #res 1
 
 #bank program
 
+str_done: str("DONE!\n")
+#align 32
+str_input: str("Got input: ")
+#align 32
+
+
 ; User program entry point
 MAIN_PROGRAM:
 .main:
@@ -36,6 +42,12 @@ MAIN_PROGRAM:
     test [Sync]     ; Even if main program is halted, keystrokes will still trigger
     jz ..wait       ; interrupts and call OUTPUT.char
     
+    mov a0, str_done
+    syscall OUTPUT.string_ROM
+    
+    ; Stay on an endless loop after finishing, comment out this line if you wish to detach the handlers and return
+    jmp pc
+    
     ; Remember to pop the old handlers in the correct order (stack = LIFO)
     syscall TIME.DetachInterrupt
     syscall INPUT.DetachInterrupt.Released
@@ -47,7 +59,12 @@ MAIN_PROGRAM:
 ; INTERRUPT HANDLERS:
 ; Routine that will get called whenever a key is pressed down. The ASCII is stored in a0
 .KeyP_Handler:
-    add a0, a0, 2
+    mov t0, a0      ; Store the ASCII of the key
+    mov a0, str_input
+    syscall OUTPUT.string_ROM
+    mov a0, t0      ; Restore the ASCII of the key
+    syscall OUTPUT.char
+    mov a0, "\n"    ; Print an endline
     syscall OUTPUT.char
     ret
     
