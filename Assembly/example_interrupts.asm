@@ -24,11 +24,8 @@ MAIN_PROGRAM:
     mov [Sync], zero ; Initialize variables
     
     ; Attach interrupt handlers (defined below). The old handlers get stored in the stack
-    mov a0, .KeyP_Handler
-    syscall INPUT.AttachInterrupt.Pressed
-    
-    mov a0, .KeyR_Handler
-    syscall INPUT.AttachInterrupt.Released
+    mov a0, .Key_Handler
+    syscall INPUT.AttachInterrupt
     
     mov a0, .TMR_Handler
     syscall TIME.AttachInterrupt
@@ -50,27 +47,20 @@ MAIN_PROGRAM:
     
     ; Remember to pop the old handlers in the correct order (stack = LIFO)
     syscall TIME.DetachInterrupt
-    syscall INPUT.DetachInterrupt.Released
-    syscall INPUT.DetachInterrupt.Pressed
+    syscall INPUT.DetachInterrupt
     
     ret
     
     
 ; INTERRUPT HANDLERS:
 ; Routine that will get called whenever a key is pressed down. The ASCII is stored in a0
-.KeyP_Handler:
+.Key_Handler:
     mov t0, a0      ; Store the ASCII of the key
     mov a0, str_input
     syscall OUTPUT.string_ROM
     mov a0, t0      ; Restore the ASCII of the key
     syscall OUTPUT.char
     mov a0, "\n"    ; Print an endline
-    syscall OUTPUT.char
-    ret
-    
-; Routine that will get called whenever a key is released. The ASCII is stored in a0
-.KeyR_Handler:
-    sub a0, a0, 2
     syscall OUTPUT.char
     ret
    

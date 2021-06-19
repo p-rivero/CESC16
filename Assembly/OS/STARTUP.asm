@@ -11,13 +11,13 @@ STARTUP:
     ; Initialize stack
     mov sp, INIT_STACK
     ; Reset interrupt handlers
-    mov [HANDLERS.KEY_PRESSED], zero
-    mov [HANDLERS.KEY_RELEASED], zero
+    mov [HANDLERS.KEYPRESS], zero
     mov [HANDLERS.TMR], zero
     
     ; Initialize I/O:
-    mov [KEYBOARD_ADDR], zero   ; Acknowledge any leftover input
-    syscall OUTPUT.Reset   ; Clear screen
+    mov t0, INPUT.RDY
+    mov [KEYBOARD_ADDR], t0 ; Acknowledge any leftover input
+    syscall OUTPUT.Reset    ; Clear screen
     
     ; User code execution
     call MAIN_PROGRAM
@@ -69,18 +69,15 @@ MAIN_INTERRUPT_HANDLER:
 .readKeyboard:
     movf a0, [KEYBOARD_ADDR]    ; Read from keyboard
     jz ..continue               ; If there was no input, don't do anything
-    mov [KEYBOARD_ADDR], zero   ; Else acknowledge input
+    mask a0, 0x80               ; Test busy flag (MSB)
+    jnz ..continue              ; If controller is busy, don't do anything
+    mov t0, INPUT.ACK
+    mov [KEYBOARD_ADDR], t0     ; Else acknowledge input
 
-    mask a0, INPUT.MASK_BREAK   ; Check if the key was pressed or released
-    jnz ..key_released
-    
-    ; Key was pressed down
-    call INPUT.Key_Pressed_Handler  ; Call the handler and continue
-    jmp ..continue
-    
-..key_released:
-    ; Key was released
-    call INPUT.Key_Released_Handler ; Call the handler and continue
+    call INPUT.Key_Handler      ; Call the user handler
+
+    mov t0, INPUT.RDY
+    mov [KEYBOARD_ADDR], t0     ; It's safe to be interrupted again by keyboard
 ..continue:
     
     ; Check other input sources (serial)
