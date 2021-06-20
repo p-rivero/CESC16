@@ -3,6 +3,22 @@
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
 ;#define STRICT_FLG    ; Remove this comment to force the correct flag values, even for undefined flags
 
+
+; Error codes: if the test fails, check the table below to see where it failed
+E_JUMPS = 0x0001    ; Automated jumps tester
+E_MEM   = 0x0001    ; Automated jumps tester
+E_ALU_1 = 0x0002    ; Basic ALU instructions and flags (section A)
+E_ALU_2 = 0x0002    ; Basic ALU instructions and flags (section B)
+E_O_DIR = 0x0003    ; ALU addressing modes (direct operand)
+E_O_IND = 0x0004    ; ALU addressing modes (indirect operand)
+E_O_IDX = 0x0005    ; ALU addressing modes (indexed operand)
+E_D_DIR = 0x0006    ; ALU addressing modes (direct operand)
+E_D_IND = 0x0007    ; ALU addressing modes (indirect operand)
+E_D_IDX = 0x0008    ; ALU addressing modes (indexed operand)
+E_IO    = 0x0009    ; Input and output
+
+
+
 #ifdef STRICT_FLG
     #define FAILURE_UNDEFINED FAILURE   ; Mismatch on undefined flag jumps to FAILURE
 #else
@@ -57,7 +73,7 @@ MANUAL_TEST:
     mov sp, 0x8001
     mov zero, 0x2000    ; This shouldn't do anything
 
-    ; Test basic ALU instructions and flags
+    ; Basic ALU instructions and flags
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
     add t0, t0, t2      ; t0 = 0x0005, flags: none
     add sp, sp, 0xE123  ; sp = 0x6124, flags: Carry, oVerflow
@@ -72,6 +88,41 @@ MANUAL_TEST:
     srl sp, sp, 1       ; sp = 0x0000, flags: Zero
     mov sp, 0x1234      ; sp = 0x1234, flags unchanged
     mov v0, sp          ; v0 = 0x1234, flags unchanged
+
+    ; Basic memory instructions
+    pushf               ; sp = 0x1233
+    mov s0, 0x5050      ; s0 = 0x5050
+    mov [25], s0
+    mov s1, [25]        ; s1 = 0x5050
+    mov s2, 0x100       ; s2 = 0x0100
+    mov [s2], s0
+    mov [s0], s2
+    mov s3, [s2]        ; s3 = 0x5050
+    mov s3, [s0]        ; s3 = 0x0100
+    mov s3, [0x100]     ; s3 = 0x5050
+    mov s3, [0x5050]    ; s3 = 0x0100
+    mov s3, [25]        ; s3 = 0x5050
+    sub s0, s0, 5       ; s0 = 0x504B, flags: none
+    mov s3, [s0+5]      ; s3 = 0x0100
+    mov [s3+500], s3
+    mov s0, [0x2F4]     ; s0 = 0x0100
+    push s0             ; sp = 0x1232
+    push sp             ; sp = 0x1231
+    push 0xABCD         ; sp = 0x1230
+    pop s0              ; s0 = 0xABCD, sp = 0x1231
+    pop s0              ; s0 = 0x1232, sp = 0x1232
+    pop s0              ; s0 = 0x0100, sp = 0x1233
+    swap s1, [sp+(-3)]  ; s1 = 0xABCD
+    movb s1, [sp+(-3)]  ; s1 = 0x0050   ;! test
+    popf                ; sp = 0x1234, flags: Zero
+    add [sp+(-4)], s1   ; flags: none   ;!
+    movb s1, [sp+(-4)]  ; s1 = 0xFFA0
+    mov s0, test_data-30    ; s0 = 0xXXXX
+    peek s2, [test_data], 1 ; s2 = 0xBEEF
+    peek s2, [s0+30], 0     ; s2 = 0xF00D
+    
+
+    ; Advanced ALU instructions and flags
     push 0b1111         ; sp = 0x1233, flags unchanged
     popf                ; sp = 0x1234, flags: Zero, Carry, oVerflow, Sign
     addc v0, v0, 0x20   ; v0 = 0x1255, flags: none
@@ -82,7 +133,7 @@ MANUAL_TEST:
     xor t1, v0, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
     add t2, t0, t1      ; t2 = 0x63A8, flags: oVerflow, Carry
     sub t2, t0, t1      ; t2 = 0xF1AC, flags: Sign, Carry
-    subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: None
+    subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: none
     subb t2, t2, 0x8001 ; t2 = 0xF1A9, flags: oVerflow, Sign, Carry
     subb t3, t2, zero   ; t3 = 0xF1A8, flags: Sign
     xor t3, t3, t3      ; t3 = 0x0000, flags: Zero
@@ -92,7 +143,7 @@ MANUAL_TEST:
     sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
     
 
-    ; Test unconditional and conditional jumps
+    ; Unconditional and conditional jumps
     mov t0, 0x5555
     jmp skip(1)         ; Taken
     mov t0, 0xFFFF      ; Not executed
@@ -121,7 +172,7 @@ MANUAL_TEST:
 
 AUTOMATED_TEST:
 
-    mov t0, 0x0100
+    mov t0, E_JUMPS
     mov [FAILURE_CAUSE], t0
 ; Test conditional jumps
     mov sp, 0x8000
@@ -131,9 +182,9 @@ AUTOMATED_TEST:
     jne FAILURE
 
 
-    mov t0, 0x0001
+    mov t0, E_ALU_1
     mov [FAILURE_CAUSE], t0
-    ; Repeat manual test
+    ; ALU operations, part 1
 
     mov t0, 0x0000
     mov t1, 0x0001
@@ -262,8 +313,111 @@ AUTOMATED_TEST:
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
-    cmp v0, sp
+    pushf               ; sp = 0x1233
+    cmp v0, 0x1234
     jne FAILURE
+    cmp sp, 0x1233
+    jne FAILURE
+
+
+
+    mov t0, E_MEM
+    mov [FAILURE_CAUSE], t0
+    ; Basic memory instructions
+    
+    mov s0, 0x5050      ; s0 = 0x5050
+    mov [25], s0
+    mov s1, [25]        ; s1 = 0x5050
+    cmp s1, 0x5050
+    jne FAILURE
+
+    mov s2, 0x100       ; s2 = 0x0100
+    mov [s2], s0
+    mov [s0], s2
+    mov s3, [s2]        ; s3 = 0x5050
+    cmp s3, 0x5050
+    jne FAILURE
+
+    mov s3, [s0]        ; s3 = 0x0100
+    cmp s3, 0x0100
+    jne FAILURE
+
+    mov s3, [0x100]     ; s3 = 0x5050
+    cmp s3, 0x5050
+    jne FAILURE
+
+    mov s3, [0x5050]    ; s3 = 0x0100
+    cmp s3, 0x0100
+    jne FAILURE
+
+    mov s3, [25]        ; s3 = 0x5050, flags unchanged
+    cmp s3, 0x5050
+    jne FAILURE
+
+    sub s0, s0, 5       ; s0 = 0x504B, flags: none
+    mov s3, [s0+5]      ; s3 = 0x0100
+    cmp s3, 0x0100
+    jne FAILURE
+
+    mov [s3+500], s3
+    mov s0, [0x2F4]     ; s0 = 0x0100
+    cmp s0, 0x0100
+    jne FAILURE
+
+    push s0             ; sp = 0x1232
+    push sp             ; sp = 0x1231
+    push 0xABCD         ; sp = 0x1230
+    pop s0              ; s0 = 0xABCD, sp = 0x1231
+    cmp s0, 0xABCD
+    jne FAILURE
+    cmp sp, 0x1231
+    jne FAILURE
+
+    pop s0              ; s0 = 0x1232, sp = 0x1232
+    cmp s0, 0x1232
+    jne FAILURE
+
+    pop s0              ; s0 = 0x0100, sp = 0x1233
+    cmp s0, 0x1232
+    jne FAILURE
+    cmp sp, 0x1233
+    jne FAILURE
+
+    swap s1, [sp+(-3)]  ; s1 = 0xABCD
+    cmp s1, 0xABCD
+    jne FAILURE
+
+    movb s1, [sp+(-3)]  ; s1 = 0x0050
+    cmp s1, 0x0050
+    jne FAILURE
+
+    popf                ; sp = 0x1234, flags: Zero
+    jnz FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
+    js FAILURE
+    cmp sp, 0x1234
+    jne FAILURE
+
+    add [sp+(-4)], s1   ; flags: none
+    movb s1, [sp+(-4)]  ; s1 = 0xFFA0
+    cmp s1, 0xFFA0
+    jne FAILURE
+
+    mov s0, test_data-30
+    peek s2, [test_data], 1 ; s2 = 0xBEEF
+    cmp s2, 0xBEEF
+    jne FAILURE
+
+    peek s2, [s0+30], 0     ; s2 = 0xF00D
+    cmp s2, 0xF00D
+    jne FAILURE
+
+
+
+    mov t0, E_ALU_2
+    mov [FAILURE_CAUSE], t0
+    ; ALU operations, part 2
 
     push 0b1111         ; sp = 0x1233, flags unchanged
     jnz FAILURE
@@ -347,7 +501,7 @@ AUTOMATED_TEST:
     jne FAILURE
     popf
 
-    subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: None
+    subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: none
     jz FAILURE
     jc FAILURE
     jo FAILURE
@@ -417,43 +571,43 @@ AUTOMATED_TEST:
 
 
 
-    mov t0, 0x0002
+    mov t0, E_O_DIR
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (direct)
     ; TODO
 
 
-    mov t0, 0x0003
+    mov t0, E_O_IND
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (indirect)
     ; TODO
     
 
-    mov t0, 0x0004
+    mov t0, E_O_IDX
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (indexed)
     ; TODO
 
 
-    mov t0, 0x0005
+    mov t0, E_D_DIR
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (direct destination)
     ; TODO
 
 
-    mov t0, 0x0006
+    mov t0, E_D_IND
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (indirect destination)
     ; TODO
 
 
-    mov t0, 0x0007
+    mov t0, E_D_IDX
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes (indexed destination)
     ; TODO
 
 
-    mov t0, 0x0010
+    mov t0, E_IO
     mov [FAILURE_CAUSE], t0
 ; Test I/O
     ; TODO
@@ -485,10 +639,11 @@ FAILURE:
     mov a1, 0xFFFF
     mov a2, 0xFFFF
     mov v0, 0xFFFF
-    mov sp, 0xFFFF
+    mov sp, 0x8000
 
     mov a0, "F"
     call Output_char
+    mov sp, 0xFFFF
     mov a0, 0xFFFF
 
     ; Infinite loop. The first jump should be enough, but it could fail in very high clock speeds
@@ -681,3 +836,7 @@ Output_char:
     
     mov [TERMINAL_ADDR], a0     ; Send char to terminal
     ret
+
+
+
+test_data:  #d32 0xBEEFF00D
