@@ -6,16 +6,16 @@
 
 ; Error codes: if the test fails, check the table below to see where it failed
 E_JUMPS = 0x0001    ; Automated jumps tester
-E_MEM   = 0x0001    ; Automated jumps tester
-E_ALU_1 = 0x0002    ; Basic ALU instructions and flags (section A)
-E_ALU_2 = 0x0002    ; Basic ALU instructions and flags (section B)
-E_O_DIR = 0x0003    ; ALU addressing modes (direct operand)
-E_O_IND = 0x0004    ; ALU addressing modes (indirect operand)
-E_O_IDX = 0x0005    ; ALU addressing modes (indexed operand)
-E_D_DIR = 0x0006    ; ALU addressing modes (direct operand)
-E_D_IND = 0x0007    ; ALU addressing modes (indirect operand)
-E_D_IDX = 0x0008    ; ALU addressing modes (indexed operand)
-E_IO    = 0x0009    ; Input and output
+E_MEM   = 0x0002    ; Automated jumps tester
+E_ALU_1 = 0x0011    ; Basic ALU instructions and flags (section A)
+E_ALU_2 = 0x0012    ; Basic ALU instructions and flags (section B)
+E_O_DIR = 0x0021    ; ALU addressing modes (direct operand)
+E_O_IND = 0x0022    ; ALU addressing modes (indirect operand)
+E_O_IDX = 0x0023    ; ALU addressing modes (indexed operand)
+E_D_DIR = 0x0024    ; ALU addressing modes (direct operand)
+E_D_IND = 0x0025    ; ALU addressing modes (indirect operand)
+E_D_IDX = 0x0026    ; ALU addressing modes (indexed operand)
+E_IO    = 0x0031    ; Input and output
 
 
 
@@ -113,9 +113,9 @@ MANUAL_TEST:
     pop s0              ; s0 = 0x1232, sp = 0x1232
     pop s0              ; s0 = 0x0100, sp = 0x1233
     swap s1, [sp+(-3)]  ; s1 = 0xABCD
-    movb s1, [sp+(-3)]  ; s1 = 0x0050   ;! test
+    movb s1, [sp+(-3)]  ; s1 = 0x0050
     popf                ; sp = 0x1234, flags: Zero
-    add [sp+(-4)], s1   ; flags: none   ;!
+    add [sp+(-4)], s1   ; flags: none
     movb s1, [sp+(-4)]  ; s1 = 0xFFA0
     mov s0, test_data-30    ; s0 = 0xXXXX
     peek s2, [test_data], 1 ; s2 = 0xBEEF
@@ -378,7 +378,7 @@ AUTOMATED_TEST:
     jne FAILURE
 
     pop s0              ; s0 = 0x0100, sp = 0x1233
-    cmp s0, 0x1232
+    cmp s0, 0x0100
     jne FAILURE
     cmp sp, 0x1233
     jne FAILURE
