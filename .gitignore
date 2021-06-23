@@ -1,4 +1,7 @@
 Assembly/*.exe
 Assembly/*.preprocessed
 Assembly/*.hex
+Assembly/*.bin
 Assembly/Tools/GenerateSymbols
+Assembly/Tools/hex2bin
+**/.vscode
