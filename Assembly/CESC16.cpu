@@ -111,7 +111,6 @@
     sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
     ; Memory
-    movb {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0x80 @ rD`4 @ rA`4 @ Imm
     swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0x81 @ rD`4 @ rA`4 @ Imm
     peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => 0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
     
@@ -143,25 +142,12 @@
     movf {rD: REG}, {Imm: i16}              => asm { add {rD}, zero, Imm }
     movf {rD: REG}, [{rA: REG}]             => asm { add {rD}, zero, [{rA}] }
     movf {rD: REG}, [{rA: REG}+{Imm: i16}]  => asm { mov {rD}, [{rA}+Imm] } @ asm { test {rD} }
-
-    movb {rD: REG}, [{Imm: i16}]            => asm { movb {rD}, [zero+Imm] }
-    movb {rD: REG}, [{rA: REG}]             => asm { movb {rD}, [{rA}+0] }
-    movb [{rA: REG}+{Imm: i16}], {rB: REG}  => asm { mov [{rA}+Imm], {rB} }
-    movb [{Imm: i16}], {rB: REG}            => asm { mov [Imm], {rB} }
-    movb [{rA: REG}], {rB: REG}             => asm { mov [{rA}], {rB} }
     
     not  {rD: REG}, {rA: REG}               => asm { xor {rD}, {rA}, 0xFFFF }
     nand {rD: REG}, {rA: REG}, {rB: REG}    => asm { and {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
     nor  {rD: REG}, {rA: REG}, {rB: REG}    => asm { or {rD}, {rA}, {rB} }  @ asm { not {rD}, {rD} }
     xnor {rD: REG}, {rA: REG}, {rB: REG}    => asm { xor {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
-    
     sllc {rD: REG}, {rA: REG}               => asm { addc {rD}, {rA}, {rA} }
-    
-    ; lw   {rD: REG}, {Imm: i16}({rA: REG})   => asm { mov {rD}, [{rA}+Imm] }
-    ; sw   {rB: REG}, {Imm: i16}({rA: REG})   => asm { mov [{rA}+Imm], {rB} }
-    ; lb   {rD: REG}, {Imm: i16}({rA: REG})   => asm { movb {rD}, [{rA}+Imm] }
-    ; lbu  {rD: REG}, {Imm: i16}({rA: REG})   => asm { movb {rD}, [{rA}+Imm] } @ asm { and {rD}, {rD}, 0x00FF }
-    ; sb   {rB: REG}, {Imm: i16}({rA: REG})   => asm { mov [{rA}+Imm], {rB} }
     
     swap {rA: REG}, {rB: REG}   => asm { xor {rA},{rA},{rB} } @ asm { xor {rB},{rA},{rB} } @ asm { xor {rA},{rA},{rB} }
     swap {rD: REG}, [{Imm: i16}]            => asm { swap {rD}, [zero+Imm] }

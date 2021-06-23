@@ -52,8 +52,6 @@ global_label:
     mov a0, vector          ; Loads the ADDRESS of vector[0] into a0 (argument register)
     mov a1, [a0+2]          ; Loads the CONTENTS of vector[2] into a1 (argument register). Identical to "lw a1, 2(a0)"
 
-    movb a1, [a0+2]         ; Move byte: loads THE LOWER 8 BITS of vector[2] into a1. Identical to "lb a1, 2(a0)"
-
     add [a0+1], t0          ; vector[1] += t0. There is no equivalent instruction in MIPS/RISC-V syntax
     
     call subroutine         ; Calls a subroutine. The arguments are in a0-a2.

@@ -113,10 +113,8 @@ MANUAL_TEST:
     pop s0              ; s0 = 0x1232, sp = 0x1232
     pop s0              ; s0 = 0x0100, sp = 0x1233
     swap s1, [sp+(-3)]  ; s1 = 0xABCD
-    movb s1, [sp+(-3)]  ; s1 = 0x0050
+    mov s1, [sp+(-3)]   ; s1 = 0x5050
     popf                ; sp = 0x1234, flags: Zero
-    add [sp+(-4)], s1   ; flags: none
-    movb s1, [sp+(-4)]  ; s1 = 0xFFA0
     mov s0, test_data-30    ; s0 = 0xXXXX
     peek s2, [test_data], 1 ; s2 = 0xBEEF
     peek s2, [s0+30], 0     ; s2 = 0xF00D
@@ -387,8 +385,8 @@ AUTOMATED_TEST:
     cmp s1, 0xABCD
     jne FAILURE
 
-    movb s1, [sp+(-3)]  ; s1 = 0x0050
-    cmp s1, 0x0050
+    mov s1, [sp+(-3)]   ; s1 = 0x5050
+    cmp s1, 0x5050
     jne FAILURE
 
     popf                ; sp = 0x1234, flags: Zero
@@ -397,11 +395,6 @@ AUTOMATED_TEST:
     jo FAILURE_UNDEFINED
     js FAILURE
     cmp sp, 0x1234
-    jne FAILURE
-
-    add [sp+(-4)], s1   ; flags: none
-    movb s1, [sp+(-4)]  ; s1 = 0xFFA0
-    cmp s1, 0xFFA0
     jne FAILURE
 
     mov s0, test_data-30

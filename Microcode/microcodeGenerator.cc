@@ -281,7 +281,7 @@ const vector<uint32_t> TEMPLATE = {
     STORE, ALU_IDXD(ALU_and), ALU_IDXD(ALU_or), ALU_IDXD(ALU_xor), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub),
 
 
-    LOAD(Bank1|Bank0),  // 10000000 - movb
+    NOP,        // 10000000 - movb (deprecated)
 
     SWAP,       // 10000001 - swap
 
