@@ -446,19 +446,23 @@ void generate() {
 
 void write_file(int filenum) {
     ofstream outputFile;
+    ofstream outputFile_bin;
     
     cout << "Writing HEX file " << filenum << endl;
     #ifndef RUN_FROM_RAM
         outputFile.open("output" + to_string(filenum) + ".hex", fstream::out);
+        outputFile_bin.open("output" + to_string(filenum) + ".bin", fstream::out);
     #else
         // When generating instructions that run from RAM, append to the end of the file
         outputFile.open("output" + to_string(filenum) + ".hex", fstream::out|ifstream::app);
+        outputFile_bin.open("output" + to_string(filenum) + ".bin", fstream::out|ifstream::app);
     #endif
     
     for (int i = 0; i < SIZE/32; i++) {
         for (int j = 0; j < 32; j++) {
             unsigned char output = content[32*i + j] >> (8*filenum);
             outputFile << setw(2) << setfill('0') << hex << int(output) << ' ';
+            outputFile_bin << output;
         }
         outputFile << '\n';
     }
