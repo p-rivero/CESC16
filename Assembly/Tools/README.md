@@ -37,9 +37,3 @@ Now the custom language "CESC16" is associated with .asm files in Notepad++.
 
 Now Notepad++ should suggest assembly keywords while typing code on .asm files
 
-
-## Estimating the average CPI of a program
-
-`EstimateCPI.cc` is a small utility program for estimating the average CPI (Clocks Per Instruction) on a piece of assembled code. The program simply reads the machine code (in raw hex format) from stdin and computes the mean (of the cost in cycles) of all the received instructions (`result = cycle_count/instruction_count`).
-
-This method completely ignores the effects of jumps (assumes the entire code is branchless) and is meant to be a fast approximation rather than an exact simulation.
