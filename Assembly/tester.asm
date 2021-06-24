@@ -151,18 +151,79 @@ MANUAL_TEST:
     mov a0, 0x1234      ; a0 = 0x1234
     jc skip(1)          ; Taken
     jmp FAILURE         ; Not executed
-    ; Todo: test JMP and JZ more thoroughly
+    jz skip(1)          ; Taken
+    jmp FAILURE         ; Not executed
+    add t0, t0, test_jmp.label
+
+test_jmp:
+    jnz t0              ; 1: Taken,     2: Not taken
+    jmp .end            ; 1: Not taken, 2: Taken
+
+.label:
+    movf t1, zero       ; t1 = 0x0000, flags: Zero
+    jmp test_jmp
+
+.end:
+    add t1, t1, 0x1111  ; t1 = 0x1111, flags: none
+
+
+    ; call/ret instructions
+    call test_call      ; sp = 0x1233
     
+    jmp test_call.end
 
-    ; Test load/store + memory operations
+test_call:
+    mov s0, 0x1234      ; s0 = 0x1234
+    ret                 ; sp = 0x1234
+
+.end:
+    add s0, s0, 0x1111  ; s0 = 0x2345
+    call test_recursive ; sp = 0x1233
+
+    jmp test_recursive.end
+
+test_recursive:
+    srl s0, s0, 1
+    jz skip(1)
+    call test_recursive ; sp--
+    ret
+
+.end:
+    add s0, s0, 1       ; s0 = 0x0001
+
+
+    ; enter/exit instructions
+    mov a0, enter_test
+    mov a1, syscall_test
+    mov a2, 0x1234
+    call MEMORY.MemCopy
+
+    enter 0x1234
+
+    add t0, t0, 1       ; t0 = 0x1236
+    jmp end_enter_test
+
+enter_test: ; Copy to RAM
+    mov t0, 0xABCD
+    add t0, t0, 0x1111  ; t0 = 0xBCDE
+    syscall syscall_test
+
+    add t0, t0, 1       ; t0 = 0x1235
+    exit
+
+syscall_test:
+    mov t0, 0x1234
+    sysret
+
+end_enter_test:
+    sub t0, t0, 1       ; t0 = 0x1235
+
+
+    ; Addressing modes
     ; TODO
 
 
-    ; Test basic I/O
-    ; TODO
-
-
-    ; Test stack (push(f)/pop(f) + call/ret)
+    ; Basic I/O
     ; TODO
 
 #endif
@@ -635,7 +696,7 @@ FAILURE:
     mov sp, 0x8000
 
     mov a0, "F"
-    call Output_char
+    mov [TERMINAL_ADDR], a0
     mov sp, 0xFFFF
     mov a0, 0xFFFF
 
