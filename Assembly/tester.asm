@@ -6,16 +6,11 @@
 
 ; Error codes: if the test fails, check the table below to see where it failed
 E_JUMPS = 0x0001    ; Automated jumps tester
-E_MEM   = 0x0002    ; Automated jumps tester
+E_MEM   = 0x0002    ; Memory instructions
 E_ALU_1 = 0x0011    ; Basic ALU instructions and flags (section A)
 E_ALU_2 = 0x0012    ; Basic ALU instructions and flags (section B)
-E_O_DIR = 0x0021    ; ALU addressing modes (direct operand)
-E_O_IND = 0x0022    ; ALU addressing modes (indirect operand)
-E_O_IDX = 0x0023    ; ALU addressing modes (indexed operand)
-E_D_DIR = 0x0024    ; ALU addressing modes (direct operand)
-E_D_IND = 0x0025    ; ALU addressing modes (indirect operand)
-E_D_IDX = 0x0026    ; ALU addressing modes (indexed operand)
-E_IO    = 0x0031    ; Input and output
+E_ADDR  = 0x0013    ; ALU addressing modes
+E_ZEROR = 0x0021    ; Speed of zero register
 
 
 
@@ -141,6 +136,21 @@ MANUAL_TEST:
     sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
     
 
+    ; Addressing modes (Mem = Address 0x8002)
+    mov [t0+2], t2          ; Mem: 0xF1A9
+    add s4, [t2+0x8E59]     ; s4 = 0xF1A8, flags: Sign, Carry
+    sub [s4+0x8E5A], s4     ; Mem: 0x0001, flags: none
+    mov t0, 0x8002          ; t0 = 0x8002
+    or [t0], t0             ; Mem: 0x8003, flags: Sign (oVerflow, Carry)
+    
+    mov t1, 0xAAAA          ; t1 = 0xAAAA
+    and t3, t1, [0x8002]    ; t3 = 0x8002, flags: Sign
+    or t3, t1, [t0]         ; t3 = 0xAAAB, flags: Sign
+    xor t3, t1, [0x8002]    ; t3 = 0x2AA9, flags: none
+    sub [0x8002], t1        ; Mem: 0xD559, flags: Sign, Carry
+    mov t0, [t0]            ; t0 = 0xD559
+    
+
     ; Unconditional and conditional jumps
     mov t0, 0x5555
     jmp skip(1)         ; Taken
@@ -192,7 +202,7 @@ test_recursive:
     add s0, s0, 1       ; s0 = 0x0001
 
 
-    ; enter/exit instructions
+    ; enter/exit and syscall/sysret instructions
     mov a0, enter_test
     mov a1, syscall_test
     mov a2, 0x1234
@@ -218,13 +228,6 @@ syscall_test:
 end_enter_test:
     sub t0, t0, 1       ; t0 = 0x1235
 
-
-    ; Addressing modes
-    ; TODO
-
-
-    ; Basic I/O
-    ; TODO
 
 #endif
 
@@ -625,46 +628,85 @@ AUTOMATED_TEST:
 
 
 
-    mov t0, E_O_DIR
+    mov t0, E_ADDR
     mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (direct)
-    ; TODO
+; Test ALU addressing modes
+    mov t0, 0x8000
+    mov [t0+2], t2          ; Mem: 0xF1A9
+    add s4, [t2+0x8E59]     ; s4 = 0xF1A8, flags: Sign, Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp s4, 0xF1A8
+    jne FAILURE
 
+    sub [s4+0x8E5A], s4     ; Mem: 0x0001, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
 
-    mov t0, E_O_IND
-    mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (indirect)
-    ; TODO
+    mov t0, 0x8002          ; t0 = 0x8002
+    or [t0], t0             ; Mem: 0x8003, flags: Sign (oVerflow, Carry)
+    jz FAILURE
+    jnc FAILURE_UNDEFINED
+    jno FAILURE_UNDEFINED
+    jns FAILURE
     
+    mov t1, 0xAAAA          ; t1 = 0xAAAA
+    and t3, t1, [0x8002]    ; t3 = 0x8002, flags: Sign
+    jz FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
+    jns FAILURE
+    cmp t3, 0x8002
+    jne FAILURE
 
-    mov t0, E_O_IDX
+    or t3, t1, [t0]         ; t3 = 0xAAAB, flags: Sign
+    jz FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
+    jns FAILURE
+    cmp t3, 0xAAAB
+    jne FAILURE
+
+    xor t3, t1, [0x8002]    ; t3 = 0x2AA9, flags: none
+    jz FAILURE
+    jc FAILURE_UNDEFINED
+    jo FAILURE_UNDEFINED
+    js FAILURE
+    cmp t3, 0x2AA9
+    jne FAILURE
+
+    sub [0x8002], t1        ; Mem: 0xD559, flags: Sign, Carry
+    mov t0, [t0]            ; t0 = 0xD559
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    jns FAILURE
+    cmp t0, 0xD559
+    jne FAILURE
+
+
+
+    mov t0, E_ZEROR
     mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (indexed)
-    ; TODO
+; Test speed of zero register
+    add t0, zero, zero
+    jnz FAILURE
+    cmp t0, zero
+    jne FAILURE
 
+    sub t0, t0, zero
+    jnz FAILURE
+    or zero, zero, 0
+    jnz FAILURE
 
-    mov t0, E_D_DIR
-    mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (direct destination)
-    ; TODO
+    not t0, zero
+    cmp t0, 0xFFFF
+    jne FAILURE
 
-
-    mov t0, E_D_IND
-    mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (indirect destination)
-    ; TODO
-
-
-    mov t0, E_D_IDX
-    mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes (indexed destination)
-    ; TODO
-
-
-    mov t0, E_IO
-    mov [FAILURE_CAUSE], t0
-; Test I/O
-    ; TODO
 
 
 ; Copy to RAM and repeat
