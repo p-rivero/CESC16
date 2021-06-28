@@ -95,6 +95,7 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 
 // INSTRUCTIONS:
+// todo: reorder
 #define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,  ZEROx14
 #define ALU_REG(OP)  Fetch,  MemOut|ArgBk|LdY,                   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
 
@@ -107,14 +108,24 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define MOV_INDA     Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
 #define ALU_INDA(OP) Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
+#define LOAD(Bank)   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
+#define MOV_RIA LOAD(Bank1)
+#define ALU_RIA(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,   ZEROx11
+
+#define MOV_RRA      Fetch,  MemOut|ArgBk|LdY|ALU_add|AluOutAddr,   MemOut|Bank1|LdReg|PcOutAddr|CLR,    ZEROx13
+#define ALU_RRA(OP)  Fetch,  MemOut|ArgBk|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx11
+
 #define MOV_DIRD     Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 #define ALU_DIRD(OP) Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
 #define MOV_INDD     Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 #define ALU_INDD(OP) Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
 
-#define ALU_IDXA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,       ZEROx11
-#define ALU_IDXD(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdY,   MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
+#define MOV_RID      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,  IrOut|LdY,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,   ZEROx12
+#define MOV_RRD      Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr,  IrOut|LdY,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,   ZEROx12
+
+#define ALU_RID(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,  IrOut|LdY,  MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
+#define ALU_RRD(OP)  Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr,  IrOut|LdY,  MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
 
 #define SLL_STEP    ALU_sll|AluOutD|LdImm|LdX
 #define SLL_END     ALU_sll|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR
@@ -128,10 +139,6 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define SRA_END     SRL_END|AluCIn
 #define SRA_STEP_4  SRA_STEP, SRA_STEP, SRA_STEP, SRA_STEP
 
-
-#define LOAD(Bank)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
-
-#define STORE       Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
 
 #define SWAP        Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
 
@@ -266,9 +273,11 @@ const vector<uint32_t> TEMPLATE = {
     // 01001FFF - ALU rD, rA, [rB]
     MOV_INDA, ALU_INDA(ALU_and), ALU_INDA(ALU_or), ALU_INDA(ALU_xor), ALU_INDA(ALU_add), ALU_INDA(ALU_sub), ALU_INDA(ALU_add), ALU_INDA(ALU_sub),
 
-    // 0101xFFF - ALU rD, [rA+Imm16]
-    LOAD(Bank1)/* lw */, ALU_IDXA(ALU_and), ALU_IDXA(ALU_or), ALU_IDXA(ALU_xor), ALU_IDXA(ALU_add), ALU_IDXA(ALU_sub), ALU_IDXA(ALU_add), ALU_IDXA(ALU_sub),
-    LOAD(Bank1)/* lw */, ALU_IDXA(ALU_and), ALU_IDXA(ALU_or), ALU_IDXA(ALU_xor), ALU_IDXA(ALU_add), ALU_IDXA(ALU_sub), ALU_IDXA(ALU_add), ALU_IDXA(ALU_sub),
+    // 01010FFF - ALU rD, [rA+Imm16]
+    MOV_RIA, ALU_RIA(ALU_and), ALU_RIA(ALU_or), ALU_RIA(ALU_xor), ALU_RIA(ALU_add), ALU_RIA(ALU_sub), ALU_RIA(ALU_add), ALU_RIA(ALU_sub),
+    
+    // 01011FFF - ALU rD, [rA+rB]
+    MOV_RRA, ALU_RRA(ALU_and), ALU_RRA(ALU_or), ALU_RRA(ALU_xor), ALU_RRA(ALU_add), ALU_RRA(ALU_sub), ALU_RRA(ALU_add), ALU_RRA(ALU_sub),
 
     // 01100FFF - ALU [Addr16], rA
     MOV_DIRD, ALU_DIRD(ALU_and), ALU_DIRD(ALU_or), ALU_DIRD(ALU_xor), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub), ALU_DIRD(ALU_add), ALU_DIRD(ALU_sub),
@@ -276,9 +285,11 @@ const vector<uint32_t> TEMPLATE = {
     // 01101FFF - ALU [rA], rB
     MOV_INDD, ALU_INDD(ALU_and), ALU_INDD(ALU_or), ALU_INDD(ALU_xor), ALU_INDD(ALU_add), ALU_INDD(ALU_sub), ALU_INDD(ALU_add), ALU_INDD(ALU_sub),
 
-    // 0111xFFF - ALU [rA+Imm16], rB
-    STORE, ALU_IDXD(ALU_and), ALU_IDXD(ALU_or), ALU_IDXD(ALU_xor), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub),
-    STORE, ALU_IDXD(ALU_and), ALU_IDXD(ALU_or), ALU_IDXD(ALU_xor), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub), ALU_IDXD(ALU_add), ALU_IDXD(ALU_sub),
+    // 01110FFF - ALU [rA+Imm16], rB
+    MOV_RID, ALU_RID(ALU_and), ALU_RID(ALU_or), ALU_RID(ALU_xor), ALU_RID(ALU_add), ALU_RID(ALU_sub), ALU_RID(ALU_add), ALU_RID(ALU_sub),
+
+    // 01111FFF - ALU [rA+rC], rB
+    MOV_RRD, ALU_RRD(ALU_and), ALU_RRD(ALU_or), ALU_RRD(ALU_xor), ALU_RRD(ALU_add), ALU_RRD(ALU_sub), ALU_RRD(ALU_add), ALU_RRD(ALU_sub),
 
 
     NOP,        // 10000000 - movb (deprecated)
@@ -372,17 +383,17 @@ void switchCarry(int flags, int funct) {
     assert(get_opcode(address) >= 0b01000000); // 0b01000000 = ALU_DIR_arg
     assert(get_opcode(address) <  0b01001000); // 0b01001000 = ALU_IND_arg
     assert(get_opcode(address + 5*OFFS*16+1) >= 0b01101000); // 0b01101000 = ALU_IND_dest
-    assert(get_opcode(address + 5*OFFS*16+1) <  0b01110000); // 0b01110000 = ALU_IDX_dest
-    assert(get_opcode(address + 7*OFFS*16+2) <  0b10000000); // 0b10000000 = MOVB
+    assert(get_opcode(address + 5*OFFS*16+1) <  0b01110000); // 0b01110000 = ALU_RI_dest
+    assert(get_opcode(address + 7*OFFS*16+2) <  0b10000000); // 0b10000000 = MOVB (deprecated)
 
     content[address + 0*OFFS*16+1] ^= AluCIn; // Disable DIR_arg variant
     content[address + 1*OFFS*16+1] ^= AluCIn; // Disable IND_arg variant (add 8 to opcode -> add 8*16 to address)
-    content[address + 2*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant (add 16 to opcode -> add 16*16 to address)
-    content[address + 3*OFFS*16+2] ^= AluCIn; // Disable IDX_arg variant
+    content[address + 2*OFFS*16+2] ^= AluCIn; // Disable RI_arg variant  (add 16 to opcode -> add 16*16 to address)
+    content[address + 3*OFFS*16+2] ^= AluCIn; // Disable RR_arg variant
     content[address + 4*OFFS*16+1] ^= AluCIn; // Disable DIR_dest variant (add 32 to opcode -> add 32*16 to address)
     content[address + 5*OFFS*16+1] ^= AluCIn; // Disable IND_dest variant (add 40 to opcode -> add 40*16 to address)
-    content[address + 6*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant (add 48 to opcode -> add 48*16 to address)
-    content[address + 7*OFFS*16+2] ^= AluCIn; // Disable IDX_dest variant
+    content[address + 6*OFFS*16+2] ^= AluCIn; // Disable RI_dest variant
+    content[address + 7*OFFS*16+2] ^= AluCIn; // Disable RR_dest variant
 }
 
 void generate() {

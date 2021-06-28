@@ -97,6 +97,9 @@
     mov {rD: REG}, [{rA: REG}+{Imm: i16}]   =>  0x50 @ rD`4 @ rA`4 @ Imm
     {op: ALU_OP} {rD: REG}, [{rA: REG}+{Imm: i16}] => 0b01010 @ op`3 @ rD`4 @ rA`4 @ Imm
 
+    mov {rD: REG}, [{rA: REG}+{rB: REG}]   =>  0x58 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+    {op: ALU_OP} {rD: REG}, [{rA: REG}+{rB: REG}] => 0b01011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
+
     mov [{Addr: u16}], {rA: REG} => 0x600 @ rA`4 @ Addr
     {op: ALU_OP} [{Addr: u16}], {rA: REG} => 0b01100 @ op`3 @ 0x0 @ rA`4 @ Addr
     
@@ -105,6 +108,9 @@
 
     mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  0x70 @ rB`4 @ rA`4 @ Imm
     {op: ALU_OP} [{rA: REG}+{Imm: i16}], {rB: REG} => 0b01110 @ op`3 @ rB`4 @ rA`4 @ Imm
+    
+    mov [{rA: REG}+{rC: REG}], {rB: REG}   =>  0x78 @ rB`4 @ rA`4 @ Imm
+    {op: ALU_OP} [{rA: REG}+{rC: REG}], {rB: REG} => 0b01111 @ op`3 @ rB`4 @ rA`4 @ Imm
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
     srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x2 @ Imm @ rD`4 @ rA`4 @ 0x0000
@@ -142,6 +148,7 @@
     movf {rD: REG}, {Imm: i16}              => asm { add {rD}, zero, Imm }
     movf {rD: REG}, [{rA: REG}]             => asm { add {rD}, zero, [{rA}] }
     movf {rD: REG}, [{rA: REG}+{Imm: i16}]  => asm { mov {rD}, [{rA}+Imm] } @ asm { test {rD} }
+    movf {rD: REG}, [{rA: REG}+{rB: REG}]   => asm { mov {rD}, [{rA}+{rB}] } @ asm { test {rD} }
     
     not  {rD: REG}, {rA: REG}               => asm { xor {rD}, {rA}, 0xFFFF }
     nand {rD: REG}, {rA: REG}, {rB: REG}    => asm { and {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
@@ -149,7 +156,6 @@
     xnor {rD: REG}, {rA: REG}, {rB: REG}    => asm { xor {rD}, {rA}, {rB} } @ asm { not {rD}, {rD} }
     sllc {rD: REG}, {rA: REG}               => asm { addc {rD}, {rA}, {rA} }
     
-    swap {rA: REG}, {rB: REG}   => asm { xor {rA},{rA},{rB} } @ asm { xor {rB},{rA},{rB} } @ asm { xor {rA},{rA},{rB} }
     swap {rD: REG}, [{Imm: i16}]            => asm { swap {rD}, [zero+Imm] }
     swap {rD: REG}, [{rA: REG}]             => asm { swap {rD}, [{rA}+0] }
     peek {rD: REG}, [{Imm: i16}], {W: PEEK_OPTIONS} => asm { peek {rD}, [zero+Imm], {W} }
