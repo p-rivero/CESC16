@@ -96,36 +96,32 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 
 // INSTRUCTIONS:
 // todo: reorder
-#define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,  ZEROx14
-#define ALU_REG(OP)  Fetch,  MemOut|ArgBk|LdY,                   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
+#define MOV_REG      Fetch,  ALU_X|AluOutD|LdReg|PcOutAddr|CLR,     ZEROx14
+#define MOV_IMM      Fetch,  MemOut|ArgBk |LdReg|PcOutAddr|CLR,     ZEROx14
 
-#define MOV_IMM      Fetch,  MemOut|ArgBk|LdReg|PcOutAddr|CLR,   ZEROx14
-#define ALU_IMM(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY,             OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,  ZEROx13
+#define ALU_REG(OP)  Fetch,  MemOut|ArgBk|      LdY,    OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx13
+#define ALU_IMM(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY,    OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx13
 
-#define MOV_DIRA     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_DIRA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define MOV_DIRA     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,   MemOut|Bank1|LdReg|PcOutAddr|CLR,   ZEROx13
+#define MOV_INDA     Fetch,  MemOut|ArgBk|      LdY|ALU_Y|AluOutAddr,   MemOut|Bank1|LdReg|PcOutAddr|CLR,   ZEROx13
+#define MOV_RIA(Bnk) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr, MemOut|Bnk  |LdReg|PcOutAddr|CLR,   ZEROx13
+#define MOV_RRA      Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr, MemOut|Bank1|LdReg|PcOutAddr|CLR,   ZEROx13
 
-#define MOV_INDA     Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdReg|PcOutAddr|CLR,  ZEROx13
-#define ALU_INDA(OP) Fetch,  MemOut|ArgBk|LdY|ALU_Y|AluOutAddr,    MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx12
+#define ALU_DIRA(OP) Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Y|AluOutAddr,               MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx12
+#define ALU_INDA(OP) Fetch,  MemOut|ArgBk|      LdY|ALU_Y|AluOutAddr,               MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx12
+#define ALU_RIA(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr, IrOut|LdX,  MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx11
+#define ALU_RRA(OP)  Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr, IrOut|LdX,  MemOut|Bank1|LdImm|LdY,     OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,    ZEROx11
 
-#define LOAD(Bank)   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      MemOut|Bank|LdReg|PcOutAddr|CLR,    ZEROx13
-#define MOV_RIA LOAD(Bank1)
-#define ALU_RIA(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,   ZEROx11
+#define MOV_DIRD     Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,                                   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define MOV_INDD     Fetch,  MemOut|ArgBk|      LdY|ALU_X|AluOutAddr,                                   ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define MOV_RID      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr, IrOut|LdY,                      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
+#define MOV_RRD      Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr, IrOut|LdY,                      ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx12
+#define SWAP         Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr, IrOut|LdY,  MemOut|Bank1|LdReg, ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
 
-#define MOV_RRA      Fetch,  MemOut|ArgBk|LdY|ALU_add|AluOutAddr,   MemOut|Bank1|LdReg|PcOutAddr|CLR,    ZEROx13
-#define ALU_RRA(OP)  Fetch,  MemOut|ArgBk|LdY|ALU_add|AluOutAddr,   IrOut|LdX,   MemOut|Bank1|LdImm|LdY,   OP|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR,     ZEROx11
-
-#define MOV_DIRD     Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_DIRD(OP) Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,    MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
-
-#define MOV_INDD     Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define ALU_INDD(OP) Fetch,  MemOut|ArgBk|LdY|ALU_X|AluOutAddr,  MemOut|Bank1|LdImm|LdX,     OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,     ZEROx12
-
-#define MOV_RID      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,  IrOut|LdY,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,   ZEROx12
-#define MOV_RRD      Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr,  IrOut|LdY,  ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,   ZEROx12
-
-#define ALU_RID(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,  IrOut|LdY,  MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
-#define ALU_RRD(OP)  Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr,  IrOut|LdY,  MemOut|Bank1|LdImm|LdX,   OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR, ZEROx11
+#define ALU_DIRD(OP) Fetch,  MemOut|ArgBk|LdImm|LdX|ALU_X|AluOutAddr,               MemOut|Bank1|LdImm|LdX, OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,  ZEROx12
+#define ALU_INDD(OP) Fetch,  MemOut|ArgBk|      LdY|ALU_X|AluOutAddr,               MemOut|Bank1|LdImm|LdX, OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,  ZEROx12
+#define ALU_RID(OP)  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr, IrOut|LdY,  MemOut|Bank1|LdImm|LdX, OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,  ZEROx11
+#define ALU_RRD(OP)  Fetch,  MemOut|ArgBk|      LdY|ALU_add|AluOutAddr, IrOut|LdY,  MemOut|Bank1|LdImm|LdX, OP|AluOutD|MemIn|Bank1|LdFlgALU|PcOutAddr|CLR,  ZEROx11
 
 #define SLL_STEP    ALU_sll|AluOutD|LdImm|LdX
 #define SLL_END     ALU_sll|AluOutD|LdReg|LdFlgALU|PcOutAddr|CLR
@@ -140,27 +136,24 @@ const uint32_t ACTIVE_LOW_MASK = CLR | SPpp | LdReg | LdX | LdY | LdFlg | PcIn;
 #define SRA_STEP_4  SRA_STEP, SRA_STEP, SRA_STEP, SRA_STEP
 
 
-#define SWAP        Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_add|AluOutAddr,      IrOut|LdY,      MemOut|Bank1|LdReg,     ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx11
-
-#define PUSH_R      Fetch,  SPmm|MemOut|ArgBk|LdY|ALU_Xminus1|AluOutAddr,       ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
+#define PUSH_R      Fetch,  SPmm|MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr, ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 #define PUSH_I      Fetch,  SPmm|MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr, ALU_Y|AluOutD|MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
-#define PUSHF       Fetch,  SPmm|ALU_Xminus1|AluOutAddr,                        FlagsOut|MemIn|Bank1|PcOutAddr|CLR,         ZEROx13
+#define PUSHF       Fetch,  SPmm|                       ALU_Xminus1|AluOutAddr, FlagsOut|     MemIn|Bank1|PcOutAddr|CLR,    ZEROx13
 
-#define POP         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdReg|PcOutAddr|CLR,      ZEROx13
-#define POPF        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,   ZEROx13
+#define CALL_R      Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,              ZEROx12
+#define ENTER_R     Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun,    ZEROx12
+#define CALL_R_RAM  Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,              ZEROx12
+#define SYSCALL_R   Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun,    ZEROx12
+#define CALL_I      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,              ZEROx12
+#define ENTER_I     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun,    ZEROx12
+#define CALL_I_RAM  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,              ZEROx12
+#define SYSCALL_I   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun,    ZEROx12
 
-#define CALL_R      Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
-#define ENTER_R     Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
-#define CALL_R_RAM  Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
-#define SYSCALL_R   Fetch,  MemOut|ArgBk|      LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
-#define CALL_I      Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
-#define ENTER_I     Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr,      SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
-#define CALL_I_RAM  Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR,           ZEROx12
-#define SYSCALL_I   Fetch,  MemOut|ArgBk|LdImm|LdY|ALU_Xminus1|AluOutAddr|PCpp, SPmm|PcOutD|MemIn|Bank1,    ALU_Y|AluOutD|PcIn|AluOutAddr|CLR|ToggleRun, ZEROx12
-
-#define RET         Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR,           ZEROx13
-#define SYSRET      Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|ToggleRun, ZEROx13
-#define EXIT        Fetch,  ALU_X|AluOutAddr,                               SPpp|MemOut|Bank1|PcIn|PcOutAddr|CLR|ToggleRun, ZEROx13
+#define POP         Fetch,  ALU_X|AluOutAddr,   SPpp|MemOut|Bank1|LdReg|   PcOutAddr|CLR,           ZEROx13
+#define POPF        Fetch,  ALU_X|AluOutAddr,   SPpp|MemOut|Bank1|LdFlgBUS|PcOutAddr|CLR,           ZEROx13
+#define RET         Fetch,  ALU_X|AluOutAddr,   SPpp|MemOut|Bank1|PcIn|    PcOutAddr|CLR,           ZEROx13
+#define SYSRET      Fetch,  ALU_X|AluOutAddr,   SPpp|MemOut|Bank1|PcIn|    PcOutAddr|CLR|ToggleRun, ZEROx13
+#define EXIT        Fetch,  ALU_X|AluOutAddr,   SPpp|MemOut|Bank1|PcIn|    PcOutAddr|CLR|ToggleRun, ZEROx13
 
 #define JMP_REG     Fetch,  ALU_X|AluOutD/*|PcIn*/|PcOutAddr|CLR,   ZEROx14
 #define JMP_IMM     Fetch,  MemOut|ArgBk /*|PcIn*/|PcOutAddr|CLR,   ZEROx14
@@ -274,7 +267,7 @@ const vector<uint32_t> TEMPLATE = {
     MOV_INDA, ALU_INDA(ALU_and), ALU_INDA(ALU_or), ALU_INDA(ALU_xor), ALU_INDA(ALU_add), ALU_INDA(ALU_sub), ALU_INDA(ALU_add), ALU_INDA(ALU_sub),
 
     // 01010FFF - ALU rD, [rA+Imm16]
-    MOV_RIA, ALU_RIA(ALU_and), ALU_RIA(ALU_or), ALU_RIA(ALU_xor), ALU_RIA(ALU_add), ALU_RIA(ALU_sub), ALU_RIA(ALU_add), ALU_RIA(ALU_sub),
+    MOV_RIA(Bank1), ALU_RIA(ALU_and), ALU_RIA(ALU_or), ALU_RIA(ALU_xor), ALU_RIA(ALU_add), ALU_RIA(ALU_sub), ALU_RIA(ALU_add), ALU_RIA(ALU_sub),
     
     // 01011FFF - ALU rD, [rA+rB]
     MOV_RRA, ALU_RRA(ALU_and), ALU_RRA(ALU_or), ALU_RRA(ALU_xor), ALU_RRA(ALU_add), ALU_RRA(ALU_sub), ALU_RRA(ALU_add), ALU_RRA(ALU_sub),
@@ -296,7 +289,7 @@ const vector<uint32_t> TEMPLATE = {
 
     SWAP,       // 10000001 - swap
 
-    LOAD(Bank0), LOAD(0),    // 1000001W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
+    MOV_RIA(Bank0), MOV_RIA(0), // 1000001W - peek(W):  W=0 -> Lower bits (Bank 01),  W=1 -> Upper bits (Bank 00)
     
     PUSH_R, // 10000100 - push rB
     PUSH_I, // 10000101 - push Imm16
