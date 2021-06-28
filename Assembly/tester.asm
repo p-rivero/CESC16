@@ -1,7 +1,7 @@
 #include "CESC16.cpu"
 
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
-;#define STRICT_FLG    ; Remove this comment to force the correct flag values, even for undefined flags
+;#define STRICT_FLG    ; Uncomment this to force the correct flag values, even for undefined flags
 
 
 ; Error codes: if the test fails, check the table below to see where it failed
@@ -709,6 +709,9 @@ AUTOMATED_TEST:
 
 
 
+    mov a0, "."
+    mov [TERMINAL_ADDR], a0 ; Send char to terminal
+
 ; Copy to RAM and repeat
     ; TODO: Jump addresses need to be recalculated
     ; todo  Change error messages
@@ -766,11 +769,8 @@ SUCCESS:
     mov v0, 0x0000
     mov sp, 0x8000
 
-    ; TODO: Improve success message
-    mov a0, "O"
-    call Output_char
     mov a0, "K"
-    call Output_char
+    mov [TERMINAL_ADDR], a0 ; Send char to terminal
     
     mov sp, 0xFFFF
     mov a0, 0xFFFF
@@ -924,13 +924,6 @@ MEMORY:
     jne ..loop
     
 ..return:
-    ret
-
-Output_char:
-    test [TERMINAL_ADDR]    ; Read flag
-    jnz Output_char         ; Poll until it's 0 (terminal ready)
-    
-    mov [TERMINAL_ADDR], a0     ; Send char to terminal
     ret
 
 
