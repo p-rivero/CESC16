@@ -109,8 +109,8 @@
     mov [{rA: REG}+{Imm: i16}], {rB: REG}   =>  0x70 @ rB`4 @ rA`4 @ Imm
     {op: ALU_OP} [{rA: REG}+{Imm: i16}], {rB: REG} => 0b01110 @ op`3 @ rB`4 @ rA`4 @ Imm
     
-    mov [{rA: REG}+{rC: REG}], {rB: REG}   =>  0x78 @ rB`4 @ rA`4 @ Imm
-    {op: ALU_OP} [{rA: REG}+{rC: REG}], {rB: REG} => 0b01111 @ op`3 @ rB`4 @ rA`4 @ Imm
+    mov [{rA: REG}+{rC: REG}], {rB: REG}   =>  0x78 @ rB`4 @ rA`4 @ 0x000 @ rC`4
+    {op: ALU_OP} [{rA: REG}+{rC: REG}], {rB: REG} => 0b01111 @ op`3 @ rB`4 @ rA`4 @ 0x000 @ rC`4
     
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
     srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x2 @ Imm @ rD`4 @ rA`4 @ 0x0000
