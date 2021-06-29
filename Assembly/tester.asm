@@ -135,22 +135,46 @@ MANUAL_TEST:
     sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
     sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
     
-
+    
     ; Addressing modes (Mem = Address 0x8002)
-    mov [t0+2], t2          ; Mem: 0xF1A9
+    mov [0x8002], s2        ; Mem: 0xF00D
+    mov s0, [0x8002]        ; s0 = 0xF00D
+    mov [t0+2], t1          ; Mem: 0xB8FE
+    mov s1, [t0+2]          ; s1 = 0xB8FE
+    mov t0, 0x8002          ; t0 = 0x8002
+    mov [t0], s0            ; Mem: 0xF00D
+    mov s1, [t0]            ; s1 = 0xF00D
+    mov s3, 0x8FF5          ; s3 = 0x8FF5
+    mov [s3+s1], t2         ; Mem: 0xF1A9
+    mov s3, [s1+s3]         ; s3 = 0xF1A9
+    mov s3, [0x8002]        ; s3 unchanged
+    
     add s4, [t2+0x8E59]     ; s4 = 0xF1A8, flags: Sign, Carry
     sub [s4+0x8E5A], s4     ; Mem: 0x0001, flags: none
-    mov t0, 0x8002          ; t0 = 0x8002
-    or [t0], t0             ; Mem: 0x8003, flags: Sign (oVerflow, Carry)
+    mov t2, 0x8102          ; t2 = 0x8102
+    or [t0], t2             ; Mem: 0x8103, flags: Sign (oVerflow, Carry)
     
     mov t1, 0xAAAA          ; t1 = 0xAAAA
     and t3, t1, [0x8002]    ; t3 = 0x8002, flags: Sign
-    or t3, t1, [t0]         ; t3 = 0xAAAB, flags: Sign
-    xor t3, t1, [0x8002]    ; t3 = 0x2AA9, flags: none
-    sub [0x8002], t1        ; Mem: 0xD559, flags: Sign, Carry
-    mov t0, [t0]            ; t0 = 0xD559
+    or t3, t1, [t0]         ; t3 = 0xABAB, flags: Sign
+    xor t3, t1, [0x8002]    ; t3 = 0x2BA9, flags: none
+    sub [0x8002], t1        ; Mem: 0xD659, flags: Sign, Carry
+    mov t1, [t0]            ; t1 = 0xD659
     
-
+    mov s1, 0xFF00          ; s1 = 0xFF00
+    addc s2, [s1+t2]        ; s2 = 0xC667, flags: Sign, Carry
+    subb [s1+t2], s2        ; Mem: 0x0FF1, flags: none
+    subb s4, s4, [t0]       ; s4 = 0xE1B7, flags: Sign
+    subb [t2+s1], s4        ; Mem: 0x2E3A, flags: Carry
+    subb s4, s4, [t0]       ; s4 = 0xB37C, flags: Sign
+    addc t1, [s4+0xCC86]    ; t1 = 0x0493, flags: Carry
+    addc t1, [s4+0xCC86]    ; t1 = 0x32CE, flags: none
+    addc [0x8002], s1       ; Mem: 0x2D3A, flags: Carry
+    subb [t0], s1           ; Mem: 0x2E39, flags: Carry
+    subb t2, t1, [0x8002]   ; t2 = 0x0494, flags: none
+    subb t1, t1, [0x8002]   ; t1 = 0x0495, flags: none
+    
+    
     ; Unconditional and conditional jumps
     mov t0, 0x5555
     jmp skip(1)         ; Taken
@@ -632,7 +656,32 @@ AUTOMATED_TEST:
     mov [FAILURE_CAUSE], t0
 ; Test ALU addressing modes
     mov t0, 0x8000
-    mov [t0+2], t2          ; Mem: 0xF1A9
+    mov [0x8002], s2        ; Mem: 0xF00D
+    mov s0, [0x8002]        ; s0 = 0xF00D
+    cmp s0, 0xF00D
+    jne FAILURE
+    
+    mov [t0+2], t1          ; Mem: 0xB8FE
+    mov s1, [t0+2]          ; s1 = 0xB8FE
+    cmp s1, 0xB8FE
+    jne FAILURE
+    
+    mov t0, 0x8002          ; t0 = 0x8002
+    mov [t0], s0            ; Mem: 0xF00D
+    mov s1, [t0]            ; s1 = 0xF00D
+    cmp s1, 0xF00D
+    jne FAILURE
+    
+    mov s3, 0x8FF5          ; s3 = 0x8FF5
+    mov [s3+s1], t2         ; Mem: 0xF1A9
+    mov s3, [s1+s3]         ; s3 = 0xF1A9
+    cmp s3, 0xF1A9
+    jne FAILURE
+    
+    mov s3, [0x8002]        ; s3 unchanged
+    cmp s3, 0xF1A9
+    jne FAILURE
+    
     add s4, [t2+0x8E59]     ; s4 = 0xF1A8, flags: Sign, Carry
     jz FAILURE
     jnc FAILURE
@@ -647,8 +696,8 @@ AUTOMATED_TEST:
     jo FAILURE
     js FAILURE
 
-    mov t0, 0x8002          ; t0 = 0x8002
-    or [t0], t0             ; Mem: 0x8003, flags: Sign (oVerflow, Carry)
+    mov t2, 0x8102          ; t2 = 0x8102
+    or [t0], t2             ; Mem: 0x8103, flags: Sign (oVerflow, Carry)
     jz FAILURE
     jnc FAILURE_UNDEFINED
     jno FAILURE_UNDEFINED
@@ -663,33 +712,128 @@ AUTOMATED_TEST:
     cmp t3, 0x8002
     jne FAILURE
 
-    or t3, t1, [t0]         ; t3 = 0xAAAB, flags: Sign
+    or t3, t1, [t0]         ; t3 = 0xABAB, flags: Sign
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     jns FAILURE
-    cmp t3, 0xAAAB
+    cmp t3, 0xABAB
     jne FAILURE
 
-    xor t3, t1, [0x8002]    ; t3 = 0x2AA9, flags: none
+    xor t3, t1, [0x8002]    ; t3 = 0x2BA9, flags: none
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
-    cmp t3, 0x2AA9
+    cmp t3, 0x2BA9
     jne FAILURE
 
-    sub [0x8002], t1        ; Mem: 0xD559, flags: Sign, Carry
-    mov t0, [t0]            ; t0 = 0xD559
+    sub [0x8002], t1        ; Mem: 0xD659, flags: Sign, Carry
+    mov t1, [t0]            ; t1 = 0xD659
     jz FAILURE
     jnc FAILURE
     jo FAILURE
     jns FAILURE
-    cmp t0, 0xD559
+    pushf
+    cmp t1, 0xD659
     jne FAILURE
-
-
-
+    popf
+    
+    mov s1, 0xFF00          ; s1 = 0xFF00
+    addc s2, [s1+t2]        ; s2 = 0xC667, flags: Sign, Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    jns FAILURE
+    pushf
+    cmp s2, 0xC667
+    jne FAILURE
+    popf
+    
+    subb [s1+t2], s2        ; Mem: 0x0FF1, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    subb s4, s4, [t0]       ; s4 = 0xE1B7, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    pushf
+    cmp s4, 0xE1B7
+    jne FAILURE
+    popf
+    
+    subb [t2+s1], s4        ; Mem: 0x2E3A, flags: Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    subb s4, s4, [t0]       ; s4 = 0xB37C, flags: Sign
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    jns FAILURE
+    pushf
+    cmp s4, 0xB37C
+    jne FAILURE
+    popf
+    
+    addc t1, [s4+0xCC86]    ; t1 = 0x0493, flags: Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp t1, 0x0493
+    jne FAILURE
+    popf
+    
+    addc t1, [s4+0xCC86]    ; t1 = 0x32CE, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp t1, 0x32CE
+    jne FAILURE
+    popf
+    
+    addc [0x8002], s1       ; Mem: 0x2D3A, flags: Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    subb [t0], s1           ; Mem: 0x2E39, flags: Carry
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    subb t2, t1, [0x8002]   ; t2 = 0x0494, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    pushf
+    cmp t1, 0x32CE
+    jne FAILURE
+    popf
+    
+    subb t1, t1, [0x8002]   ; t1 = 0x0495, flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    cmp t1, 0x0495
+    jne FAILURE
+    
+    
+    
     mov t0, E_ZEROR
     mov [FAILURE_CAUSE], t0
 ; Test speed of zero register
