@@ -2,6 +2,7 @@
 
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
 ;#define STRICT_FLG    ; Uncomment this to force the correct flag values, even for undefined flags
+;#define TEST_RAM
 
 
 ; Error codes: if the test fails, check the table below to see where it failed
@@ -12,6 +13,9 @@ E_ALU_2 = 0x0012    ; Basic ALU instructions and flags (section B)
 E_ADDR  = 0x0013    ; ALU addressing modes
 E_ZEROR = 0x0021    ; Speed of zero register
 
+MASK_ROM = 0x0000
+MASK_RAM = 0x8000
+
 
 
 #ifdef STRICT_FLG
@@ -19,6 +23,15 @@ E_ZEROR = 0x0021    ; Speed of zero register
 #else
     #define FAILURE_UNDEFINED skip(0)   ; Mismatch on undefined flag continues execution
 #endif
+
+#ifdef TEST_RAM
+    #define ERR_MASK MASK_RAM
+#else
+    #define ERR_MASK MASK_ROM
+#endif
+
+#define sizeof_RAM(Begin) (pc - Begin)    ; Returns the data size between Begin and the current spot (RAM)
+
 
 #bank data
 FAILURE_CAUSE: #res 1
@@ -30,7 +43,26 @@ BEGIN:
     ; Perform restart
     nop
 
+#ifdef TEST_RAM
+    ; Testing RAM execution
+    
+    #ifdef DO_MANUAL_TEST
+        ; TODO: copy and execute MANUAL_TEST
+        ; TODO: call ENTER_EXIT_MANUAL_TEST
+    #endif
+
+        ; TODO: copy TEST_JUMPS
+        ; TODO: copy and execute AUTOMATED_TEST
+
+#endif
+
+
 #ifdef DO_MANUAL_TEST
+
+#ifdef TEST_RAM
+    ; First part of manual test will be copied to RAM
+    #bits 16
+#endif
 
 MANUAL_TEST:
 
@@ -187,80 +219,105 @@ MANUAL_TEST:
     jmp FAILURE         ; Not executed
     jz skip(1)          ; Taken
     jmp FAILURE         ; Not executed
-    add t0, t0, test_jmp.label
+    add t0, t0, .test_jmp.label
 
-test_jmp:
+.test_jmp:
     jnz t0              ; 1: Taken,     2: Not taken
-    jmp .end            ; 1: Not taken, 2: Taken
+    jmp ..skip          ; 1: Not taken, 2: Taken
 
-.label:
+..label:
     movf t1, zero       ; t1 = 0x0000, flags: Zero
-    jmp test_jmp
+    jmp .test_jmp
 
-.end:
+..skip:
     add t1, t1, 0x1111  ; t1 = 0x1111, flags: none
 
 
     ; call/ret instructions
-    call test_call      ; sp = 0x1233
+    call .test_call     ; sp = 0x1233
     
-    jmp test_call.end
+    jmp .test_call.end
 
-test_call:
+.test_call:
     mov s0, 0x1234      ; s0 = 0x1234
     ret                 ; sp = 0x1234
 
-.end:
+..end:
     add s0, s0, 0x1111  ; s0 = 0x2345
-    call test_recursive ; sp = 0x1233
+    call .test_recursive ; sp = 0x1233
 
-    jmp test_recursive.end
+    jmp .test_recursive.end
 
-test_recursive:
+.test_recursive:
     srl s0, s0, 1
     jz skip(1)
-    call test_recursive ; sp--
+    call .test_recursive ; sp--
     ret
 
-.end:
+..end:
     add s0, s0, 1       ; s0 = 0x0001
 
+; End of manual test: return to caller
+#ifdef TEST_RAM
+    exit
+#endif
 
+.size = sizeof_RAM(MANUAL_TEST)
+
+
+; enter/exit testing is always done in ROM
+#bits 32
+
+ENTER_EXIT_MANUAL_TEST:
     ; enter/exit and syscall/sysret instructions
-    mov a0, enter_test
-    mov a1, syscall_test
+    mov a0, .enter_test
+    mov a1, .enter_test.end
     mov a2, 0x1234
     call MEMORY.MemCopy
 
     enter 0x1234
 
     add t0, t0, 1       ; t0 = 0x1236
-    jmp end_enter_test
+    jmp .enter_test.end
 
-enter_test: ; Copy to RAM
+.enter_test: ; Copy to RAM
     mov t0, 0xABCD
     add t0, t0, 0x1111  ; t0 = 0xBCDE
     syscall syscall_test
-
+    
+; syscall_test:         (defined below)
+;     mov t0, 0x1234
+;     sysret
+    
     add t0, t0, 1       ; t0 = 0x1235
     exit
+..end:
 
-syscall_test:
-    mov t0, 0x1234
-    sysret
-
-end_enter_test:
     sub t0, t0, 1       ; t0 = 0x1235
+    
+#ifdef TEST_RAM
+    ; End of manual test: return to caller
+    ret
+#else
+    ; End of manual test: continue with automated test
+    jmp AUTOMATED_TEST
+#endif
+
 
 
 #endif
 
 
+#ifdef TEST_RAM
+    ; Automated test will be copied to RAM
+    #bits 16
+#endif
+
 AUTOMATED_TEST:
 
-    mov t0, E_JUMPS
+    mov t0, E_JUMPS|ERR_MASK
     mov [FAILURE_CAUSE], t0
-; Test conditional jumps
+    ; Test conditional jumps
     mov sp, 0x8000
     call TEST_JUMPS ; Call the jumps tester subroutine
 
@@ -268,7 +325,7 @@ AUTOMATED_TEST:
     jne FAILURE
 
 
-    mov t0, E_ALU_1
+    mov t0, E_ALU_1|ERR_MASK
     mov [FAILURE_CAUSE], t0
     ; ALU operations, part 1
 
@@ -407,7 +464,7 @@ AUTOMATED_TEST:
 
 
 
-    mov t0, E_MEM
+    mov t0, E_MEM|ERR_MASK
     mov [FAILURE_CAUSE], t0
     ; Basic memory instructions
     
@@ -496,7 +553,7 @@ AUTOMATED_TEST:
 
 
 
-    mov t0, E_ALU_2
+    mov t0, E_ALU_2|ERR_MASK
     mov [FAILURE_CAUSE], t0
     ; ALU operations, part 2
 
@@ -652,9 +709,9 @@ AUTOMATED_TEST:
 
 
 
-    mov t0, E_ADDR
+    mov t0, E_ADDR|ERR_MASK
     mov [FAILURE_CAUSE], t0
-; Test ALU addressing modes
+    ; Test ALU addressing modes
     mov t0, 0x8000
     mov [0x8002], s2        ; Mem: 0xF00D
     mov s0, [0x8002]        ; s0 = 0xF00D
@@ -834,9 +891,9 @@ AUTOMATED_TEST:
     
     
     
-    mov t0, E_ZEROR
+    mov t0, E_ZEROR|ERR_MASK
     mov [FAILURE_CAUSE], t0
-; Test speed of zero register
+    ; Test speed of zero register
     add t0, zero, zero
     jnz FAILURE
     cmp t0, zero
@@ -855,12 +912,6 @@ AUTOMATED_TEST:
 
     mov a0, "."
     mov [TERMINAL_ADDR], a0 ; Send char to terminal
-
-; Copy to RAM and repeat
-    ; TODO: Jump addresses need to be recalculated
-    ; todo  Change error messages
-    ; todo  syscall FAILURE instead of jumping
-
 
     ; Test finished!
     jmp SUCCESS
@@ -919,7 +970,7 @@ SUCCESS:
     mov sp, 0xFFFF
     mov a0, 0xFFFF
 
-    jmp pc
+    jmp pc  ; Infinite loop
 
     
 
@@ -928,18 +979,7 @@ SUCCESS:
 
 
 ; CODE FROM THE FORMER JUMPS TEST PROGRAM (TEST_JUMPS.ASM)
-
-; Data in program memory:
-args: ; Arguments to be tested
-#d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
-.size = sizeof(args)
-
-outputs: ; Expected outputs
-#d16    0x1559,    0x1559,      0x1559,     0x0376,     0x0376,      0x1d16,     0x1a96,     0x3d0a,     0x236a,     0x24ea,     0x3d0a,      0x0376
-.size = sizeof(outputs)
-
-progmem_end:
-
+AUTOMATED_TEST_SZ = sizeof_RAM(AUTOMATED_TEST)
 
 ; User program entry point
 TEST_JUMPS:
@@ -1048,8 +1088,29 @@ TEST_JUMPS:
     
     ret
 
+.size = sizeof_RAM(TEST_JUMPS)
 
-; CODE FROM THE OS LIBRARIES:
+
+
+
+; ALWAYS ON ROM
+#bits 32
+
+; Data in program memory:
+args: ; Arguments to be tested
+#d16    0, 0,      300, 300,    -1, -1,     0, 100,     5, 0x7fff,   10, -10,    0, 0x8000,  -1, 0x8000, 0x8000, 0,  0x8000, 1,  2, 1,       -2, -1
+.size = sizeof(args)
+
+outputs: ; Expected outputs
+#d16    0x1559,    0x1559,      0x1559,     0x0376,     0x0376,      0x1d16,     0x1a96,     0x3d0a,     0x236a,     0x24ea,     0x3d0a,      0x0376
+.size = sizeof(outputs)
+
+progmem_end:
+
+syscall_test:
+    mov t0, 0x1234
+    sysret
+    
 
 MEMORY:
 .MemCopy:
