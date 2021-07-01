@@ -1,5 +1,32 @@
 #include "CESC16.cpu"
 
+; =====================
+; CESC16 CPU TEST SUITE
+; =====================
+;
+; Automated tests for checking that a CESC16 CPU works properly
+;
+; How to use:
+;
+; 1. If DO_MANUAL_TEST is left uncommented, the tester will first perform the tests without
+;    checking the results. A human must supervise the code execution and check that the
+;    result of each instruction matches the comment written next to them.
+;
+; 2. Then, the automated tests will begin. If all tests pass, the LEDs on the registers will
+;    display a chess pattern. If a test fails, all registers will be set to 0xFFFF except for
+;    t0, which will contain the error code of the test that failed. Check the table below to
+;    see which test didn't pass.
+;
+; 3. If STRICT_FLG is defined, a flag that doesn't match the hardware simulation will be
+;    considered a failure, even if the flag is undefined after the executed instruction.
+;    Uncomment it for testing real hardware, and leave it commented for emulators.
+;
+; 4. If TEST_RAM is defined, the test suite will be copied to RAM and executed in user mode
+;    (from RAM). I recommend testing the ROM first; once it works you can uncomment that line
+;    and test RAM. Keep in mind that RAM testing is ~10x slower than testing directly in ROM.
+
+
+
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
 ; #define STRICT_FLG    ; Uncomment this to force the correct flag values, even for undefined flags
 ; #define TEST_RAM      ; Uncomment this to copy the tester program to RAM (test RAM execution)
@@ -942,10 +969,6 @@ AUTOMATED_TEST:
     cmp t0, 0xFFFF
     jne FAILURE
 
-
-
-    mov a0, "."
-    mov [TERMINAL_ADDR], a0 ; Send char to terminal
 
     ; Test finished!
     jmp SUCCESS
