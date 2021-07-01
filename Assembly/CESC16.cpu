@@ -71,14 +71,6 @@
     Op  =>  1
     Arg =>  0
 }
-#subruledef JMP_ADDR {
-    #ifdef RAM_PROGRAM
-        skip({Off: i16})   =>  pc+(Off+1)*2 ; Skips a number of instructions (RAM)
-    #else 
-        skip({Off: i16})   =>  pc+Off+1  ; Skips a number of instructions (ROM)
-    #endif
-    {Imm: u16}   =>   Imm
-}
 
 #ruledef INSTRUCTIONS {
     ; ALU
@@ -128,15 +120,15 @@
     popf            => 0x88010000
     
     ; Jumps
-    {jmp: JUMP} {rA: REG}        => 0b1100 @ jmp`4 @ 0x0 @ rA`4 @ 0x0000
-    {jmp: JUMP} {Addr: JMP_ADDR} => 0b1101 @ jmp`4 @ 0x00 @ Addr`16
+    {jmp: JUMP} {rA: REG}   => 0b1100 @ jmp`4 @ 0x0 @ rA`4 @ 0x0000
+    {jmp: JUMP} {Addr: u16} => 0b1101 @ jmp`4 @ 0x00 @ Addr`16
     
-    call {rB: REG}            => 0xE001 @ 0x000 @ rB`4
-    call {Addr: JMP_ADDR}     => 0xE101 @ Addr`16
-    syscall {rB: REG}         => 0xE201 @ 0x000 @ rB`4
-    syscall {Addr: JMP_ADDR}  => 0xE301 @ Addr`16
-    enter {rB: REG}           => 0xE401 @ 0x000 @ rB`4
-    enter {Addr: JMP_ADDR}    => 0xE501 @ Addr`16
+    call {rB: REG}          => 0xE001 @ 0x000 @ rB`4
+    call {Addr: u16}        => 0xE101 @ Addr`16
+    syscall {rB: REG}       => 0xE201 @ 0x000 @ rB`4
+    syscall {Addr: u16}     => 0xE301 @ Addr`16
+    enter {rB: REG}         => 0xE401 @ 0x000 @ rB`4
+    enter {Addr: u16}       => 0xE501 @ Addr`16
     ret     => 0xE6010000
     sysret  => 0xE7010000
     exit    => 0xE8010000
@@ -181,8 +173,13 @@
 
 ; Utilities
 #ifdef RAM_PROGRAM
-    #define sizeof(Begin) (pc - Begin)    ; Returns the data size between Begin and the current spot (RAM)
-#else 
+    ; Skips a number of instructions (RAM)
+    #define skip(Off) (pc + 2*(Off + 1))
+    ; Returns the data size between Begin and the current spot (RAM)
+    #define sizeof(Begin) (pc - Begin)
+#else
+    ; Skips a number of instructions (ROM)
+    #define skip(Off) (pc + Off + 1)
     #define sizeof(Begin) (pc - Begin)*2  ; Returns the data size between Begin and the current spot (ROM)
 #endif
 

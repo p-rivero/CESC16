@@ -25,6 +25,7 @@ MASK_RAM = 0x8000
 #endif
 
 #ifdef TEST_RAM
+    #undef skip
     #define skip(Off) (pc + 2*(Off + 1))
     #define ERR_MASK MASK_RAM
 #else
