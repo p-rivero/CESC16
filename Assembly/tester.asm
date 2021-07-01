@@ -1,8 +1,8 @@
 #include "CESC16.cpu"
 
 #define DO_MANUAL_TEST ; Comment out (using ;) this line to skip the initial manual test
-;#define STRICT_FLG    ; Uncomment this to force the correct flag values, even for undefined flags
-;#define TEST_RAM
+; #define STRICT_FLG    ; Uncomment this to force the correct flag values, even for undefined flags
+; #define TEST_RAM      ; Uncomment this to copy the tester program to RAM (test RAM execution)
 
 
 ; Error codes: if the test fails, check the table below to see where it failed
@@ -25,12 +25,16 @@ MASK_RAM = 0x8000
 #endif
 
 #ifdef TEST_RAM
+    #define skip(Off) (pc + 2*(Off + 1))
     #define ERR_MASK MASK_RAM
 #else
     #define ERR_MASK MASK_ROM
 #endif
 
-#define sizeof_RAM(Begin) (pc - Begin)    ; Returns the data size between Begin and the current spot (RAM)
+; Returns the data size between Begin and the current spot (RAM)
+#define sizeof_RAM(Begin) (pc - Begin)
+; Returns the address in ROM where a RAM symbol is located
+#define rom(Addr) (Addr/2)
 
 
 #bank data
@@ -47,13 +51,37 @@ BEGIN:
     ; Testing RAM execution
     
     #ifdef DO_MANUAL_TEST
-        ; TODO: copy and execute MANUAL_TEST
-        ; TODO: call ENTER_EXIT_MANUAL_TEST
+        ; Copy MANUAL_TEST to RAM
+        mov sp, 0x8000
+        mov a0, rom(MANUAL_TEST)
+        mov a1, rom(MANUAL_TEST) + MANUAL_TEST.size
+        mov a2, MANUAL_TEST ; RAM location
+        call MEMORY.MemCopy
+        
+        ; Execute MANUAL_TEST
+        enter MANUAL_TEST
+        
+        ; Manual test for enter/exit is stored in ROM
+        call ENTER_EXIT_MANUAL_TEST
     #endif
 
-        ; TODO: copy TEST_JUMPS
-        ; TODO: copy and execute AUTOMATED_TEST
+    mov a0, rom(TEST_JUMPS)
+    mov a1, rom(TEST_JUMPS) + TEST_JUMPS.size
+    mov a2, TEST_JUMPS ; RAM location
+    call MEMORY.MemCopy
+    
+    mov a0, rom(AUTOMATED_TEST)
+    mov a1, rom(AUTOMATED_TEST) + AUTOMATED_TEST_SZ
+    mov a2, AUTOMATED_TEST ; RAM location
+    call MEMORY.MemCopy
+    
+    ; Execute AUTOMATED_TEST
+    enter AUTOMATED_TEST
+    
+    ; Unreachable
+    jmp pc
 
+; ifdef TEST_RAM
 #endif
 
 
@@ -118,6 +146,7 @@ MANUAL_TEST:
 
     ; Basic memory instructions
     pushf               ; sp = 0x1233
+    mov s4, [0x100]     ; Store overwritten instruction in RAM
     mov s0, 0x5050      ; s0 = 0x5050
     mov [25], s0
     mov s1, [25]        ; s1 = 0x5050
@@ -145,6 +174,7 @@ MANUAL_TEST:
     mov s0, test_data-30    ; s0 = 0xXXXX
     peek s2, [test_data], 1 ; s2 = 0xBEEF
     peek s2, [s0+30], 0     ; s2 = 0xF00D
+    mov [0x100], s4     ; Restore overwritten instruction in RAM
     
 
     ; Advanced ALU instructions and flags
@@ -259,6 +289,7 @@ MANUAL_TEST:
 
 ; End of manual test: return to caller
 #ifdef TEST_RAM
+    mov sp, 0x7FFF
     exit
 #endif
 
@@ -304,7 +335,7 @@ ENTER_EXIT_MANUAL_TEST:
 #endif
 
 
-
+; ifdef DO_MANUAL_TEST
 #endif
 
 
@@ -501,9 +532,11 @@ AUTOMATED_TEST:
     mov s3, [s0+5]      ; s3 = 0x0100
     cmp s3, 0x0100
     jne FAILURE
-
+    
+    mov t0, [0x2F4]     ; Store overwritten instruction in RAM
     mov [s3+500], s3
     mov s0, [0x2F4]     ; s0 = 0x0100
+    mov [0x2F4], t0     ; Restore overwritten instruction in RAM
     cmp s0, 0x0100
     jne FAILURE
 
@@ -993,7 +1026,12 @@ TEST_JUMPS:
     mov a0, args
     mov a1, progmem_end
     mov a2, sp              ; Destination is the stack
+#ifdef TEST_RAM
+    mov v0, MEMORY.MemCopy
+    syscall CALL_GATE
+#else
     syscall MEMORY.MemCopy
+#endif
     
     mov s0, sp  ; Pointer to start of arguments
     add s2, sp, args.size   ; End of arguments
@@ -1134,3 +1172,8 @@ MEMORY:
 
 
 test_data:  #d32 0xBEEFF00D
+
+CALL_GATE:
+    call v0
+    sysret
+
