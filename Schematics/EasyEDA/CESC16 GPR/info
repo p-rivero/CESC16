@@ -1,0 +1,286 @@
+{
+  "uuid": "7bb63e47c4e7157cb24395ba4d0b7d5c",
+  "path": "Offline/CESC16 GPR",
+  "name": "CESC16 GPR",
+  "content": "Schematics and PCBs for the CESC16 computer",
+  "created_at": "2020-07-21 12:28:01",
+  "updated_at": "2021-04-22 12:08:40",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "871ee52275c9868848c54f7dc730d0ed",
+      "title": "GPR",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "a8969696a5e24a3284571e095e0d85e1": 2,
+        "ca94110f4544769d36adda4b0515e409": 4,
+        "b6f01a1cce3c847d5e3fa7501881bc76": 2,
+        "b3ae2f946ec28ceab3eddb0dfe90ae62": 2,
+        "beb7660708a0499fac6a060cc3851aa2": 2,
+        "8594922bf7656e1a593fe27b198cf7ff": 16,
+        "45aa9db41fe55f139f756074a7ef37a0": 1,
+        "0e7de0705db79c49f7005d174cdac6cc": 1,
+        "597701dbde98d3183fe5df5fb870ec57": 17,
+        "aa8afcdf2fb7888783da54ff10956e12": 1,
+        "050210eb44fb24b0f1f7d73e6372031b": 2,
+        "c1d9fd67d0194de1891bfba8f43ca210": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "19-213/Y2C-CQ2R2L/3T(CY)",
+          1,
+          "LED0603-R-RD",
+          "LED17",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-213/Y2C-CQ2R2L/3T(CY)",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72038",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "0e7de0705db79c49f7005d174cdac6cc"
+          }
+        ],
+        [
+          "FC-2012HRK-620D",
+          1,
+          "LED0805-RD",
+          "LED18",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "NATIONSTAR",
+            "BOM_Manufacturer Part": "FC-2012HRK-620D",
+            "BOM_Supplier Part": "C84256",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "a267edbe7c3c4a16b85fd51e936458d0",
+            "uuid": "45aa9db41fe55f139f756074a7ef37a0"
+          }
+        ],
+        [
+          "Header-Male-2.54_1x1",
+          2,
+          "HDR-TH_1P-P2.54-V-M",
+          "P2,P1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "ReliaPro",
+            "BOM_Manufacturer Part": "Header-Male-2.54_1x1",
+            "BOM_Supplier Part": "C81276",
+            "puuid": "3036750d1d0a4e9fa4035186551a7693",
+            "uuid": "050210eb44fb24b0f1f7d73e6372031b"
+          }
+        ],
+        [
+          "1K",
+          17,
+          "R0603",
+          "R15,R14,R13,R12,R11,R10,R9,R17,R16,R1,R2,R3,R4,R5,R6,R7,R8",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C21190",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "597701dbde98d3183fe5df5fb870ec57"
+          }
+        ],
+        [
+          "19-217/BHC-ZL1M2RY/3T",
+          16,
+          "LED0603-R-RD",
+          "LED5,LED4,LED3,LED1,LED16,LED15,LED14,LED13,LED12,LED11,LED10,LED9,LED2,LED7,LED6,LED8",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-217/BHC-ZL1M2RY/3T",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72041",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "8594922bf7656e1a593fe27b198cf7ff"
+          }
+        ],
+        [
+          "SN74HC377NSR",
+          2,
+          "SOIC-20_L13.3-W5.5-P1.27-LS7.8-BL",
+          "U1,U3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "SN74HC377NSR",
+            "BOM_Supplier Part": "C7647",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "0f54065e98304fa1805ed0cfdb6c665b",
+            "uuid": "a8969696a5e24a3284571e095e0d85e1"
+          }
+        ],
+        [
+          "2K",
+          1,
+          "R0603",
+          "R18",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF2001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C22975",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "aa8afcdf2fb7888783da54ff10956e12"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x16",
+          2,
+          "HDR-TH_16P-P2.54-V",
+          "H3,H4",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header1*16P pitch 2.54mm",
+            "BOM_Supplier Part": "C66987",
+            "puuid": "a249de7d161d4ae894913a5559e361f0",
+            "uuid": "b3ae2f946ec28ceab3eddb0dfe90ae62"
+          }
+        ],
+        [
+          "74HC245D,653",
+          2,
+          "SOIC-20_L13.0-W7.6-P1.27-LS10.6-BL",
+          "U4,U2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC245D,653",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C5625",
+            "puuid": "2231cec5876f48739c79682897c2b662",
+            "uuid": "b6f01a1cce3c847d5e3fa7501881bc76"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x3",
+          2,
+          "HDR-TH_3P-P2.54-V",
+          "H2,H1",
+          {
+            "BOM_Supplier Part": "C146243",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Boom Precision Elec",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x3",
+            "puuid": "7e70b923819e4f3bb9fdeaf4abdca9d3",
+            "uuid": "beb7660708a0499fac6a060cc3851aa2"
+          }
+        ],
+        [
+          "10uF",
+          1,
+          "CAP-TH_BD5.0-P2.00-D0.8-FD",
+          "C5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C125988",
+            "BOM_Manufacturer": "Nichicon",
+            "BOM_Manufacturer Part": "UPW1E100MDD",
+            "puuid": "3744bcbe1f464b01ae180f32d7d4b0c4",
+            "uuid": "c1d9fd67d0194de1891bfba8f43ca210"
+          }
+        ],
+        [
+          "100nF",
+          4,
+          "C0402",
+          "C3,C2,C1,C4",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL05B104KO5NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C1525",
+            "puuid": "f8eca159cd18407f9d5df374a1c2badf",
+            "uuid": "ca94110f4544769d36adda4b0515e409"
+          }
+        ]
+      ],
+      "updateTime": 1611574602,
+      "createTime": 1595315713,
+      "histories": [],
+      "created_at": "2020-07-21 09:15:13",
+      "updated_at": "2021-01-25 12:36:42"
+    },
+    {
+      "uuid": "7bb233e73f0ee0f16df13987ed78699c",
+      "puuid": "7bb63e47c4e7157cb24395ba4d0b7d5c",
+      "title": "GPR_PCB",
+      "filename": "GPR_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 1,
+        "3036750d1d0a4e9fa4035186551a7693": 2,
+        "e8901072611c4b309f15829075c906c5": 18,
+        "f8eca159cd18407f9d5df374a1c2badf": 4,
+        "2231cec5876f48739c79682897c2b662": 2,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2,
+        "a267edbe7c3c4a16b85fd51e936458d0": 1,
+        "a249de7d161d4ae894913a5559e361f0": 2,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 17,
+        "0f54065e98304fa1805ed0cfdb6c665b": 2
+      },
+      "BOM": [],
+      "updateTime": 1619086120,
+      "createTime": 1595328327,
+      "histories": [],
+      "created_at": "2020-07-21 12:45:27",
+      "updated_at": "2021-04-22 12:08:40"
+    },
+    {
+      "uuid": "9f5bf6c1ed11cba42e5310f43914cde0",
+      "puuid": "7bb63e47c4e7157cb24395ba4d0b7d5c",
+      "title": "GPR_PCB auto",
+      "filename": "GPR_PCB auto.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "e8901072611c4b309f15829075c906c5": 16,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 16,
+        "0f54065e98304fa1805ed0cfdb6c665b": 2,
+        "a249de7d161d4ae894913a5559e361f0": 2,
+        "2231cec5876f48739c79682897c2b662": 2,
+        "f8eca159cd18407f9d5df374a1c2badf": 4,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2
+      },
+      "BOM": [],
+      "updateTime": 1595342060,
+      "createTime": 1595329632,
+      "histories": [],
+      "created_at": "2020-07-21 13:07:12",
+      "updated_at": "2020-07-21 16:34:20"
+    }
+  ],
+  "sort": [
+    "470eb823be3ec170d3ae0782dca58b35",
+    "80af2819f729a76ee2b8d3049a203fa7",
+    "1ded615ed66e7d3c5acd74748ac5e1a6",
+    "871ee52275c9868848c54f7dc730d0ed"
+  ],
+  "title": "CESC16 GPR",
+  "foldername": "CESC16 GPR",
+  "schfilename": "CESC16 copy copy copy.json",
+  "schfilemtime": 1611574602177
+}

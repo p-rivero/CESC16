@@ -1,0 +1,305 @@
+{
+  "uuid": "251a1871da14429dbceba16ff105458a",
+  "path": "Offline/CESC16 BACKPLANE",
+  "name": "CESC16 BACKPLANE",
+  "content": "",
+  "created_at": "2020-08-27 09:54:07",
+  "updated_at": "2021-03-17 20:34:56",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "6d2128b02acbc3934228646897d608df",
+      "title": "Backplane",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "b3ae2f946ec28ceab3eddb0dfe90ae62": 41,
+        "050210eb44fb24b0f1f7d73e6372031b": 28,
+        "beb7660708a0499fac6a060cc3851aa2": 38,
+        "0b6ea66f1a77ef3069b26dadb3d73791": 6,
+        "c5d887c7679772878b729b3a44f4d373": 1,
+        "5ae8abab3ac7b2d6a3f7440de1a35612": 2,
+        "3e926514573827991a9dc1734d292267": 1,
+        "f367c9043b9d696814add546ab641d32": 1,
+        "bacf5553da266925c44144ce5fdc0a97": 6,
+        "76d1280f2be942b4a7894b917959b68f": 3,
+        "b19fd0001b3a851287f5ebb4ee3ab19b": 3,
+        "17eb339750ed2e3756214c176201643d": 2,
+        "298a97ab699240e080e9bf877b4af9bf": 1,
+        "8bdc13e9ae1f4d1db0b74b070ca0dff5": 4
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "Header-Female-2.54_1x2",
+          6,
+          "HDR-TH_2P-P2.54-V-M",
+          "H64,H62,H61,H66,H70,H74",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54-1*2PFemale",
+            "BOM_Supplier Part": "C49661",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "e6b180e1316a4d0690f78b72797504c2",
+            "uuid": "0b6ea66f1a77ef3069b26dadb3d73791"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x9",
+          1,
+          "HDR-TH_9P-P2.54-V",
+          "H71",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*9 Straight Female header",
+            "BOM_Supplier Part": "C39576",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "56621dc176674ff6a0a106b16bb6bd98",
+            "uuid": "3e926514573827991a9dc1734d292267"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x10",
+          2,
+          "HDR-TH_10P-P2.54-V-F",
+          "H67,H88",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*10P Straight Female header Gold-plated",
+            "BOM_Supplier Part": "C35445",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "17eda053266b4cdca86c67384ca2b6c2",
+            "uuid": "5ae8abab3ac7b2d6a3f7440de1a35612"
+          }
+        ],
+        [
+          "standoff",
+          4,
+          "STANDOFF",
+          "P31,P29,P30,P32",
+          {
+            "BOM_Supplier Part": "C124413",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "ReliaPro",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x4",
+            "puuid": "727ed57c220f4fb0b42bd2e357be2c1e",
+            "uuid": "8bdc13e9ae1f4d1db0b74b070ca0dff5"
+          }
+        ],
+        [
+          "Header-Male-2.54_1x6",
+          2,
+          "HDR-TH_6P-P2.54-V",
+          "H91,H90",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Header-Male-2.54_1x6",
+            "BOM_Supplier Part": "C37208",
+            "puuid": "fd9fc9865419407ab6a588b47dec0227",
+            "uuid": "17eb339750ed2e3756214c176201643d"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x5",
+          3,
+          "HDR-TH_5P-P2.54-V",
+          "H87,H51,H94",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*5p Female header",
+            "BOM_Supplier Part": "C50950",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb9c6c8fa19b477099719a0996c07c32",
+            "uuid": "76d1280f2be942b4a7894b917959b68f"
+          }
+        ],
+        [
+          "Header-Female-2.54_2x2",
+          1,
+          "HDR-TH_4P-P2.54-V-F-R2-C2-S2.54",
+          "H92",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "CONNFLY",
+            "BOM_Manufacturer Part": "DS1023-2*2SF11",
+            "BOM_Supplier Part": "C92273",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "d76c0526787e4154ac6e7ea8d7a45b7a",
+            "uuid": "298a97ab699240e080e9bf877b4af9bf"
+          }
+        ],
+        [
+          "Header-Male-2.54_1x1",
+          28,
+          "HDR-TH_1P-P2.54-V-M",
+          "P20,P10,P12,P13,P1,P15,P16,P17,P11,P18,P19,P9,P8,P21,P7,P22,P23,P24,P6,P25,P26,P27,P5,P4,P28,P3,P2,P14",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "ReliaPro",
+            "BOM_Manufacturer Part": "Header-Male-2.54_1x1",
+            "BOM_Supplier Part": "C81276",
+            "puuid": "3036750d1d0a4e9fa4035186551a7693",
+            "uuid": "050210eb44fb24b0f1f7d73e6372031b"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x16",
+          41,
+          "HDR-TH_16P-P2.54-V",
+          "H44,H45,H89,H80,H46,H3,H78,H52,H5,H6,H11,H77,H12,H76,H13,H103,H14,H27,H73,H102,H100,H4,H28,H29,H30,H69,H19,H20,H68,H21,H22,H35,H36,H57,H58,H59,H60,H37,H38,H63,H43",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header1*16P pitch 2.54mm",
+            "BOM_Supplier Part": "C66987",
+            "puuid": "a249de7d161d4ae894913a5559e361f0",
+            "uuid": "b3ae2f946ec28ceab3eddb0dfe90ae62"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x13",
+          3,
+          "HDR-TH_13P-P2.54-V",
+          "H85,H79,H86",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header 2.54-1*13P",
+            "BOM_Supplier Part": "C52709",
+            "puuid": "ef4b959f78a0437b870d6189a91fb3a8",
+            "uuid": "b19fd0001b3a851287f5ebb4ee3ab19b"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x8",
+          6,
+          "HDR-TH_8P-P2.54-V",
+          "H75,H82,H95,H96,H99,H101",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female headerHDR1X8-2.54",
+            "BOM_Supplier Part": "C27438",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "366e1b46b2ba4833900571d9613df11d",
+            "uuid": "bacf5553da266925c44144ce5fdc0a97"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x3",
+          28,
+          "HDR-TH_3P-P2.54-V",
+          "H40,H23,H39,H34,H33,H42,H41,H55,H32,H31,H26,H25,H48,H56,H47,H16,H15,H10,H9,H24,H18,H53,H8,H17,H7,H2,H1,H54",
+          {
+            "BOM_Supplier Part": "C146243",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Boom Precision Elec",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x3",
+            "puuid": "7e70b923819e4f3bb9fdeaf4abdca9d3",
+            "uuid": "beb7660708a0499fac6a060cc3851aa2"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x3",
+          10,
+          "HDR-TH_3P-P2.54-V",
+          "H49,H50,H84,H83,H81,H93,H97,H98,H104,H105",
+          {
+            "BOM_Supplier Part": "C146243",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Boom Precision Elec",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x3",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "7e70b923819e4f3bb9fdeaf4abdca9d3",
+            "uuid": "beb7660708a0499fac6a060cc3851aa2"
+          }
+        ],
+        [
+          "Header-Female-2.54_2x14",
+          1,
+          "HDR-TH_28P-P2.54-V-R2-C14-S2.54",
+          "H65",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2×14 Double female header",
+            "BOM_Supplier Part": "C60375",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "7ba95dc0f0e64c8f84be713cb7c1d907",
+            "uuid": "c5d887c7679772878b729b3a44f4d373"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x6",
+          1,
+          "HDR-TH_6P-P2.54-V-F",
+          "H72",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header 1*6p",
+            "BOM_Supplier Part": "C40877",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "84f1ed3c8ee94504833047c26b4d21a2",
+            "uuid": "f367c9043b9d696814add546ab641d32"
+          }
+        ]
+      ],
+      "updateTime": 1613899273,
+      "createTime": 1598514849,
+      "histories": [],
+      "created_at": "2020-08-27 09:54:09",
+      "updated_at": "2021-02-21 10:21:13"
+    },
+    {
+      "uuid": "87f23328b11b19dc8434f035c428bbb1",
+      "puuid": "251a1871da14429dbceba16ff105458a",
+      "title": "Backplane_PCB",
+      "filename": "Backplane_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "727ed57c220f4fb0b42bd2e357be2c1e": 4,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 38,
+        "d76c0526787e4154ac6e7ea8d7a45b7a": 1,
+        "bb9c6c8fa19b477099719a0996c07c32": 3,
+        "fd9fc9865419407ab6a588b47dec0227": 2,
+        "a249de7d161d4ae894913a5559e361f0": 41,
+        "ef4b959f78a0437b870d6189a91fb3a8": 3,
+        "366e1b46b2ba4833900571d9613df11d": 6,
+        "e6b180e1316a4d0690f78b72797504c2": 6,
+        "56621dc176674ff6a0a106b16bb6bd98": 1,
+        "84f1ed3c8ee94504833047c26b4d21a2": 1,
+        "3036750d1d0a4e9fa4035186551a7693": 28,
+        "7ba95dc0f0e64c8f84be713cb7c1d907": 1,
+        "17eda053266b4cdca86c67384ca2b6c2": 2
+      },
+      "BOM": [],
+      "updateTime": 1616009696,
+      "createTime": 1598514901,
+      "histories": [],
+      "created_at": "2020-08-27 09:55:01",
+      "updated_at": "2021-03-17 20:34:56"
+    }
+  ],
+  "sort": [],
+  "title": "CESC16 BACKPLANE",
+  "foldername": "CESC16 BACKPLANE",
+  "schfilename": "CESC16 BACKPLANE.json",
+  "schfilemtime": 1613899273999
+}

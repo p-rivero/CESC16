@@ -1,0 +1,544 @@
+{
+  "uuid": "e7be71cb9a76a3fd60c2c67cf7b40e16",
+  "path": "Offline/CESC16 CLK+Reset",
+  "name": "CESC16 CLK+Reset",
+  "content": "Schematics and PCBs for the CESC16 computer",
+  "created_at": "2021-07-02 13:30:04",
+  "updated_at": "2021-07-02 13:31:02",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "0b04fac4f26e9f3cb62693b016c10bb8",
+      "title": "PSU+CLK",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "17eb339750ed2e3756214c176201643d": 2,
+        "f841d847e7e148dbbac1a846468bcf85": 1,
+        "22bb8597f3a24a7e9c9e3b556716a344": 1,
+        "adc4878864c04fdda38c7f26470a136a": 1,
+        "91732fc54e5e4c618d4d5d7b734475f4": 1,
+        "6289997254024d058766b86b0d6797f1": 2,
+        "e8227dd34355fb317f612b5079bf676c": 2,
+        "b210af5a1436310a86e8b108e2e5a90b": 4,
+        "a1f9f07f21fc526f18327b54d81266a3": 2,
+        "93ebcd6080ba26a913b1eeabcd603876": 2,
+        "637415f70eb949abfaeba2abe658ee9b": 2,
+        "597701dbde98d3183fe5df5fb870ec57": 3,
+        "7492307c42164c03a6dbeb21025cf052": 1,
+        "9b2bf24fdf163a1a3e429373c4abaec1": 1,
+        "bbadef58014a4c3d93c2ab43bfc2daa9": 1,
+        "dd699e4e67eb42c48cb54d1b2afada97": 1,
+        "f7ee3b07db4642c6b5c4260f487d6c58": 2,
+        "1e8a84d50b8068dce3bee2549e07a715": 1,
+        "ac41f5ef3fc14138a7d867b5a4955c26": 2,
+        "43c22d797679400e98e91b4a6d2a93f1": 1,
+        "303ea8960e30b8ac9e63b17d909c778d": 1,
+        "45aa9db41fe55f139f756074a7ef37a0": 1,
+        "aa8afcdf2fb7888783da54ff10956e12": 1,
+        "76d1280f2be942b4a7894b917959b68f": 1,
+        "beb7660708a0499fac6a060cc3851aa2": 1,
+        "ca94110f4544769d36adda4b0515e409": 8,
+        "c1d9fd67d0194de1891bfba8f43ca210": 1,
+        "298a97ab699240e080e9bf877b4af9bf": 1,
+        "d19afd66eee0b7f6751eec8bbbf6b843": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "74HC14D,653",
+          1,
+          "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+          "U5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC14D,653",
+            "BOM_Supplier Part": "C5605",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb311a94a4cb4d43984afb997764cddb",
+            "uuid": "1e8a84d50b8068dce3bee2549e07a715"
+          }
+        ],
+        [
+          "330K",
+          1,
+          "R0603",
+          "R6",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF3303T5E",
+            "BOM_Supplier Part": "C23137",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "1bf59dff03ec4233aa077dc7cf0e92a1",
+            "uuid": "9b2bf24fdf163a1a3e429373c4abaec1"
+          }
+        ],
+        [
+          "Header-Male-2.54_1x6",
+          2,
+          "HDR-TH_6P-P2.54-V",
+          "H1,H3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Header-Male-2.54_1x6",
+            "BOM_Supplier Part": "C37208",
+            "puuid": "fd9fc9865419407ab6a588b47dec0227",
+            "uuid": "17eb339750ed2e3756214c176201643d"
+          }
+        ],
+        [
+          "1000uF",
+          1,
+          "CAP-Z-10MMX12.5MM",
+          "C2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "LELON",
+            "BOM_Manufacturer Part": "REA102M1JBK-1625",
+            "BOM_Supplier Part": "C134528",
+            "puuid": "03298de241594c598451cc4db00f4927",
+            "uuid": "22bb8597f3a24a7e9c9e3b556716a344"
+          }
+        ],
+        [
+          "74HC153D,653",
+          1,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U7",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC153D,653",
+            "BOM_Supplier Part": "C53334",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "43c22d797679400e98e91b4a6d2a93f1"
+          }
+        ],
+        [
+          "FC-2012HRK-620D",
+          1,
+          "LED0805-RD",
+          "LED3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "NATIONSTAR",
+            "BOM_Manufacturer Part": "FC-2012HRK-620D",
+            "BOM_Supplier Part": "C84256",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "a267edbe7c3c4a16b85fd51e936458d0",
+            "uuid": "45aa9db41fe55f139f756074a7ef37a0"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x5",
+          1,
+          "HDR-TH_5P-P2.54-V",
+          "H2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*5p Female header",
+            "BOM_Supplier Part": "C50950",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb9c6c8fa19b477099719a0996c07c32",
+            "uuid": "76d1280f2be942b4a7894b917959b68f"
+          }
+        ],
+        [
+          "10nF",
+          2,
+          "C0603",
+          "C5,C6",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "FH",
+            "BOM_Manufacturer Part": "0603B103K500NT",
+            "BOM_Supplier Part": "C57112",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "9796ce52d844439588f46357e429be00",
+            "uuid": "93ebcd6080ba26a913b1eeabcd603876"
+          }
+        ],
+        [
+          "Header-Female-2.54_2x2",
+          1,
+          "HDR-TH_4P-P2.54-V-F-R2-C2-S2.54",
+          "H5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "CONNFLY",
+            "BOM_Manufacturer Part": "DS1023-2*2SF11",
+            "BOM_Supplier Part": "C92273",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "d76c0526787e4154ac6e7ea8d7a45b7a",
+            "uuid": "298a97ab699240e080e9bf877b4af9bf"
+          }
+        ],
+        [
+          "19-217/GHC-YR1S2/3T",
+          1,
+          "LED0603-R-RD",
+          "LED2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-217/GHC-YR1S2/3T",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72043",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "303ea8960e30b8ac9e63b17d909c778d"
+          }
+        ],
+        [
+          "5AR2SC10 300-400",
+          1,
+          "LED-TH_BD5.0-P2.54-FD",
+          "LED1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "KENTO",
+            "BOM_Manufacturer Part": "5AR2SC10 300-400",
+            "BOM_Supplier Part": "C54140",
+            "puuid": "06b5cd08f3384a54acbf965c7106184b",
+            "uuid": "91732fc54e5e4c618d4d5d7b734475f4"
+          }
+        ],
+        [
+          "1K",
+          3,
+          "R0603",
+          "R4,R2,R5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C21190",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "597701dbde98d3183fe5df5fb870ec57"
+          }
+        ],
+        [
+          "1uF",
+          2,
+          "C0603",
+          "C3,C4",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL10A105KB8NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_Supplier Part": "C15849",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "9796ce52d844439588f46357e429be00",
+            "uuid": "637415f70eb949abfaeba2abe658ee9b"
+          }
+        ],
+        [
+          "100kA",
+          1,
+          "BOURNS PTV111-3",
+          "POT1",
+          {
+            "BOM_Supplier Part": "652-PTT111-3217A-B503",
+            "BOM_Supplier": "Mouser",
+            "BOM_Manufacturer": "Bourns",
+            "BOM_Manufacturer Part": "PTT111-3217A-B503",
+            "puuid": "702a0800a27c4694ac0193167d4fc3f5",
+            "uuid": "7492307c42164c03a6dbeb21025cf052"
+          }
+        ],
+        [
+          "74HC74D,652",
+          2,
+          "SOP-14_L8.6-W3.9-P1.27-LS6.0-BL",
+          "U1,U6",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C547150",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC74D,652",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "9551d5c0025140a28b5162d083989bd6",
+            "uuid": "6289997254024d058766b86b0d6797f1"
+          }
+        ],
+        [
+          "NE555DR",
+          2,
+          "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL",
+          "U3,U2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "NE555DR",
+            "BOM_Supplier Part": "C7593",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "fea11772be3e46fc9943dcf3594665f6",
+            "uuid": "a1f9f07f21fc526f18327b54d81266a3"
+          }
+        ],
+        [
+          "2K",
+          1,
+          "R0603",
+          "R10",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF2001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C22975",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "aa8afcdf2fb7888783da54ff10956e12"
+          }
+        ],
+        [
+          "OS102011MS2QN1",
+          2,
+          "SW-TH_OS102011MS2QN1",
+          "SW1,SW2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C221829",
+            "BOM_Manufacturer": "C&K",
+            "BOM_Manufacturer Part": "OS102011MS2QN1",
+            "puuid": "074feca94623415c9d07db6e9a632032",
+            "uuid": "ac41f5ef3fc14138a7d867b5a4955c26"
+          }
+        ],
+        [
+          "670688000",
+          1,
+          "USB-B-TH_67068-8000",
+          "USB",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C114097",
+            "BOM_Manufacturer": "MOLEX",
+            "BOM_Manufacturer Part": "670688000",
+            "puuid": "11fe68be0a3d4c0dbd343d43fe4b0567",
+            "uuid": "adc4878864c04fdda38c7f26470a136a"
+          }
+        ],
+        [
+          "10K",
+          4,
+          "R0603",
+          "R9,R11,R12,R3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1002T5E",
+            "BOM_Supplier Part": "C25804",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "1bf59dff03ec4233aa077dc7cf0e92a1",
+            "uuid": "b210af5a1436310a86e8b108e2e5a90b"
+          }
+        ],
+        [
+          "MXO45",
+          1,
+          "OSC_DIP8_SOCKET",
+          "U4",
+          {
+            "BOM_Manufacturer Part": "MXO45",
+            "puuid": "f5875fdb6eb54ecb85f1d6ed404ceb7c",
+            "uuid": "bbadef58014a4c3d93c2ab43bfc2daa9"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x3",
+          1,
+          "HDR-TH_3P-P2.54-V",
+          "H4",
+          {
+            "BOM_Supplier Part": "C146243",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Boom Precision Elec",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x3",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "7e70b923819e4f3bb9fdeaf4abdca9d3",
+            "uuid": "beb7660708a0499fac6a060cc3851aa2"
+          }
+        ],
+        [
+          "10uF",
+          1,
+          "CAP-TH_BD5.0-P2.00-D0.8-FD",
+          "C20",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C125988",
+            "BOM_Manufacturer": "Nichicon",
+            "BOM_Manufacturer Part": "UPW1E100MDD",
+            "puuid": "3744bcbe1f464b01ae180f32d7d4b0c4",
+            "uuid": "c1d9fd67d0194de1891bfba8f43ca210"
+          }
+        ],
+        [
+          "100nF",
+          8,
+          "C0402",
+          "C18,C8,C14,C7,C13,C17,C15,C16",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL05B104KO5NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C1525",
+            "puuid": "f8eca159cd18407f9d5df374a1c2badf",
+            "uuid": "ca94110f4544769d36adda4b0515e409"
+          }
+        ],
+        [
+          "470",
+          1,
+          "R0603",
+          "R1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF4700T5E",
+            "BOM_Supplier Part": "C23179",
+            "BOM_JLCPCB Part Class": "Basic Part",
+            "puuid": "398691f1f785460098bbe5ee6590333c",
+            "uuid": "d19afd66eee0b7f6751eec8bbbf6b843"
+          }
+        ],
+        [
+          "SN74HC161DR",
+          1,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U9",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "SN74HC161DR",
+            "BOM_Supplier Part": "C6824",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "dd699e4e67eb42c48cb54d1b2afada97"
+          }
+        ],
+        [
+          "button6*6*8.5",
+          2,
+          "KEY-TH_4P-L6.0-W6.0-P4.50",
+          "BTN1,BTN2",
+          {
+            "BOM_Supplier Part": "C59980",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "ReliaPro",
+            "BOM_Manufacturer Part": "button6*6*8.5",
+            "puuid": "9096c4e6bc254754b0b895e85df2faca",
+            "uuid": "e8227dd34355fb317f612b5079bf676c"
+          }
+        ],
+        [
+          "0",
+          2,
+          "R0806",
+          "R8,R7",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "8d98b068f5d54cda8fb74987d20c266c",
+            "uuid": "f7ee3b07db4642c6b5c4260f487d6c58"
+          }
+        ],
+        [
+          "100uF",
+          1,
+          "CAP-TH_BD6.3-P2.50-D1.0-FD",
+          "C1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C384623",
+            "BOM_Manufacturer": "Lelon",
+            "BOM_Manufacturer Part": "RGA101M1EBK-0611G",
+            "puuid": "1a9b494b74c34d3b879eb7f824b3824d",
+            "uuid": "f841d847e7e148dbbac1a846468bcf85"
+          }
+        ]
+      ],
+      "updateTime": 1622836110,
+      "createTime": 1594318117,
+      "histories": [],
+      "created_at": "2020-07-09 20:08:37",
+      "updated_at": "2021-06-04 21:48:30"
+    },
+    {
+      "uuid": "be09a273b9b532237da26d5a9682cbb9",
+      "title": "CLK_PCB",
+      "filename": "CLK_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "398691f1f785460098bbe5ee6590333c": 1,
+        "8d98b068f5d54cda8fb74987d20c266c": 2,
+        "d76c0526787e4154ac6e7ea8d7a45b7a": 1,
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 1,
+        "f8eca159cd18407f9d5df374a1c2badf": 8,
+        "1bf59dff03ec4233aa077dc7cf0e92a1": 5,
+        "bb9c6c8fa19b477099719a0996c07c32": 1,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 1,
+        "f5875fdb6eb54ecb85f1d6ed404ceb7c": 1,
+        "bb311a94a4cb4d43984afb997764cddb": 1,
+        "bc30752f83694054baa42649cbb6b7d0": 2,
+        "e8901072611c4b309f15829075c906c5": 4,
+        "9096c4e6bc254754b0b895e85df2faca": 2,
+        "9551d5c0025140a28b5162d083989bd6": 2,
+        "9796ce52d844439588f46357e429be00": 4,
+        "702a0800a27c4694ac0193167d4fc3f5": 1,
+        "fea11772be3e46fc9943dcf3594665f6": 2,
+        "fd9fc9865419407ab6a588b47dec0227": 2,
+        "11fe68be0a3d4c0dbd343d43fe4b0567": 1,
+        "03298de241594c598451cc4db00f4927": 1,
+        "06b5cd08f3384a54acbf965c7106184b": 1,
+        "074feca94623415c9d07db6e9a632032": 2,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 1,
+        "a267edbe7c3c4a16b85fd51e936458d0": 1,
+        "1a9b494b74c34d3b879eb7f824b3824d": 1
+      },
+      "BOM": [],
+      "updateTime": 1625225462,
+      "createTime": 1594661162,
+      "histories": [],
+      "created_at": "2020-07-13 19:26:02",
+      "updated_at": "2021-07-02 13:31:02"
+    }
+  ],
+  "sort": [
+    "b0ffe9363243bb3f1b08a80bbdf71e57",
+    "0b04fac4f26e9f3cb62693b016c10bb8",
+    "eff06529f22111f5eee8957609815232",
+    "9645b3376002965a6f0bd67b9a5bd721"
+  ],
+  "title": "CESC16 CLK+Reset",
+  "foldername": "CESC16 CLK+Reset",
+  "schfilename": "CESC16 CLK+Reset.json",
+  "schfilemtime": 1625225404919.8315
+}

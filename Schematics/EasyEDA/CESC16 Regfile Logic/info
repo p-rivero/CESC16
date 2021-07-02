@@ -1,0 +1,310 @@
+{
+  "uuid": "5c8a1a4c34ae5d20e1656a949efa7b46",
+  "path": "Offline/CESC16 Regfile Logic",
+  "name": "CESC16 Regfile Logic",
+  "content": "",
+  "created_at": "2021-01-20 13:44:28",
+  "updated_at": "2021-06-28 12:00:28",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "0594207f2856b04cf643ba288a3b48df",
+      "title": "Regfile",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "b3ae2f946ec28ceab3eddb0dfe90ae62": 3,
+        "dfe7e8e4a7ec4f19b255c491a979216d": 1,
+        "b6f01a1cce3c847d5e3fa7501881bc76": 6,
+        "098636fd172c48a7b3c6dde5faff2f9f": 4,
+        "5ae8abab3ac7b2d6a3f7440de1a35612": 1,
+        "0b6ea66f1a77ef3069b26dadb3d73791": 4,
+        "c5d887c7679772878b729b3a44f4d373": 1,
+        "ca94110f4544769d36adda4b0515e409": 15,
+        "c1d9fd67d0194de1891bfba8f43ca210": 2,
+        "aa8afcdf2fb7888783da54ff10956e12": 1,
+        "597701dbde98d3183fe5df5fb870ec57": 17,
+        "0e7de0705db79c49f7005d174cdac6cc": 1,
+        "45aa9db41fe55f139f756074a7ef37a0": 1,
+        "8594922bf7656e1a593fe27b198cf7ff": 16,
+        "7717bdbc62574629b879eb0016d9cb77": 4
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "Header-Female-2.54_1x2",
+          4,
+          "HDR-TH_2P-P2.54-V-M",
+          "H4,H2,H9,H8",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54-1*2PFemale",
+            "BOM_Supplier Part": "C49661",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "e6b180e1316a4d0690f78b72797504c2",
+            "uuid": "0b6ea66f1a77ef3069b26dadb3d73791"
+          }
+        ],
+        [
+          "19-213/Y2C-CQ2R2L/3T(CY)",
+          1,
+          "LED0603-R-RD",
+          "LED17",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-213/Y2C-CQ2R2L/3T(CY)",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72038",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "0e7de0705db79c49f7005d174cdac6cc"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x10",
+          1,
+          "HDR-TH_10P-P2.54-V-F",
+          "H1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*10P Straight Female header Gold-plated",
+            "BOM_Supplier Part": "C35445",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "17eda053266b4cdca86c67384ca2b6c2",
+            "uuid": "5ae8abab3ac7b2d6a3f7440de1a35612"
+          }
+        ],
+        [
+          "FC-2012HRK-620D",
+          1,
+          "LED0805-RD",
+          "LED18",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "NATIONSTAR",
+            "BOM_Manufacturer Part": "FC-2012HRK-620D",
+            "BOM_Supplier Part": "C84256",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "a267edbe7c3c4a16b85fd51e936458d0",
+            "uuid": "45aa9db41fe55f139f756074a7ef37a0"
+          }
+        ],
+        [
+          "74HC138D,653",
+          4,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U1,U3,U4,U2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC138D,653",
+            "BOM_Supplier Part": "C5602",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "7717bdbc62574629b879eb0016d9cb77"
+          }
+        ],
+        [
+          "SN74HC191DR",
+          4,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U9,U10,U8,U11",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C484752",
+            "BOM_Manufacturer": "Texas Instruments",
+            "BOM_Manufacturer Part": "SN74HC191DR",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "098636fd172c48a7b3c6dde5faff2f9f"
+          }
+        ],
+        [
+          "1K",
+          17,
+          "R0603",
+          "R9,R1,R2,R3,R4,R5,R6,R7,R8,R10,R11,R12,R13,R14,R15,R17,R16",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C21190",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "597701dbde98d3183fe5df5fb870ec57"
+          }
+        ],
+        [
+          "19-217/BHC-ZL1M2RY/3T",
+          16,
+          "LED0603-R-RD",
+          "LED8,LED5,LED14,LED13,LED12,LED11,LED10,LED9,LED15,LED7,LED6,LED4,LED3,LED2,LED1,LED16",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-217/BHC-ZL1M2RY/3T",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72041",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "8594922bf7656e1a593fe27b198cf7ff"
+          }
+        ],
+        [
+          "2K",
+          1,
+          "R0603",
+          "R18",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF2001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C22975",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "aa8afcdf2fb7888783da54ff10956e12"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x16",
+          3,
+          "HDR-TH_16P-P2.54-V",
+          "H3,H5,H7",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header1*16P pitch 2.54mm",
+            "BOM_Supplier Part": "C66987",
+            "puuid": "a249de7d161d4ae894913a5559e361f0",
+            "uuid": "b3ae2f946ec28ceab3eddb0dfe90ae62"
+          }
+        ],
+        [
+          "74HC245D,653",
+          6,
+          "SOIC-20_L13.0-W7.6-P1.27-LS10.6-BL",
+          "U15,U14,U6,U13,U12,U7",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC245D,653",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C5625",
+            "puuid": "2231cec5876f48739c79682897c2b662",
+            "uuid": "b6f01a1cce3c847d5e3fa7501881bc76"
+          }
+        ],
+        [
+          "10uF",
+          2,
+          "CAP-TH_BD5.0-P2.00-D0.8-FD",
+          "C15,C14",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C125988",
+            "BOM_Manufacturer": "Nichicon",
+            "BOM_Manufacturer Part": "UPW1E100MDD",
+            "puuid": "3744bcbe1f464b01ae180f32d7d4b0c4",
+            "uuid": "c1d9fd67d0194de1891bfba8f43ca210"
+          }
+        ],
+        [
+          "Header-Female-2.54_2x14",
+          1,
+          "HDR-TH_28P-P2.54-V-R2-C14-S2.54",
+          "H6",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2×14 Double female header",
+            "BOM_Supplier Part": "C60375",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "7ba95dc0f0e64c8f84be713cb7c1d907",
+            "uuid": "c5d887c7679772878b729b3a44f4d373"
+          }
+        ],
+        [
+          "100nF",
+          15,
+          "C0402",
+          "C13,C9,C4,C12,C8,C7,C6,C5,C10,C1,C16,C17,C2,C3,C11",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL05B104KO5NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C1525",
+            "puuid": "f8eca159cd18407f9d5df374a1c2badf",
+            "uuid": "ca94110f4544769d36adda4b0515e409"
+          }
+        ],
+        [
+          "CD74HC00M96",
+          1,
+          "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+          "U5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C107294",
+            "BOM_Manufacturer": "Texas Instruments",
+            "BOM_Manufacturer Part": "CD74HC00M96",
+            "puuid": "bb311a94a4cb4d43984afb997764cddb",
+            "uuid": "dfe7e8e4a7ec4f19b255c491a979216d"
+          }
+        ]
+      ],
+      "updateTime": 1624874313,
+      "createTime": 1611146690,
+      "histories": [],
+      "created_at": "2021-01-20 13:44:50",
+      "updated_at": "2021-06-28 11:58:33"
+    },
+    {
+      "uuid": "613237fe06fdee03790724a2f4825d09",
+      "puuid": "5c8a1a4c34ae5d20e1656a949efa7b46",
+      "title": "Regfile_PCB",
+      "filename": "Regfile_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "2231cec5876f48739c79682897c2b662": 6,
+        "f8eca159cd18407f9d5df374a1c2badf": 15,
+        "bc30752f83694054baa42649cbb6b7d0": 8,
+        "bb311a94a4cb4d43984afb997764cddb": 1,
+        "e6b180e1316a4d0690f78b72797504c2": 4,
+        "17eda053266b4cdca86c67384ca2b6c2": 1,
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 2,
+        "e8901072611c4b309f15829075c906c5": 18,
+        "7ba95dc0f0e64c8f84be713cb7c1d907": 1,
+        "a249de7d161d4ae894913a5559e361f0": 3,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 17,
+        "a267edbe7c3c4a16b85fd51e936458d0": 1
+      },
+      "BOM": [],
+      "updateTime": 1624874428,
+      "createTime": 1611248584,
+      "histories": [],
+      "created_at": "2021-01-21 18:03:04",
+      "updated_at": "2021-06-28 12:00:28"
+    }
+  ],
+  "sort": [
+    "0594207f2856b04cf643ba288a3b48df",
+    "d155954b6c81ff22424378ee71c01356"
+  ],
+  "title": "CESC16 Regfile Logic",
+  "foldername": "CESC16 Regfile Logic",
+  "schfilename": "CESC16 Regfile Logic.json",
+  "schfilemtime": 1624874313375
+}

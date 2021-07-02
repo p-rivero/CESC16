@@ -1,0 +1,378 @@
+{
+  "uuid": "ab981e0b2c7e1adca2f35d581a96ddc7",
+  "path": "Offline/CESC16 ALU",
+  "name": "CESC16 ALU",
+  "content": "Schematics and PCBs for the CESC16 computer",
+  "created_at": "2020-07-21 12:25:59",
+  "updated_at": "2021-06-22 17:26:24",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "1ce3adab5e10d088a55570dab38e5697",
+      "title": "ALU",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "c1d423e005044aac849684f2ba36e6f2": 4,
+        "b3ae2f946ec28ceab3eddb0dfe90ae62": 3,
+        "9eb082b8c1f64420b728cc84135dda7c": 4,
+        "d0153cecedd641b6b98e7c9201bcb755": 2,
+        "8c35b9cb64314c7bb5941db4d8ca423c": 2,
+        "d2e94b02b45b49b0bd2801bc29922ea2": 1,
+        "b6f01a1cce3c847d5e3fa7501881bc76": 6,
+        "b19fd0001b3a851287f5ebb4ee3ab19b": 1,
+        "76d1280f2be942b4a7894b917959b68f": 1,
+        "ca94110f4544769d36adda4b0515e409": 19,
+        "c1d9fd67d0194de1891bfba8f43ca210": 2,
+        "cf35262a9089155ca82a7b41f430ec7d": 4,
+        "beb7660708a0499fac6a060cc3851aa2": 2,
+        "45aa9db41fe55f139f756074a7ef37a0": 2,
+        "aa8afcdf2fb7888783da54ff10956e12": 2,
+        "0e7de0705db79c49f7005d174cdac6cc": 3,
+        "597701dbde98d3183fe5df5fb870ec57": 3
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "19-213/Y2C-CQ2R2L/3T(CY)",
+          3,
+          "LED0603-R-RD",
+          "LED5,LED3,LED4",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-213/Y2C-CQ2R2L/3T(CY)",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72038",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "0e7de0705db79c49f7005d174cdac6cc"
+          }
+        ],
+        [
+          "74HC08D,653",
+          2,
+          "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+          "U14,U17",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC08D,653",
+            "BOM_Supplier Part": "C5593",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb311a94a4cb4d43984afb997764cddb",
+            "uuid": "8c35b9cb64314c7bb5941db4d8ca423c"
+          }
+        ],
+        [
+          "SN74HC377NSR",
+          4,
+          "SOIC-20_L13.3-W5.5-P1.27-LS7.8-BL",
+          "U3,U1,U4,U2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "SN74HC377NSR",
+            "BOM_Supplier Part": "C7647",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "0f54065e98304fa1805ed0cfdb6c665b",
+            "uuid": "9eb082b8c1f64420b728cc84135dda7c"
+          }
+        ],
+        [
+          "FC-2012HRK-620D",
+          2,
+          "LED0805-RD",
+          "LED1,LED2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "NATIONSTAR",
+            "BOM_Manufacturer Part": "FC-2012HRK-620D",
+            "BOM_Supplier Part": "C84256",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "a267edbe7c3c4a16b85fd51e936458d0",
+            "uuid": "45aa9db41fe55f139f756074a7ef37a0"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x5",
+          1,
+          "HDR-TH_5P-P2.54-V",
+          "H5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*5p Female header",
+            "BOM_Supplier Part": "C50950",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb9c6c8fa19b477099719a0996c07c32",
+            "uuid": "76d1280f2be942b4a7894b917959b68f"
+          }
+        ],
+        [
+          "1K",
+          3,
+          "R0603",
+          "R5,R4,R3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C21190",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "597701dbde98d3183fe5df5fb870ec57"
+          }
+        ],
+        [
+          "2K",
+          2,
+          "R0603",
+          "R2,R1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF2001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C22975",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "aa8afcdf2fb7888783da54ff10956e12"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x16",
+          3,
+          "HDR-TH_16P-P2.54-V",
+          "H7,H2,H6",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header1*16P pitch 2.54mm",
+            "BOM_Supplier Part": "C66987",
+            "puuid": "a249de7d161d4ae894913a5559e361f0",
+            "uuid": "b3ae2f946ec28ceab3eddb0dfe90ae62"
+          }
+        ],
+        [
+          "74HC245D,653",
+          6,
+          "SOIC-20_L13.0-W7.6-P1.27-LS10.6-BL",
+          "U11,U19,U12,U16,U18,U15",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC245D,653",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C5625",
+            "puuid": "2231cec5876f48739c79682897c2b662",
+            "uuid": "b6f01a1cce3c847d5e3fa7501881bc76"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x13",
+          1,
+          "HDR-TH_13P-P2.54-V",
+          "H1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header 2.54-1*13P",
+            "BOM_Supplier Part": "C52709",
+            "puuid": "ef4b959f78a0437b870d6189a91fb3a8",
+            "uuid": "b19fd0001b3a851287f5ebb4ee3ab19b"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x3",
+          2,
+          "HDR-TH_3P-P2.54-V",
+          "H4,H3",
+          {
+            "BOM_Supplier Part": "C146243",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Boom Precision Elec",
+            "BOM_Manufacturer Part": "Header-Female-2.54_1x3",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "7e70b923819e4f3bb9fdeaf4abdca9d3",
+            "uuid": "beb7660708a0499fac6a060cc3851aa2"
+          }
+        ],
+        [
+          "10uF",
+          2,
+          "CAP-TH_BD5.0-P2.00-D0.8-FD",
+          "C20,C21",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C125988",
+            "BOM_Manufacturer": "Nichicon",
+            "BOM_Manufacturer Part": "UPW1E100MDD",
+            "puuid": "3744bcbe1f464b01ae180f32d7d4b0c4",
+            "uuid": "c1d9fd67d0194de1891bfba8f43ca210"
+          }
+        ],
+        [
+          "74HC181",
+          4,
+          "DIP24-2.54-30.6X7.62MM",
+          "U7,U5,U8,U6",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "0ae8feb35b6a49128838296355b1d6e8",
+            "uuid": "c1d423e005044aac849684f2ba36e6f2"
+          }
+        ],
+        [
+          "100nF",
+          19,
+          "C0402",
+          "C5,C8,C10,C11,C12,C13,C19,C18,C17,C16,C15,C7,C6,C9,C1,C3,C4,C14,C2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL05B104KO5NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C1525",
+            "puuid": "f8eca159cd18407f9d5df374a1c2badf",
+            "uuid": "ca94110f4544769d36adda4b0515e409"
+          }
+        ],
+        [
+          "10K",
+          4,
+          "RES-ARRAY-SMD_0603-8P-L3.2-W1.6-BL",
+          "RN1,RN2,RN3,RN4",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "4D03WGJ0103T5E",
+            "BOM_Supplier Part": "C29718",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "109e5b24485d430f95eaa4f2fe2ab4f9",
+            "uuid": "cf35262a9089155ca82a7b41f430ec7d"
+          }
+        ],
+        [
+          "74HC151D,653",
+          1,
+          "SOIC-16_L10.8-W4.5-P1.27-LS6.8-BL",
+          "U13",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC151D,653",
+            "BOM_Supplier Part": "C131692",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "9149e151f6a74451b67053c373ffaaac",
+            "uuid": "d2e94b02b45b49b0bd2801bc29922ea2"
+          }
+        ],
+        [
+          "74HC02D,653",
+          2,
+          "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+          "U10,U9",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC02D,653",
+            "BOM_Supplier Part": "C5588",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bb311a94a4cb4d43984afb997764cddb",
+            "uuid": "d0153cecedd641b6b98e7c9201bcb755"
+          }
+        ]
+      ],
+      "updateTime": 1624375584,
+      "createTime": 1594796219,
+      "histories": [],
+      "created_at": "2020-07-15 08:56:59",
+      "updated_at": "2021-06-22 17:26:24"
+    },
+    {
+      "uuid": "d93b963bc9a287723acd9fd9b40f4954",
+      "puuid": "ab981e0b2c7e1adca2f35d581a96ddc7",
+      "title": "ALU_PCB",
+      "filename": "ALU_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "e8901072611c4b309f15829075c906c5": 5,
+        "bb311a94a4cb4d43984afb997764cddb": 4,
+        "bb9c6c8fa19b477099719a0996c07c32": 1,
+        "2231cec5876f48739c79682897c2b662": 6,
+        "0ae8feb35b6a49128838296355b1d6e8": 4,
+        "f8eca159cd18407f9d5df374a1c2badf": 19,
+        "109e5b24485d430f95eaa4f2fe2ab4f9": 4,
+        "9149e151f6a74451b67053c373ffaaac": 1,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2,
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 2,
+        "a267edbe7c3c4a16b85fd51e936458d0": 2,
+        "ef4b959f78a0437b870d6189a91fb3a8": 1,
+        "a249de7d161d4ae894913a5559e361f0": 3,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 3,
+        "0f54065e98304fa1805ed0cfdb6c665b": 4
+      },
+      "BOM": [],
+      "updateTime": 1619088540,
+      "createTime": 1612277175,
+      "histories": [],
+      "created_at": "2021-02-02 15:46:15",
+      "updated_at": "2021-04-22 12:49:00"
+    },
+    {
+      "uuid": "769dd6cc4a47dd39770eb353e9711448",
+      "puuid": "ab981e0b2c7e1adca2f35d581a96ddc7",
+      "title": "ALU_PCB test",
+      "filename": "ALU_PCB test.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "bb311a94a4cb4d43984afb997764cddb": 4,
+        "0f54065e98304fa1805ed0cfdb6c665b": 4,
+        "bb9c6c8fa19b477099719a0996c07c32": 1,
+        "a249de7d161d4ae894913a5559e361f0": 3,
+        "2231cec5876f48739c79682897c2b662": 6,
+        "ef4b959f78a0437b870d6189a91fb3a8": 1,
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 1,
+        "0ae8feb35b6a49128838296355b1d6e8": 4,
+        "f8eca159cd18407f9d5df374a1c2badf": 19,
+        "109e5b24485d430f95eaa4f2fe2ab4f9": 4,
+        "9149e151f6a74451b67053c373ffaaac": 1,
+        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2
+      },
+      "BOM": [],
+      "updateTime": 1612433489,
+      "createTime": 1612431809,
+      "histories": [],
+      "created_at": "2021-02-04 10:43:29",
+      "updated_at": "2021-02-04 11:11:29"
+    }
+  ],
+  "sort": [
+    "ba2bfc6fc88c76a3bda9d99a4bfef7ce",
+    "79b2dd8da5a5b95ab2167fd2241864dd",
+    "1ce3adab5e10d088a55570dab38e5697",
+    "848ba804ae52532b69c70d74c19cb8ea"
+  ],
+  "title": "CESC16 ALU",
+  "foldername": "CESC16 ALU",
+  "schfilename": "CESC16 copy.json",
+  "schfilemtime": 1624375584574
+}

@@ -1,0 +1,425 @@
+{
+  "uuid": "db026d174866693b120859c2b30fcbf2",
+  "path": "Offline/CESC16 Memory",
+  "name": "CESC16 Memory",
+  "content": "",
+  "created_at": "2021-01-27 09:41:52",
+  "updated_at": "2021-06-23 20:18:04",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "c4297ee1abbd35d59ddb60817d6100d3",
+      "title": "Memory",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "dd699e4e67eb42c48cb54d1b2afada97": 4,
+        "b3ae2f946ec28ceab3eddb0dfe90ae62": 3,
+        "b6f01a1cce3c847d5e3fa7501881bc76": 4,
+        "cf35262a9089155ca82a7b41f430ec7d": 4,
+        "c0eb4777bb014fb2a62f64ea54c1f2f5": 4,
+        "bbeee1b812b942138435efc8a7afff0b": 1,
+        "7717bdbc62574629b879eb0016d9cb77": 1,
+        "bacf5553da266925c44144ce5fdc0a97": 1,
+        "a53bfc057ce742c1b5dbc069ecc6a723": 1,
+        "24726371cc9241de9182c5c2a3bc5aa4": 1,
+        "8fa9a539fc9243139377f70a106ba6f8": 1,
+        "f54e183fb5b84c73a7b59239e3015017": 1,
+        "ead5c1a4cf4b4227a97fb13c04ad046a": 1,
+        "9655a43122b447c2bf54d074d5854777": 2,
+        "ca94110f4544769d36adda4b0515e409": 17,
+        "c1d9fd67d0194de1891bfba8f43ca210": 2,
+        "7d702ab027b947cfafae79d4d6de95d6": 2,
+        "0b6ea66f1a77ef3069b26dadb3d73791": 2,
+        "8594922bf7656e1a593fe27b198cf7ff": 32,
+        "45aa9db41fe55f139f756074a7ef37a0": 3,
+        "0e7de0705db79c49f7005d174cdac6cc": 2,
+        "597701dbde98d3183fe5df5fb870ec57": 34,
+        "aa8afcdf2fb7888783da54ff10956e12": 3,
+        "f367c9043b9d696814add546ab641d32": 1,
+        "3e926514573827991a9dc1734d292267": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "Header-Female-2.54_1x2",
+          2,
+          "HDR-TH_2P-P2.54-V-M",
+          "H7,H5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54-1*2PFemale",
+            "BOM_Supplier Part": "C49661",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "e6b180e1316a4d0690f78b72797504c2",
+            "uuid": "0b6ea66f1a77ef3069b26dadb3d73791"
+          }
+        ],
+        [
+          "19-213/Y2C-CQ2R2L/3T(CY)",
+          2,
+          "LED0603-R-RD",
+          "LED36,LED17",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-213/Y2C-CQ2R2L/3T(CY)",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72038",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "0e7de0705db79c49f7005d174cdac6cc"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x9",
+          1,
+          "HDR-TH_9P-P2.54-V",
+          "H2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "2.54mm 1*9 Straight Female header",
+            "BOM_Supplier Part": "C39576",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "56621dc176674ff6a0a106b16bb6bd98",
+            "uuid": "3e926514573827991a9dc1734d292267"
+          }
+        ],
+        [
+          "100nF",
+          2,
+          "C0603",
+          "C19,C20",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C141080",
+            "BOM_Manufacturer": "KEMET",
+            "BOM_Manufacturer Part": "C0603C104J5RAC7867",
+            "puuid": "9796ce52d844439588f46357e429be00",
+            "uuid": "7d702ab027b947cfafae79d4d6de95d6"
+          }
+        ],
+        [
+          "FC-2012HRK-620D",
+          3,
+          "LED0805-RD",
+          "LED38,LED35,LED18",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "NATIONSTAR",
+            "BOM_Manufacturer Part": "FC-2012HRK-620D",
+            "BOM_Supplier Part": "C84256",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "a267edbe7c3c4a16b85fd51e936458d0",
+            "uuid": "45aa9db41fe55f139f756074a7ef37a0"
+          }
+        ],
+        [
+          "74HC138D,653",
+          1,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U15",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC138D,653",
+            "BOM_Supplier Part": "C5602",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "7717bdbc62574629b879eb0016d9cb77"
+          }
+        ],
+        [
+          "SST39SF040-70-4C-PHE_C220176",
+          2,
+          "ZIF32",
+          "U16,U19",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C220176",
+            "BOM_Manufacturer": "Microchip Tech",
+            "BOM_Manufacturer Part": "SST39SF040-70-4C-PHE",
+            "puuid": "882d5eb53ba44f598fa3867476af00a9",
+            "uuid": "9655a43122b447c2bf54d074d5854777"
+          }
+        ],
+        [
+          "1K",
+          34,
+          "R0603",
+          "R20,R29,R28,R27,R26,R25,R24,R23,R22,R21,R17,R19,R16,R35,R33,R32,R34,R15,R13,R14,R31,R30,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF1001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C21190",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "597701dbde98d3183fe5df5fb870ec57"
+          }
+        ],
+        [
+          "19-217/BHC-ZL1M2RY/3T",
+          32,
+          "LED0603-R-RD",
+          "LED14,LED30,LED13,LED12,LED11,LED10,LED9,LED8,LED7,LED6,LED5,LED4,LED3,LED2,LED19,LED16,LED29,LED28,LED27,LED26,LED25,LED1,LED31,LED24,LED34,LED33,LED23,LED22,LED21,LED20,LED15,LED32",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "EVERLIGHT",
+            "BOM_Manufacturer Part": "19-217/BHC-ZL1M2RY/3T",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C72041",
+            "puuid": "50dc3b6111d549ddb6686d77ab1ebdd8",
+            "uuid": "8594922bf7656e1a593fe27b198cf7ff"
+          }
+        ],
+        [
+          "2K",
+          3,
+          "R0603",
+          "R18,R37,R36",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "0603WAF2001T5E",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C22975",
+            "puuid": "e8901072611c4b309f15829075c906c5",
+            "uuid": "aa8afcdf2fb7888783da54ff10956e12"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x16",
+          3,
+          "HDR-TH_16P-P2.54-V",
+          "H4,H6,H3",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header1*16P pitch 2.54mm",
+            "BOM_Supplier Part": "C66987",
+            "puuid": "a249de7d161d4ae894913a5559e361f0",
+            "uuid": "b3ae2f946ec28ceab3eddb0dfe90ae62"
+          }
+        ],
+        [
+          "74HC245D,653",
+          4,
+          "SOIC-20_L13.0-W7.6-P1.27-LS10.6-BL",
+          "U7,U8,U6,U5",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC245D,653",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C5625",
+            "puuid": "2231cec5876f48739c79682897c2b662",
+            "uuid": "b6f01a1cce3c847d5e3fa7501881bc76"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x8",
+          1,
+          "HDR-TH_8P-P2.54-V",
+          "H8",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female headerHDR1X8-2.54",
+            "BOM_Supplier Part": "C27438",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "366e1b46b2ba4833900571d9613df11d",
+            "uuid": "bacf5553da266925c44144ce5fdc0a97"
+          }
+        ],
+        [
+          "CD74HCT30MG4",
+          1,
+          "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+          "U10",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "CD74HCT30MG4",
+            "BOM_Supplier Part": "C6558",
+            "puuid": "bb311a94a4cb4d43984afb997764cddb",
+            "uuid": "bbeee1b812b942138435efc8a7afff0b"
+          }
+        ],
+        [
+          "74HC173D,652",
+          4,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U12,U14,U11,U13",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C546651",
+            "BOM_Manufacturer": "Nexperia",
+            "BOM_Manufacturer Part": "74HC173D,652",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "c0eb4777bb014fb2a62f64ea54c1f2f5"
+          }
+        ],
+        [
+          "10uF",
+          2,
+          "CAP-TH_BD5.0-P2.00-D0.8-FD",
+          "C21,C22",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Supplier Part": "C125988",
+            "BOM_Manufacturer": "Nichicon",
+            "BOM_Manufacturer Part": "UPW1E100MDD",
+            "puuid": "3744bcbe1f464b01ae180f32d7d4b0c4",
+            "uuid": "c1d9fd67d0194de1891bfba8f43ca210"
+          }
+        ],
+        [
+          "100nF",
+          17,
+          "C0402",
+          "C11,C18,C16,C15,C14,C4,C3,C2,C1,C6,C7,C8,C9,C10,C17,C12,C13",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer Part": "CL05B104KO5NNNC",
+            "BOM_Manufacturer": "SAMSUNG",
+            "BOM_LCSC Assembly": "Yes",
+            "BOM_Supplier Part": "C1525",
+            "puuid": "f8eca159cd18407f9d5df374a1c2badf",
+            "uuid": "ca94110f4544769d36adda4b0515e409"
+          }
+        ],
+        [
+          "10K",
+          4,
+          "RES-ARRAY-SMD_0603-8P-L3.2-W1.6-BL",
+          "RN8,RN5,RN6,RN7",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "UniOhm",
+            "BOM_Manufacturer Part": "4D03WGJ0103T5E",
+            "BOM_Supplier Part": "C29718",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "109e5b24485d430f95eaa4f2fe2ab4f9",
+            "uuid": "cf35262a9089155ca82a7b41f430ec7d"
+          }
+        ],
+        [
+          "SN74HC161DR",
+          4,
+          "SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL",
+          "U4,U3,U1,U2",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "SN74HC161DR",
+            "BOM_Supplier Part": "C6824",
+            "BOM_JLCPCB SMD": "Yes",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "bc30752f83694054baa42649cbb6b7d0",
+            "uuid": "dd699e4e67eb42c48cb54d1b2afada97"
+          }
+        ],
+        [
+          "IS61C6416AL-12KLI",
+          1,
+          "ISSI-SOJ-44",
+          "U17",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "e9c1f764742542309cbf3a04f4eb7c8c",
+            "uuid": "ead5c1a4cf4b4227a97fb13c04ad046a"
+          }
+        ],
+        [
+          "Header-Female-2.54_1x6",
+          1,
+          "HDR-TH_6P-P2.54-V-F",
+          "H1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "BOOMELE",
+            "BOM_Manufacturer Part": "Female header 1*6p",
+            "BOM_Supplier Part": "C40877",
+            "BOM_LCSC Assembly": "Yes",
+            "puuid": "84f1ed3c8ee94504833047c26b4d21a2",
+            "uuid": "f367c9043b9d696814add546ab641d32"
+          }
+        ],
+        [
+          "74HC00",
+          1,
+          "SOIC-14_150MIL",
+          "U9",
+          {
+            "BOM_Manufacturer": "TI",
+            "BOM_Manufacturer Part": "SN74HC00D",
+            "BOM_Supplier": "Element14",
+            "BOM_Supplier Part": "9590870",
+            "puuid": "a5d6d4cb580941f48845567b11f6793a",
+            "uuid": "8fa9a539fc9243139377f70a106ba6f8"
+          }
+        ]
+      ],
+      "updateTime": 1624470680,
+      "createTime": 1611736946,
+      "histories": [],
+      "created_at": "2021-01-27 09:42:26",
+      "updated_at": "2021-06-23 19:51:20"
+    },
+    {
+      "uuid": "20fdf36d5d56fca0ed7442d1626cb735",
+      "puuid": "db026d174866693b120859c2b30fcbf2",
+      "title": "Memory_PCB",
+      "filename": "Memory_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "9796ce52d844439588f46357e429be00": 2,
+        "a249de7d161d4ae894913a5559e361f0": 3,
+        "366e1b46b2ba4833900571d9613df11d": 1,
+        "84f1ed3c8ee94504833047c26b4d21a2": 1,
+        "882d5eb53ba44f598fa3867476af00a9": 2,
+        "e8901072611c4b309f15829075c906c5": 37,
+        "2231cec5876f48739c79682897c2b662": 4,
+        "bc30752f83694054baa42649cbb6b7d0": 9,
+        "e9c1f764742542309cbf3a04f4eb7c8c": 1,
+        "bb311a94a4cb4d43984afb997764cddb": 1,
+        "a5d6d4cb580941f48845567b11f6793a": 1,
+        "3744bcbe1f464b01ae180f32d7d4b0c4": 2,
+        "f8eca159cd18407f9d5df374a1c2badf": 17,
+        "e6b180e1316a4d0690f78b72797504c2": 2,
+        "56621dc176674ff6a0a106b16bb6bd98": 1,
+        "50dc3b6111d549ddb6686d77ab1ebdd8": 34,
+        "a267edbe7c3c4a16b85fd51e936458d0": 3,
+        "109e5b24485d430f95eaa4f2fe2ab4f9": 4
+      },
+      "BOM": [],
+      "updateTime": 1624472284,
+      "createTime": 1611748910,
+      "histories": [],
+      "created_at": "2021-01-27 13:01:50",
+      "updated_at": "2021-06-23 20:18:04"
+    }
+  ],
+  "sort": [
+    "c4297ee1abbd35d59ddb60817d6100d3"
+  ],
+  "title": "CESC16 Memory",
+  "foldername": "CESC16 Memory",
+  "schfilename": "CESC16 Memory.json",
+  "schfilemtime": 1624470681069
+}
