@@ -25,7 +25,7 @@ STARTUP:
     ; If user code terminates, halt the computer
     syscall TIME.Halt
     
-    #res (INTERRUPT_VECTOR - pc) ; Fill space until interrupt vector (hardware entry point)
+    #addr INTERRUPT_VECTOR  ; Fill space until interrupt vector (hardware entry point)
     
 RAM_INT_HANDLER:
     ; This handler gets called when an interrupt occurs while running a program from RAM.
