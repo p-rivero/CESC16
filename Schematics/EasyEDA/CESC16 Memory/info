@@ -4,7 +4,7 @@
   "name": "CESC16 Memory",
   "content": "",
   "created_at": "2021-01-27 09:41:52",
-  "updated_at": "2021-06-23 20:18:04",
+  "updated_at": "2021-07-02 14:05:37",
   "stick": "",
   "documents": [
     {
@@ -408,11 +408,11 @@
         "109e5b24485d430f95eaa4f2fe2ab4f9": 4
       },
       "BOM": [],
-      "updateTime": 1624472284,
+      "updateTime": 1625227537,
       "createTime": 1611748910,
       "histories": [],
       "created_at": "2021-01-27 13:01:50",
-      "updated_at": "2021-06-23 20:18:04"
+      "updated_at": "2021-07-02 14:05:37"
     }
   ],
   "sort": [

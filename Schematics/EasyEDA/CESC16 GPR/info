@@ -4,7 +4,7 @@
   "name": "CESC16 GPR",
   "content": "Schematics and PCBs for the CESC16 computer",
   "created_at": "2020-07-21 12:28:01",
-  "updated_at": "2021-04-22 12:08:40",
+  "updated_at": "2021-07-02 15:25:18",
   "stick": "",
   "documents": [
     {
@@ -235,42 +235,17 @@
         "f8eca159cd18407f9d5df374a1c2badf": 4,
         "2231cec5876f48739c79682897c2b662": 2,
         "7e70b923819e4f3bb9fdeaf4abdca9d3": 2,
-        "a267edbe7c3c4a16b85fd51e936458d0": 1,
+        "0f54065e98304fa1805ed0cfdb6c665b": 2,
         "a249de7d161d4ae894913a5559e361f0": 2,
         "50dc3b6111d549ddb6686d77ab1ebdd8": 17,
-        "0f54065e98304fa1805ed0cfdb6c665b": 2
+        "a267edbe7c3c4a16b85fd51e936458d0": 1
       },
       "BOM": [],
-      "updateTime": 1619086120,
+      "updateTime": 1625231314,
       "createTime": 1595328327,
       "histories": [],
       "created_at": "2020-07-21 12:45:27",
-      "updated_at": "2021-04-22 12:08:40"
-    },
-    {
-      "uuid": "9f5bf6c1ed11cba42e5310f43914cde0",
-      "puuid": "7bb63e47c4e7157cb24395ba4d0b7d5c",
-      "title": "GPR_PCB auto",
-      "filename": "GPR_PCB auto.json",
-      "description": "",
-      "docType": "3",
-      "master": "",
-      "thumb": "/images/thumb-default.png",
-      "components": {
-        "e8901072611c4b309f15829075c906c5": 16,
-        "50dc3b6111d549ddb6686d77ab1ebdd8": 16,
-        "0f54065e98304fa1805ed0cfdb6c665b": 2,
-        "a249de7d161d4ae894913a5559e361f0": 2,
-        "2231cec5876f48739c79682897c2b662": 2,
-        "f8eca159cd18407f9d5df374a1c2badf": 4,
-        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2
-      },
-      "BOM": [],
-      "updateTime": 1595342060,
-      "createTime": 1595329632,
-      "histories": [],
-      "created_at": "2020-07-21 13:07:12",
-      "updated_at": "2020-07-21 16:34:20"
+      "updated_at": "2021-07-02 15:08:34"
     }
   ],
   "sort": [
@@ -281,6 +256,6 @@
   ],
   "title": "CESC16 GPR",
   "foldername": "CESC16 GPR",
-  "schfilename": "CESC16 copy copy copy.json",
+  "schfilename": "CESC16 GPR.json",
   "schfilemtime": 1611574602177
 }

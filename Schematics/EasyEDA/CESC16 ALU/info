@@ -4,7 +4,7 @@
   "name": "CESC16 ALU",
   "content": "Schematics and PCBs for the CESC16 computer",
   "created_at": "2020-07-21 12:25:59",
-  "updated_at": "2021-06-22 17:26:24",
+  "updated_at": "2021-07-02 15:21:35",
   "stick": "",
   "documents": [
     {
@@ -295,11 +295,11 @@
           }
         ]
       ],
-      "updateTime": 1624375584,
+      "updateTime": 1625232095,
       "createTime": 1594796219,
       "histories": [],
       "created_at": "2020-07-15 08:56:59",
-      "updated_at": "2021-06-22 17:26:24"
+      "updated_at": "2021-07-02 15:21:35"
     },
     {
       "uuid": "d93b963bc9a287723acd9fd9b40f4954",
@@ -328,41 +328,11 @@
         "0f54065e98304fa1805ed0cfdb6c665b": 4
       },
       "BOM": [],
-      "updateTime": 1619088540,
+      "updateTime": 1625228169,
       "createTime": 1612277175,
       "histories": [],
       "created_at": "2021-02-02 15:46:15",
-      "updated_at": "2021-04-22 12:49:00"
-    },
-    {
-      "uuid": "769dd6cc4a47dd39770eb353e9711448",
-      "puuid": "ab981e0b2c7e1adca2f35d581a96ddc7",
-      "title": "ALU_PCB test",
-      "filename": "ALU_PCB test.json",
-      "description": "",
-      "docType": "3",
-      "master": "",
-      "thumb": "/images/thumb-default.png",
-      "components": {
-        "bb311a94a4cb4d43984afb997764cddb": 4,
-        "0f54065e98304fa1805ed0cfdb6c665b": 4,
-        "bb9c6c8fa19b477099719a0996c07c32": 1,
-        "a249de7d161d4ae894913a5559e361f0": 3,
-        "2231cec5876f48739c79682897c2b662": 6,
-        "ef4b959f78a0437b870d6189a91fb3a8": 1,
-        "3744bcbe1f464b01ae180f32d7d4b0c4": 1,
-        "0ae8feb35b6a49128838296355b1d6e8": 4,
-        "f8eca159cd18407f9d5df374a1c2badf": 19,
-        "109e5b24485d430f95eaa4f2fe2ab4f9": 4,
-        "9149e151f6a74451b67053c373ffaaac": 1,
-        "7e70b923819e4f3bb9fdeaf4abdca9d3": 2
-      },
-      "BOM": [],
-      "updateTime": 1612433489,
-      "createTime": 1612431809,
-      "histories": [],
-      "created_at": "2021-02-04 10:43:29",
-      "updated_at": "2021-02-04 11:11:29"
+      "updated_at": "2021-07-02 14:16:09"
     }
   ],
   "sort": [
@@ -373,6 +343,6 @@
   ],
   "title": "CESC16 ALU",
   "foldername": "CESC16 ALU",
-  "schfilename": "CESC16 copy.json",
-  "schfilemtime": 1624375584574
+  "schfilename": "CESC16 ALU.json",
+  "schfilemtime": 1625232095280
 }
