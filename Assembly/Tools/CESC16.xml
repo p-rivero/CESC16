@@ -6,20 +6,20 @@
         
 		<KeyWord name="zero" />
 		<KeyWord name="sp" />
-		<KeyWord name="t0" />
-		<KeyWord name="t1" />
-		<KeyWord name="t2" />
-		<KeyWord name="t3" />
-		<KeyWord name="t4" />
-		<KeyWord name="a0" />
-		<KeyWord name="a1" />
-		<KeyWord name="a2" />
-		<KeyWord name="v0" />
+		<KeyWord name="bp" />
 		<KeyWord name="s0" />
 		<KeyWord name="s1" />
 		<KeyWord name="s2" />
 		<KeyWord name="s3" />
 		<KeyWord name="s4" />
+		<KeyWord name="t0" />
+		<KeyWord name="t1" />
+		<KeyWord name="t2" />
+		<KeyWord name="t3" />
+		<KeyWord name="a0" />
+		<KeyWord name="a1" />
+		<KeyWord name="a2" />
+		<KeyWord name="a3" />
         
 		<KeyWord name="mov" />
 		<KeyWord name="and" />

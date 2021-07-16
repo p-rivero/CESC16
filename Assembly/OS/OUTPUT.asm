@@ -31,8 +31,7 @@ OUTPUT:
 ; TODO: calculate time of division method
 .uint16:
     cmp a0, 10
-    jb skip(1)
-    jmp ..continue
+    jnb ..continue
     ; If the input is a number between 0 and 9, just print it and return
     add a0, a0, "0"
     jmp .char
@@ -40,34 +39,33 @@ OUTPUT:
 ..continue:
     ; Implement 16 bit Double dabble algorithm (convert to BCD)
     ; Takes ~1000 cycles
-    push s0
-    mov s0, 16      ; Iteration counter
+    mov t0, 16      ; Iteration counter
     mov a1, zero    ; BCD output is stored in a1 and a2
     mov a2, zero
     
 ..loop:
     ; For each BCD digit (4 bits) that is >= 5, increment it by 3
     ; Test lowest BCD digit
-    and v0, a1, 0x000F
-    cmp v0, 0x0005
+    and t1, a1, 0x000F
+    cmp t1, 0x0005
     jb skip(1)
     add a1, a1, 0x0003
     
     ; Test 2nd BCD digit
-    and v0, a1, 0x00F0
-    cmp v0, 0x0050
+    and t1, a1, 0x00F0
+    cmp t1, 0x0050
     jb skip(1)
     add a1, a1, 0x0030
     
     ; Test 3rd BCD digit
-    and v0, a1, 0x0F00
-    cmp v0, 0x0500
+    and t1, a1, 0x0F00
+    cmp t1, 0x0500
     jb skip(1)
     add a1, a1, 0x0300
     
     ; Test 4th BCD digit
-    and v0, a1, 0xF000
-    cmp v0, 0x5000
+    and t1, a1, 0xF000
+    cmp t1, 0x5000
     jb skip(1)
     add a1, a1, 0x3000
     
@@ -77,40 +75,39 @@ OUTPUT:
     sllc a1, a1
     sllc a2, a2
     
-    sub s0, s0, 1
+    sub t0, t0, 1
     jnz ..loop      ; Iterate 16 times
     
-    ; At this point, a0 = 0 and a2,a1 contain BCD. s0 and v0 are free to use
+    ; At this point, a0 = 0 and a2,a1 contain BCD. t0 and t1 are free to use
     ; Store numbers to print
-    and s0, a1, 0x000F  ; Store lowest BCD digit
-    mov [Print_Buffer+4], s0
+    and t0, a1, 0x000F  ; Store lowest BCD digit
+    mov [Print_Buffer+4], t0
     srl a1, a1, 4
-    and s0, a1, 0x000F  ; Store 2nd BCD digit
-    mov [Print_Buffer+3], s0
+    and t0, a1, 0x000F  ; Store 2nd BCD digit
+    mov [Print_Buffer+3], t0
     srl a1, a1, 4
-    and s0, a1, 0x000F  ; Store 3rd BCD digit
-    mov [Print_Buffer+2], s0
-    srl s0, a1, 4
-    mov [Print_Buffer+1], s0  ; Store 4th BCD digit
+    and t0, a1, 0x000F  ; Store 3rd BCD digit
+    mov [Print_Buffer+2], t0
+    srl t0, a1, 4
+    mov [Print_Buffer+1], t0  ; Store 4th BCD digit
     mov [Print_Buffer], a2    ; Store most significant BCD digit (5th)
     
 ; Remove leading zeroes
-    mov s0, Print_Buffer-1
-..rem_zeroes:           
-    add s0, s0, 1
-    movf a0, [s0]
+    mov t0, Print_Buffer-1
+..rem_zeroes:
+    add t0, t0, 1
+    movf a0, [t0]
     jz ..rem_zeroes
 
 ; Print number from first non-zero digit onward
 ..print:        
     add a0, a0, "0"
     call .char
-    add s0, s0, 1
-    mov a0, [s0]
-    cmp s0, Print_Buffer+4
+    add t0, t0, 1
+    mov a0, [t0]
+    cmp t0, Print_Buffer+4
     jbe ..print ; Loop while pointer is below or equal the address of last digit
     
-    pop s0  ; Restore context and return
     ret
     
     
@@ -120,10 +117,10 @@ OUTPUT:
     jle .uint16   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
-    mov a2, a0
+    mov t0, a0
     mov a0, "-"
     syscall .char
-    sub a0, zero, a2
+    sub a0, zero, t0
     jmp .uint16   ; Print unsigned integer and return
 
 
@@ -139,10 +136,10 @@ OUTPUT:
     jle .uint32   ; If 0 <= n, print n as an unsigned integer
     
     ; If number is strictly negative, output '-' and print absolute value
-    mov a2, a0
+    mov t0, a0
     mov a0, "-"
     syscall .char
-    sub a0, zero, a2    ; Negate a1,a2 and store in a1,a0
+    sub a0, zero, t0    ; Negate a1,t0 and store in a1,a0
     subb a1, zero, a1
     jmp .uint32   ; Print unsigned integer and return
 
@@ -150,7 +147,6 @@ OUTPUT:
 
 ; Prints a null-terminated string (constructed in RAM). a0 points at the first char of the string
 ; WARNING: each 16-bit word contains A SINGLE 8-bit char (upper 8 bits must be 0x00)
-; TODO: Find better name. If utf16be support gets added to customasm, make this the default .string routine
 .string:
     mov a1, a0      ; Move pointer to a1 (use a0 as argument of .char)
 ..loop:

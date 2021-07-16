@@ -6,7 +6,7 @@ output_bin = $(filename).bin
 
 temporary = temp.preprocessed
 
-preprocess = cpp -x assembler-with-cpp -nostdinc -CC -undef -P $(1) > $(temporary)
+preprocess = cpp -x assembler-with-cpp -include CESC16.cpu -nostdinc -CC -undef -P $(1) > $(temporary)
 remove = rm -f $(temporary)
 
 assemble: customasm.exe

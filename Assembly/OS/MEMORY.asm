@@ -14,11 +14,12 @@ MEMORY:
     cmp a1, a0      ; If (address of last element) <= (address of first element),
     jbe ..return    ; then return (nothing to copy)
     
+    ; Todo: Unroll loop
 ..loop:
-    peek v0, [a0+0], Up     ; Read upper 16-bit word / opcode
-    mov [a2], v0            ; Store to lower address (big endian)
-    peek v0, [a0+0], Low    ; Read lower 16-bit word / argument
-    mov [a2+1], v0          ; Store to upper address (big endian)
+    peek t3, [a0], Up       ; Read upper 16-bit word / opcode
+    mov [a2], t3            ; Store to lower address (big endian)
+    peek t3, [a0], Low      ; Read lower 16-bit word / argument
+    mov [a2+1], t3          ; Store to upper address (big endian)
     add a0, a0, 1           ; Increment program memory pointer
     add a2, a2, 2           ; Increment data memory pointer
     
@@ -33,9 +34,9 @@ MEMORY:
 ; In order to call OS subroutines (or any subroutine stored in ROM) from a program running in RAM,
 ; this call gate must be used (otherwise the ret instruction would stay in ROM).
 ; If the subroutine will never return (STARTUP.Reset, TIME.Halt), then syscall can be used directly.
-; Usage example:  mov v0, MATH.Mult
+; Usage example:  mov t0, MATH.Mult
 ;                 syscall CALL_GATE
 CALL_GATE:
-    call v0
+    call t0
     sysret
 

@@ -114,11 +114,11 @@
             "patterns": [
                 {
                     "name": "support.type.register.x86.asm",
-                    "match": "\\b(?i:pc|zero|sp|t0|t1|t2|t3|t4|v0|a0|a1|a2|s0|s1|s2|s3|s4)\\b"
+                    "match": "\\b(?i:pc|zero|sp|bp|s0|s1|s2|s3|s4|t0|t1|t2|t3|a0|a1|a2|a3)\\b"
                 },
                 {
                     "name": "keyword.mnemonic.x86.asm",
-                    "match": "\\s(?i:mov|and|or|xor|add|sub|addc|subb|nand|not|nor|xnor|jmp|jz|je|jnz|jne|jc|jb|jnae|jnc|jae|jnb|jo|jno|js|jns|ja|jnbe|jbe|jna|jl|jnge|jle|jng|jg|jnle|jge|jnl|sll|sllc|srl|sra|movf|swap|peek|push|pushf|pop|popf|call|syscall|enter|ret|sysret|exit|cmp|test|mask|clrf|lw|sw|lb|lbu|sb|nop)\\s"
+                    "match": "\\s(?i:mov|and|or|xor|add|sub|addc|subb|nand|not|nor|xnor|jmp|jz|je|jnz|jne|jc|jb|jnae|jnc|jae|jnb|jo|jno|js|jns|ja|jnbe|jbe|jna|jl|jnge|jle|jng|jg|jnle|jge|jnl|sll|sllc|srl|sra|movf|swap|peek|push|pushf|pop|popf|call|syscall|enter|ret|sysret|exit|cmp|test|mask|clrf|nop)\\s"
                 }
             ]
         },

@@ -3,8 +3,7 @@
 ; ======================
 ; This example shows how to attach and detach interrupt handlers for different interrupt events
 
-; Include definition and libraries
-#include "CESC16.cpu"
+; Include libraries
 #include "OS/OS.inc"
 
 #bank data

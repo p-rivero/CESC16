@@ -1,5 +1,3 @@
-#include "CESC16.cpu"
-
 ; =====================
 ; CESC16 CPU TEST SUITE
 ; =====================
@@ -127,7 +125,7 @@ MANUAL_TEST:
     mov t1, 0xFFFF
     mov t2, 0xFFFF
     mov t3, 0xFFFF
-    mov t4, 0xFFFF
+    mov bp, 0xFFFF
     mov s0, 0xFFFF
     mov s1, 0xFFFF
     mov s2, 0xFFFF
@@ -136,14 +134,14 @@ MANUAL_TEST:
     mov a0, 0xFFFF
     mov a1, 0xFFFF
     mov a2, 0xFFFF
-    mov v0, 0xFFFF
+    mov a3, 0xFFFF
     mov sp, 0xFFFF
 
     mov t0, 0x0000
     mov t1, 0x0001
     mov t2, 0x0002
     mov t3, 0x0004
-    mov t4, 0x0008
+    mov bp, 0x0008
     mov s0, 0x0010
     mov s1, 0x0020
     mov s2, 0x0040
@@ -152,7 +150,7 @@ MANUAL_TEST:
     mov a0, 0x0200
     mov a1, 0x0400
     mov a2, 0x0800
-    mov v0, 0x1000
+    mov a3, 0x1000
     mov sp, 0x8001
     mov zero, 0x2000    ; This shouldn't do anything
 
@@ -160,17 +158,17 @@ MANUAL_TEST:
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
     add t0, t0, t2      ; t0 = 0x0005, flags: none
     add sp, sp, 0xE123  ; sp = 0x6124, flags: Carry, oVerflow
-    mov sp, v0          ; sp = 0x1000, flags unchanged
+    mov sp, a3          ; sp = 0x1000, flags unchanged
     sll sp, sp, 3       ; sp = 0x8000, flags: Sign
-    sra v0, sp, 9       ; v0 = 0xFFC0, flags: Sign
-    srl v0, sp, 9       ; v0 = 0x0040, flags: none
-    sra v0, v0, 1       ; v0 = 0x0020, flags: none
+    sra a3, sp, 9       ; a3 = 0xFFC0, flags: Sign
+    srl a3, sp, 9       ; a3 = 0x0040, flags: none
+    sra a3, a3, 1       ; a3 = 0x0020, flags: none
     sll sp, sp, 1       ; sp = 0x0000, flags: Zero, Carry
     movf sp, 0x0001     ; sp = 0x0001, flags: none
-    sra v0, sp, 1       ; v0 = 0x0000, flags: Zero (Carry)
+    sra a3, sp, 1       ; a3 = 0x0000, flags: Zero (Carry)
     srl sp, sp, 1       ; sp = 0x0000, flags: Zero
     mov sp, 0x1234      ; sp = 0x1234, flags unchanged
-    mov v0, sp          ; v0 = 0x1234, flags unchanged
+    mov a3, sp          ; a3 = 0x1234, flags unchanged
 
     ; Basic memory instructions
     pushf               ; sp = 0x1233
@@ -208,21 +206,21 @@ MANUAL_TEST:
     ; Advanced ALU instructions and flags
     push 0b1111         ; sp = 0x1233, flags unchanged
     popf                ; sp = 0x1234, flags: Zero, Carry, oVerflow, Sign
-    addc v0, v0, 0x20   ; v0 = 0x1255, flags: none
-    addc v0, sp, 0x20   ; v0 = 0x1254, flags: none
+    addc a3, a3, 0x20   ; a3 = 0x1255, flags: none
+    addc a3, sp, 0x20   ; a3 = 0x1254, flags: none
     mov t0, 0xAAAA      ; t0 = 0xAAAA, flags unchanged
-    xor t1, v0, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
+    xor t1, a3, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
     clrf                ; registers unchanged, flags: none
-    xor t1, v0, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
+    xor t1, a3, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
     add t2, t0, t1      ; t2 = 0x63A8, flags: oVerflow, Carry
     sub t2, t0, t1      ; t2 = 0xF1AC, flags: Sign, Carry
     subb t2, t2, 0x8001 ; t2 = 0x71AA, flags: none
     subb t2, t2, 0x8001 ; t2 = 0xF1A9, flags: oVerflow, Sign, Carry
     subb t3, t2, zero   ; t3 = 0xF1A8, flags: Sign
     xor t3, t3, t3      ; t3 = 0x0000, flags: Zero
-    sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
-    srl s4, t4, 15      ; s4 = 0x0001, flags: none
-    sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
+    sll bp, t2, 15      ; bp = 0x8000, flags: Sign
+    srl s4, bp, 15      ; s4 = 0x0001, flags: none
+    sra s4, bp, 15      ; s4 = 0xFFFF, flags: Sign
     sub t0, zero,0x8000 ; t0 = 0x8000, flags: Carry, oVerflow, Sign
     
     
@@ -392,7 +390,7 @@ AUTOMATED_TEST:
     mov t1, 0x0001
     mov t2, 0x0002
     mov t3, 0x0004
-    mov t4, 0x0008
+    mov bp, 0x0008
     mov s0, 0x0010
     mov s1, 0x0020
     mov s2, 0x0040
@@ -401,7 +399,7 @@ AUTOMATED_TEST:
     mov a0, 0x0200
     mov a1, 0x0400
     mov a2, 0x0800
-    mov v0, 0x1000
+    mov a3, 0x1000
     mov sp, 0x8001
 
     or t0, t1, t2       ; t0 = 0x0003, flags: none (Carry)
@@ -430,7 +428,7 @@ AUTOMATED_TEST:
     jne FAILURE
     popf
 
-    mov sp, v0          ; sp = 0x1000, flags unchanged
+    mov sp, a3          ; sp = 0x1000, flags unchanged
     jz FAILURE
     jnc FAILURE
     jno FAILURE
@@ -446,28 +444,28 @@ AUTOMATED_TEST:
     cmp sp, 0x8000
     jne FAILURE
 
-    sra v0, sp, 9       ; v0 = 0xFFC0, flags: Sign
+    sra a3, sp, 9       ; a3 = 0xFFC0, flags: Sign
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     jns FAILURE
-    cmp v0, 0xFFC0
+    cmp a3, 0xFFC0
     jne FAILURE
 
-    srl v0, sp, 9       ; v0 = 0x0040, flags: none
+    srl a3, sp, 9       ; a3 = 0x0040, flags: none
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
-    cmp v0, 0x0040
+    cmp a3, 0x0040
     jne FAILURE
 
-    sra v0, v0, 1       ; v0 = 0x0020, flags: none
+    sra a3, a3, 1       ; a3 = 0x0020, flags: none
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
-    cmp v0, 0x0020
+    cmp a3, 0x0020
     jne FAILURE
 
     sll sp, sp, 1       ; sp = 0x0000, flags: Zero, Carry
@@ -486,12 +484,12 @@ AUTOMATED_TEST:
     cmp sp, 0x0001
     jne FAILURE
 
-    sra v0, sp, 1       ; v0 = 0x0000, flags: Zero (Carry)
+    sra a3, sp, 1       ; a3 = 0x0000, flags: Zero (Carry)
     jnz FAILURE
     jnc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
-    cmp v0, zero
+    cmp a3, zero
     jne FAILURE
 
     srl sp, sp, 1       ; sp = 0x0000, flags: Zero
@@ -510,13 +508,13 @@ AUTOMATED_TEST:
     cmp sp, 0x1234
     jne FAILURE
 
-    mov v0, sp          ; v0 = 0x1234, flags unchanged
+    mov a3, sp          ; a3 = 0x1234, flags unchanged
     jnz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
     js FAILURE
     pushf               ; sp = 0x1233
-    cmp v0, 0x1234
+    cmp a3, 0x1234
     jne FAILURE
     cmp sp, 0x1233
     jne FAILURE
@@ -632,23 +630,23 @@ AUTOMATED_TEST:
     jno FAILURE
     jns FAILURE
 
-    addc v0, v0, 0x20   ; v0 = 0x1255, flags: none
+    addc a3, a3, 0x20   ; a3 = 0x1255, flags: none
     jz FAILURE
     jc FAILURE
     jo FAILURE
     js FAILURE
     pushf
-    cmp v0, 0x1255
+    cmp a3, 0x1255
     jne FAILURE
     popf
 
-    addc v0, sp, 0x20   ; v0 = 0x1254, flags: none
+    addc a3, sp, 0x20   ; a3 = 0x1254, flags: none
     jz FAILURE
     jc FAILURE
     jo FAILURE
     js FAILURE
     pushf
-    cmp v0, 0x1254
+    cmp a3, 0x1254
     jne FAILURE
     popf
 
@@ -660,7 +658,7 @@ AUTOMATED_TEST:
     cmp t0, 0xAAAA
     jne FAILURE
 
-    xor t1, v0, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
+    xor t1, a3, 0xAAAA  ; t1 = 0xB8FE, flags: Sign (oVerflow, Carry)
     jz FAILURE
     jnc FAILURE_UNDEFINED
     jno FAILURE_UNDEFINED
@@ -674,7 +672,7 @@ AUTOMATED_TEST:
     jo FAILURE
     js FAILURE
 
-    xor t1, v0, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
+    xor t1, a3, t0      ; t1 unchanged, flags: Sign (oVerflow, Carry)
     jz FAILURE
     jnc FAILURE_UNDEFINED
     jno FAILURE_UNDEFINED
@@ -736,15 +734,15 @@ AUTOMATED_TEST:
     cmp t3, zero
     jne FAILURE
 
-    sll t4, t2, 15      ; t4 = 0x8000, flags: Sign
+    sll bp, t2, 15      ; bp = 0x8000, flags: Sign
     jz FAILURE
     jc FAILURE
     jo FAILURE_UNDEFINED
     jns FAILURE
-    cmp t4, 0x8000
+    cmp bp, 0x8000
     jne FAILURE
 
-    srl s4, t4, 15      ; s4 = 0x0001, flags: none
+    srl s4, bp, 15      ; s4 = 0x0001, flags: none
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
@@ -752,7 +750,7 @@ AUTOMATED_TEST:
     cmp s4, 0x0001
     jne FAILURE
 
-    sra s4, t4, 15      ; s4 = 0xFFFF, flags: Sign
+    sra s4, bp, 15      ; s4 = 0xFFFF, flags: Sign
     jz FAILURE
     jc FAILURE_UNDEFINED
     jo FAILURE_UNDEFINED
@@ -981,7 +979,7 @@ FAILURE:
     mov t1, 0xFFFF
     mov t2, 0xFFFF
     mov t3, 0xFFFF
-    mov t4, 0xFFFF
+    mov bp, 0xFFFF
     mov s0, 0xFFFF
     mov s1, 0xFFFF
     mov s2, 0xFFFF
@@ -989,7 +987,7 @@ FAILURE:
     mov s4, 0xFFFF
     mov a1, 0xFFFF
     mov a2, 0xFFFF
-    mov v0, 0xFFFF
+    mov a3, 0xFFFF
     mov sp, 0x8000
 
     mov a0, "F"
@@ -1001,8 +999,8 @@ FAILURE:
 .loop:
     jmp .loop
     jmp .loop
-    mov v0, .loop
-    jmp v0
+    mov a3, .loop
+    jmp a3
 
 SUCCESS:
     ; Make checkerboard pattern to indicate success
@@ -1010,7 +1008,7 @@ SUCCESS:
     mov t1, 0xFFFF
     mov t2, 0x0000
     mov t3, 0xFFFF
-    mov t4, 0xFFFF
+    mov bp, 0xFFFF
     mov s0, 0xFFFF
     mov s1, 0xFFFF
     mov s2, 0x0000
@@ -1018,7 +1016,7 @@ SUCCESS:
     mov s4, 0xFFFF
     mov a1, 0x0000
     mov a2, 0x0000
-    mov v0, 0x0000
+    mov a3, 0x0000
     mov sp, 0x8000
 
     mov a0, "K"
@@ -1051,7 +1049,7 @@ TEST_JUMPS:
     mov a1, progmem_end
     mov a2, sp              ; Destination is the stack
 #ifdef TEST_RAM
-    mov v0, MEMORY.MemCopy
+    mov a3, MEMORY.MemCopy
     syscall CALL_GATE
 #else
     syscall MEMORY.MemCopy
@@ -1067,7 +1065,7 @@ TEST_JUMPS:
     call .test_cond ; Call test
     
     mov t0, [s1]    ; Load output
-    cmp v0, t0
+    cmp a3, t0
     jne FAILURE     ; If outputs don't match, display error
     
     add s0, s0, 2
@@ -1086,67 +1084,67 @@ TEST_JUMPS:
 
 
 ; Arguments: a0, a1 are tests
-; Returns: v0 is the test result
+; Returns: a3 is the test result
 .test_cond:     
-    mov v0, 0
+    mov a3, 0
     
     cmp a0, a1
     jz skip(1)
-    or v0, v0, 0x0001
+    or a3, a3, 0x0001
     
     cmp a0, a1
     jnz skip(1)
-    or v0, v0, 0x0002
+    or a3, a3, 0x0002
     
     cmp a0, a1
     jc skip(1)
-    or v0, v0, 0x0004
+    or a3, a3, 0x0004
     
     cmp a0, a1
     jnc skip(1)
-    or v0, v0, 0x0008
+    or a3, a3, 0x0008
     
     cmp a0, a1
     jbe skip(1)
-    or v0, v0, 0x0010
+    or a3, a3, 0x0010
     
     cmp a0, a1
     jl skip(1)
-    or v0, v0, 0x0020
+    or a3, a3, 0x0020
     
     cmp a0, a1
     jle skip(1)
-    or v0, v0, 0x0040
+    or a3, a3, 0x0040
 
     cmp a0, a1
     jo skip(1)
-    or v0, v0, 0x0080
+    or a3, a3, 0x0080
 
     cmp a0, a1
     jno skip(1)
-    or v0, v0, 0x0100
+    or a3, a3, 0x0100
 
     cmp a0, a1
     js skip(1)
-    or v0, v0, 0x0200
+    or a3, a3, 0x0200
 
     cmp a0, a1
     jns skip(1)
-    or v0, v0, 0x0400
+    or a3, a3, 0x0400
 
     cmp a0, a1
     jg skip(1)
-    or v0, v0, 0x0800
+    or a3, a3, 0x0800
 
     cmp a0, a1
     jge skip(1)
-    or v0, v0, 0x1000
+    or a3, a3, 0x1000
 
     cmp a0, a1
     ja skip(1)
-    or v0, v0, 0x2000
+    or a3, a3, 0x2000
     
-    xor v0, v0, 0x3FFF  ; Invert the results (convert to active high)
+    xor a3, a3, 0x3FFF  ; Invert the results (convert to active high)
     
     ret
 
@@ -1180,10 +1178,10 @@ MEMORY:
     jbe ..return    ; then return (nothing to copy)
     
 ..loop:
-    peek v0, [a0+0], Up     ; Read upper 16-bit word / opcode
-    mov [a2], v0            ; Store to lower address (big endian)
-    peek v0, [a0+0], Low    ; Read lower 16-bit word / argument
-    mov [a2+1], v0          ; Store to upper address (big endian)
+    peek a3, [a0+0], Up     ; Read upper 16-bit word / opcode
+    mov [a2], a3            ; Store to lower address (big endian)
+    peek a3, [a0+0], Low    ; Read lower 16-bit word / argument
+    mov [a2+1], a3          ; Store to upper address (big endian)
     add a0, a0, 1           ; Increment program memory pointer
     add a2, a2, 2           ; Increment data memory pointer
     
@@ -1198,6 +1196,6 @@ MEMORY:
 test_data:  #d32 0xBEEFF00D
 
 CALL_GATE:
-    call v0
+    call a3
     sysret
 

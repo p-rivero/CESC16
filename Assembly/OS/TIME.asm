@@ -30,10 +30,10 @@ TIME:
     mov [TMR_ACTIVE], zero
     ret
     
-; Read the current value of the timer and store it in v0.
-; The number of clock cycles that have passed since the call to TIME.SetTimer is (v0-INIT_VALUE)*16
+; Read the current value of the timer and store it in a0.
+; The number of clock cycles that have passed since the call to TIME.SetTimer is (a0-INIT_VALUE)*16
 .ReadTimer:
-    mov v0, [TIMER_ADDR]
+    mov a0, [TIMER_ADDR]
     ret
     
 ; Attach an interrupt handler (jump address) to a timer overflow event

@@ -42,15 +42,15 @@ MAIN_INTERRUPT_HANDLER:
     
     ; Store context
     pushf
+    push bp
     push a0
     push a1
     push a2
-    push v0
+    push a3
     push t0
     push t1
     push t2
     push t3
-    push t4
     
     ; Check timer (max ~30 cycles + user interrupt)
 .readTimer:
@@ -84,14 +84,14 @@ MAIN_INTERRUPT_HANDLER:
     ; TODO
     
     ; Restore context
-    pop t4
     pop t3
     pop t2
     pop t1
     pop t0
-    pop v0
+    pop a3
     pop a2
     pop a1
     pop a0
+    pop bp
     popf
     ret
