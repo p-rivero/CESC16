@@ -262,6 +262,35 @@ MANUAL_TEST:
     subb t2, t1, [0x8002]   ; t2 = 0x0494, flags: none
     subb t1, t1, [0x8002]   ; t1 = 0x0495, flags: none
     
+    mov bp, 0x9050      ; bp = 0x9050
+    movf t0, 0x4000     ; t0 = 0x4000, flags: none
+    mov [0x9000], 1
+    mov [bp], 5
+    mov [bp+5], 10
+    mov [t0+t0], 15
+    mov t1, [0x9000]    ; t1 = 0x0001
+    mov t1, [0x9050]    ; t1 = 0x0005
+    mov t1, [0x9055]    ; t1 = 0x000A
+    mov t1, [0x8000]    ; t1 = 0x000F
+    addc [0x9000], 1    ; flags: none
+    addc [bp], 5        ; flags: none
+    addc [bp+5], 10     ; flags: none
+    addc [t0+t0], 15    ; flags: none
+    mov t1, [0x9000]    ; t1 = 0x0002
+    mov t1, [0x9050]    ; t1 = 0x000A
+    mov t1, [0x9055]    ; t1 = 0x0014
+    mov t1, [0x8000]    ; t1 = 0x001E
+    sub zero, t0, 0x4001
+    subb [0x9000], 4    ; flags: Carry, Sign
+    addc [bp], 5        ; flags: none
+    sub zero, t0, 0x4001
+    subb [bp+5], 15     ; flags: none
+    sub zero, t0, 0x4001
+    addc [t0+t0], 0     ; flags: none
+    mov t1, [0x9000]    ; t1 = 0xFFFD
+    mov t1, [0x9050]    ; t1 = 0x0010
+    mov t1, [0x9055]    ; t1 = 0x0004
+    mov t1, [0x8000]    ; t1 = 0x001F
     
     ; Unconditional and conditional jumps
     mov t0, 0x5555
@@ -946,6 +975,112 @@ AUTOMATED_TEST:
     jo FAILURE
     js FAILURE
     cmp t1, 0x0495
+    jne FAILURE
+    
+    
+    mov bp, 0x9050      ; bp = 0x9050
+    movf t0, 0x4000     ; t0 = 0x4000, flags: none
+    mov [0x9000], 1
+    mov [bp], 5
+    mov [bp+5], 10
+    mov [t0+t0], 15
+    mov t1, [0x9000]    ; t1 = 0x0001
+    cmp t1, 0x0001
+    jne FAILURE
+    
+    mov t1, [0x9050]    ; t1 = 0x0005
+    cmp t1, 0x0005
+    jne FAILURE
+    
+    mov t1, [0x9055]    ; t1 = 0x000A
+    cmp t1, 0x000A
+    jne FAILURE
+    
+    mov t1, [0x8000]    ; t1 = 0x000F
+    cmp t1, 0x000F
+    jne FAILURE
+    
+    addc [0x9000], 1    ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    addc [bp], 5        ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    addc [bp+5], 10     ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    addc [t0+t0], 15    ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    mov t1, [0x9000]    ; t1 = 0x0002
+    cmp t1, 0x0002
+    jne FAILURE
+    
+    mov t1, [0x9050]    ; t1 = 0x000A
+    cmp t1, 0x000A
+    jne FAILURE
+    
+    mov t1, [0x9055]    ; t1 = 0x0014
+    cmp t1, 0x0014
+    jne FAILURE
+    
+    mov t1, [0x8000]    ; t1 = 0x001E
+    cmp t1, 0x001E
+    jne FAILURE
+    
+    sub zero, t0, 0x4001
+    subb [0x9000], 4    ; flags: Carry, Sign
+    jz FAILURE
+    jnc FAILURE
+    jo FAILURE
+    jns FAILURE
+    
+    addc [bp], 5        ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    sub zero, t0, 0x4001
+    subb [bp+5], 15     ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    sub zero, t0, 0x4001
+    addc [t0+t0], 0     ; flags: none
+    jz FAILURE
+    jc FAILURE
+    jo FAILURE
+    js FAILURE
+    
+    mov t1, [0x9000]    ; t1 = 0xFFFD
+    cmp t1, 0xFFFD
+    jne FAILURE
+    
+    mov t1, [0x9050]    ; t1 = 0x0010
+    cmp t1, 0x0010
+    jne FAILURE
+    
+    mov t1, [0x9055]    ; t1 = 0x0004
+    cmp t1, 0x0004
+    jne FAILURE
+    
+    mov t1, [0x8000]    ; t1 = 0x001F
+    cmp t1, 0x001F
     jne FAILURE
     
     

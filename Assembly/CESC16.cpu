@@ -73,13 +73,14 @@
 }
 
 #ruledef INSTRUCTIONS {
-    ; ALU
+    ; ALU (register operands)
     mov {rD: REG}, {rA: REG} => 0x00 @ rD`4 @ rA`4 @ 0x0000
     {op: ALU_OP} {rD: REG}, {rA: REG}, {rB: REG} => 0b00000 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
 
     mov {rD: REG}, {Imm: i16} => 0x08 @ rD`4 @ 0x0 @ Imm
     {op: ALU_OP} {rD: REG}, {rA: REG}, {Imm: i16} => 0b00001 @ op`3 @ rD`4 @ rA`4 @ Imm
     
+    ; ALU (memory operand)
     mov {rD: REG}, [{Addr: u16}] => 0x40 @ rD`4 @ 0x0 @ Addr
     {op: ALU_OP} {rD: REG}, {rA: REG}, [{Addr: u16}] => 0b01000 @ op`3 @ rD`4 @ rA`4 @ Addr
     
@@ -91,7 +92,8 @@
 
     mov {rD: REG}, [{rA: REG}+{rB: REG}]   =>  0x58 @ rD`4 @ rA`4 @ 0x000 @ rB`4
     {op: ALU_OP} {rD: REG}, [{rA: REG}+{rB: REG}] => 0b01011 @ op`3 @ rD`4 @ rA`4 @ 0x000 @ rB`4
-
+    
+    ; ALU (memory destination, register)
     mov [{Addr: u16}], {rA: REG} => 0x600 @ rA`4 @ Addr
     {op: ALU_OP} [{Addr: u16}], {rA: REG} => 0b01100 @ op`3 @ 0x0 @ rA`4 @ Addr
     
@@ -104,20 +106,34 @@
     mov [{rA: REG}+{rC: REG}], {rB: REG}   =>  0x78 @ rB`4 @ rA`4 @ 0x000 @ rC`4
     {op: ALU_OP} [{rA: REG}+{rC: REG}], {rB: REG} => 0b01111 @ op`3 @ rB`4 @ rA`4 @ 0x000 @ rC`4
     
+    ; ALU (memory destination, immediate)
+    mov [{Addr: u16}], {imm4: u4} => 0x80 @ imm4 @ 0x0 @ Addr
+    {op: ALU_OP} [{Addr: u16}], {imm4: u4} => 0b10000 @ op`3 @ imm4 @ 0x0 @ Addr
+    
+    mov [{rA: REG}], {Imm: i16} => 0x880 @ rA`4 @ Imm
+    {op: ALU_OP} [{rA: REG}], {Imm: i16} => 0b10001 @ op`3 @ 0x0 @ rA`4 @ Imm
+
+    mov [{rA: REG}+{Imm: i16}], {imm4: u4}   =>  0x90 @ imm4 @ rA`4 @ Imm
+    {op: ALU_OP} [{rA: REG}+{Imm: i16}], {imm4: u4} => 0b10010 @ op`3 @ imm4 @ rA`4 @ Imm
+    
+    mov [{rA: REG}+{rC: REG}], {imm4: u4}   =>  0x98 @ imm4 @ rA`4 @ 0x000 @ rC`4
+    {op: ALU_OP} [{rA: REG}+{rC: REG}], {imm4: u4} => 0b10011 @ op`3 @ imm4 @ rA`4 @ 0x000 @ rC`4
+    
+    ; Shifts
     sll {rD: REG}, {rA: REG}, {Imm: u4} => 0x1 @ Imm @ rD`4 @ rA`4 @ 0x0000
     srl {rD: REG}, {rA: REG}, {Imm: u4} => 0x2 @ Imm @ rD`4 @ rA`4 @ 0x0000
     sra {rD: REG}, {rA: REG}, {Imm: u4} => 0x3 @ Imm @ rD`4 @ rA`4 @ 0x0000
     
     ; Memory
-    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0x81 @ rD`4 @ rA`4 @ Imm
-    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => 0b1000001 @ W`1 @ rD`4 @ rA`4 @ Imm
+    swap {rD: REG}, [{rA: REG}+{Imm: i16}]  => 0xA1 @ rD`4 @ rA`4 @ Imm
+    peek {rD: REG}, [{rA: REG}+{Imm: i16}], {W: PEEK_OPTIONS} => 0b1010001 @ W`1 @ rD`4 @ rA`4 @ Imm
     
-    push {rB: REG}  => 0x8401000 @ rB`4
-    push {Imm: i16} => 0x8501 @ Imm
-    pushf           => 0x86010000
+    push {rB: REG}  => 0xA401000 @ rB`4
+    push {Imm: i16} => 0xA501 @ Imm
+    pushf           => 0xA6010000
 
-    pop  {rD: REG}  => 0x87 @ rD`4 @ 0x10000
-    popf            => 0x88010000
+    pop  {rD: REG}  => 0xA7 @ rD`4 @ 0x10000
+    popf            => 0xA8010000
     
     ; Jumps
     {jmp: JUMP} {rA: REG}   => 0b1100 @ jmp`4 @ 0x0 @ rA`4 @ 0x0000
@@ -155,6 +171,8 @@
     
     cmp {rA: REG}, {rB: REG}                => asm { sub zero, {rA}, {rB} }
     cmp {rA: REG}, {Imm: i16}               => asm { sub zero, {rA}, Imm }
+    cmp {rA: REG}, [{Addr: u16}]            => asm { sub zero, {rA}, [Addr] }
+    cmp {rA: REG}, [{rB: REG}]              => asm { sub zero, {rA}, [{rB}] }
     
     mask {rA: REG}, {rB: REG}               => asm { and zero, {rA}, {rB} }
     mask {rA: REG}, {Imm: i16}              => asm { and zero, {rA}, Imm }
@@ -165,6 +183,7 @@
     test [{Addr: u16}]                      => asm { movf zero, [Addr] }
     test [{rA: REG}]                        => asm { movf zero, [{rA}] }
     test [{rA: REG}+{Imm: i16}]             => asm { add zero, [{rA}+Imm] }
+    test [{rA: REG}+{rB: REG}]              => asm { add zero, [{rA}+{rB}] }
     
     clrf    => asm { movf zero, 0x0001 }
     
