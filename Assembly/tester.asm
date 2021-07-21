@@ -1139,19 +1139,19 @@ FAILURE:
 
 SUCCESS:
     ; Make checkerboard pattern to indicate success
-    mov t0, 0x0000
-    mov t1, 0xFFFF
+    mov t0, 0xFFFF
+    mov t1, 0x0000
     mov t2, 0x0000
     mov t3, 0xFFFF
-    mov bp, 0xFFFF
+    mov bp, 0x0000
     mov s0, 0xFFFF
-    mov s1, 0xFFFF
-    mov s2, 0x0000
-    mov s3, 0x0000
-    mov s4, 0xFFFF
+    mov s1, 0x0000
+    mov s2, 0xFFFF
+    mov s3, 0xFFFF
+    mov s4, 0x0000
     mov a1, 0x0000
     mov a2, 0x0000
-    mov a3, 0x0000
+    mov a3, 0xFFFF
     mov sp, 0x8000
 
     mov a0, "K"
