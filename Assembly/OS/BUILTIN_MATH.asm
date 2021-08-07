@@ -13,8 +13,14 @@ BUILTIN:
 
 ; Signed/unsigned 16 bit Multiply
 ; a0 = a0*a1
-; Worst case run time: ~230 clock cycles (~120 cycles if M is 8 bit)
-.mul
+; Worst case run time: ~235 clock cycles (~125 cycles if smallest value is 8 bit)
+.mul:
+    cmp a0, a1      ; If a0 > a1, swap them (run time depends on the value in a0)
+    jna .end_swap
+    mov t0, a0
+    mov a0, a1
+    mov a1, t0
+.end_swap:
     mov a2, 0   ; Set result to 0
     
 ..while:
@@ -50,7 +56,7 @@ BUILTIN:
 ; a0 = a0%a1
 ; Worst case run time: 7 clock cycles (+ run time of div)
 .mod:
-    call div
+    call .div
     mov a0, a1
     
     
@@ -58,7 +64,7 @@ BUILTIN:
 ; a0 = a0%a1
 ; Worst case run time: 7 clock cycles (+ run time of divu)
 .modu:
-    call divu
+    call .divu
     mov a0, a1
 
 
