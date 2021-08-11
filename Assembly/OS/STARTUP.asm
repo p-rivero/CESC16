@@ -15,9 +15,9 @@ STARTUP:
     mov [HANDLERS.TMR], zero
     
     ; Initialize I/O:
-    mov t0, INPUT.RDY
-    mov [KEYBOARD_ADDR], t0 ; Acknowledge any leftover input
     syscall OUTPUT.Reset    ; Clear screen
+    mov t0, INPUT.RDY
+    mov [KEYBOARD_ADDR], t0 ; OS is ready to receive new interrupts
     
     ; User code execution
     call MAIN_PROGRAM
@@ -67,15 +67,28 @@ MAIN_INTERRUPT_HANDLER:
     
     ; Check PS/2 keyboard input (max ~30 cycles + user interrupt)
 .readKeyboard:
-    movf a0, [KEYBOARD_ADDR]    ; Read from keyboard
+    mov a0, [KEYBOARD_ADDR]     ; Read from keyboard
+    and a0, a0, 0x7F            ; Remove busy flag (MSB)
     jz ..continue               ; If there was no input, don't do anything
-    mask a0, 0x80               ; Test busy flag (MSB)
-    jnz ..continue              ; If controller is busy, don't do anything
+    ; Here we should poll the busy flag until it's 0, but we can save time by assuming
+    ; that the INT latency is enough time for the controller to be ready.
+    ; TODO: Remove this check
+..temp:
+    mov t0, [KEYBOARD_ADDR]
+    mask t0, 0x80
+    jnz ..temp
+    ; todo
     mov t0, INPUT.ACK
-    mov [KEYBOARD_ADDR], t0     ; Else acknowledge input
+    mov [KEYBOARD_ADDR], t0     ; Acknowledge input, this clears the register to avoid double reads
 
     call INPUT.Key_Handler      ; Call the user handler
 
+    ; TODO: Remove this check
+..temp2:
+    mov t0, [KEYBOARD_ADDR]
+    mask t0, 0x80
+    jnz ..temp2
+    ; todo
     mov t0, INPUT.RDY
     mov [KEYBOARD_ADDR], t0     ; It's safe to be interrupted again by keyboard
 ..continue:
