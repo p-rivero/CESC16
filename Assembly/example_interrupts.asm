@@ -15,6 +15,10 @@ str_done: str("DONE!\n")
 #align 32
 str_input: str("Got input: ")
 #align 32
+str_end1: str(" (")
+#align 32
+str_end2: str(")\n")
+#align 32
 
 
 ; User program entry point
@@ -54,13 +58,24 @@ MAIN_PROGRAM:
 ; INTERRUPT HANDLERS:
 ; Routine that will get called whenever a key is pressed down. The ASCII is stored in a0
 .Key_Handler:
-    mov t0, a0      ; Store the ASCII of the key
+    push s0
+    mov s0, a0      ; Store the ASCII of the key
+    ; Print "Got input: "
     mov a0, str_input
     syscall OUTPUT.string_ROM
-    mov a0, t0      ; Restore the ASCII of the key
+    ; Print the pressed char
+    mov a0, s0
     syscall OUTPUT.char
-    mov a0, "\n"    ; Print an endline
-    syscall OUTPUT.char
+    ; Print " ("
+    mov a0, str_end1
+    syscall OUTPUT.string_ROM
+    ; Print the ASCII code of the char
+    mov a0, s0
+    syscall OUTPUT.uint16
+    ; Print ")\n"
+    mov a0, str_end2
+    syscall OUTPUT.string_ROM
+    pop s0
     ret
    
 ; Routine that will get called whenever the timer overflows.
