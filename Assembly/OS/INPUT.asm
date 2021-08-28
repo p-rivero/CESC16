@@ -50,7 +50,5 @@ INPUT:
     ret     ; If it's zero, don't do anything
 
 ..keyboard_int:
-    mov a0, "!"
-    syscall OUTPUT.char
     mov [TMR_ACTIVE], zero  ; Disable timer
     jmp STARTUP.Reset   ; Reset computer (placeholder)

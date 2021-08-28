@@ -80,7 +80,6 @@ MAIN_PROGRAM:
    
 ; Routine that will get called whenever the timer overflows.
 .TMR_Handler:
-    mov t0, 1
-    mov [Sync], t0  ; The global variable Sync signals the main program to exit the loop
+    mov [Sync], 1  ; The global variable Sync signals the main program to exit the loop
     ret
     

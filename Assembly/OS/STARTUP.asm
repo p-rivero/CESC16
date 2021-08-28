@@ -16,8 +16,7 @@ STARTUP:
     
     ; Initialize I/O:
     syscall OUTPUT.Reset    ; Clear screen
-    mov t0, INPUT.RDY
-    mov [KEYBOARD_ADDR], t0 ; OS is ready to receive new interrupts
+    mov [KEYBOARD_ADDR], INPUT.RDY  ; OS is ready to receive new interrupts
     
     ; User code execution
     call MAIN_PROGRAM
@@ -78,8 +77,7 @@ MAIN_INTERRUPT_HANDLER:
     mask t0, 0x80
     jnz ..temp
     ; todo
-    mov t0, INPUT.ACK
-    mov [KEYBOARD_ADDR], t0     ; Acknowledge input, this clears the register to avoid double reads
+    mov [KEYBOARD_ADDR], INPUT.ACK  ; Acknowledge input, this clears the register to avoid double reads
 
     call INPUT.Key_Handler      ; Call the user handler
 
@@ -89,8 +87,7 @@ MAIN_INTERRUPT_HANDLER:
     mask t0, 0x80
     jnz ..temp2
     ; todo
-    mov t0, INPUT.RDY
-    mov [KEYBOARD_ADDR], t0     ; It's safe to be interrupted again by keyboard
+    mov [KEYBOARD_ADDR], INPUT.RDY  ; It's safe to be interrupted again by keyboard
 ..continue:
     
     ; Check other input sources (serial)

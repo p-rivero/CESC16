@@ -21,7 +21,7 @@ TIME:
 ; I/O handlers could also be called.
 .SetTimer:
     mov [TIMER_ADDR], a0    ; Send char to timer. The timer starts counting automatically
-    mov [TMR_ACTIVE], sp    ; Mark timer as active (any non-zero value means "true", and sp is guaranteed to never be 0)
+    mov [TMR_ACTIVE], 1     ; Mark timer as active
     ret
     
 ; Cancel the current timer. Note that there is no way to stop the timer once it's started.
