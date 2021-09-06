@@ -71,7 +71,7 @@ MAIN_PROGRAM:
     syscall OUTPUT.string_ROM
     ; Print the ASCII code of the char
     mov a0, s0
-    syscall OUTPUT.uint16
+    syscall OUTPUT.hex
     ; Print ")\n"
     mov a0, str_end2
     syscall OUTPUT.string_ROM

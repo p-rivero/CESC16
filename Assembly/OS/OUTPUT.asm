@@ -3,7 +3,7 @@
 ; =============================
 
 #bank data
-Print_Buffer: #res 8
+Print_Buffer: #res 5    ; Decimal for 0xFFFF has 5 digits
 
 #bank program
 
@@ -24,6 +24,27 @@ OUTPUT:
     ; - 2 MHz: At most, the polling loops 9 times (with polling every 3 us)
     
     mov [TERMINAL_ADDR], a0     ; Send char to terminal
+    ret
+    
+    
+; Print to screen the contents of Print_Buffer
+.Output_PrintBuffer:
+; Remove leading zeroes
+    mov t0, Print_Buffer-1
+..rem_zeroes:
+    add t0, t0, 1
+    movf a0, [t0]
+    jz ..rem_zeroes
+
+; Print number from first non-zero digit onward
+..print:        
+    add a0, a0, "0"
+    call .char
+    add t0, t0, 1
+    mov a0, [t0]
+    cmp t0, Print_Buffer+4
+    jbe ..print ; Loop while pointer is below or equal the address of last digit
+    
     ret
     
     
@@ -92,23 +113,7 @@ OUTPUT:
     mov [Print_Buffer+1], t0  ; Store 4th BCD digit
     mov [Print_Buffer], a2    ; Store most significant BCD digit (5th)
     
-; Remove leading zeroes
-    mov t0, Print_Buffer-1
-..rem_zeroes:
-    add t0, t0, 1
-    movf a0, [t0]
-    jz ..rem_zeroes
-
-; Print number from first non-zero digit onward
-..print:        
-    add a0, a0, "0"
-    call .char
-    add t0, t0, 1
-    mov a0, [t0]
-    cmp t0, Print_Buffer+4
-    jbe ..print ; Loop while pointer is below or equal the address of last digit
-    
-    ret
+    jmp .Output_PrintBuffer
     
     
 ; Prints the contents of a0 as a SIGNED integer.
@@ -123,6 +128,34 @@ OUTPUT:
     sub a0, zero, t0
     jmp .uint16   ; Print unsigned integer and return
 
+
+; Prints the HEX representation of the contents of a0.
+.hex:
+    mov [Print_Buffer], zero    ; Buffer has 5 digits. First one will always be 0
+    ; Last digit
+    and t0, a0, 0x000F
+    peek t0, [t0 + ..hexTable], LOW
+    mov [Print_Buffer+4], t0
+    ; 3rd digit
+    srl a0, a0, 4
+    and t0, a0, 0x000F
+    peek t0, [t0 + ..hexTable], LOW
+    mov [Print_Buffer+3], t0
+    ; 2nd digit
+    srl a0, a0, 4
+    and t0, a0, 0x000F
+    peek t0, [t0 + ..hexTable], LOW
+    mov [Print_Buffer+2], t0
+    ; First digit
+    srl a0, a0, 4
+    peek t0, [t0 + ..hexTable], LOW
+    mov [Print_Buffer+1], t0
+    
+    jmp .Output_PrintBuffer
+    
+..hexTable:
+#d32 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A"-"0", "B"-"0", "C"-"0", "D"-"0", "E"-"0", "F"-"0"
+#align 32
 
 ; Prints the contents of a1,a0 as an UNSIGNED 32-bit integer (a1 contains upper bits).
 .uint32:
