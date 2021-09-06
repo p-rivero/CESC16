@@ -21,6 +21,7 @@ TMR_ACTIVE:     #res 1  ; A non-zero value indicates that the timer is currently
 
 #include "STARTUP.asm"
 #include "MEMORY.asm"
+#include "BUILTIN_MATH.asm"
 #include "MATH.asm"
 #include "INPUT.asm"
 #include "OUTPUT.asm"
