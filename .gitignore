@@ -5,3 +5,4 @@ Assembly/*.bin
 Assembly/Tools/GenerateSymbols
 Assembly/Tools/hex2bin
 **/.vscode
+Peripherals/Keyboard_Serial/build
