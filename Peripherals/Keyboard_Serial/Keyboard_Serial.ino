@@ -128,7 +128,7 @@ void write_byte(byte data) {
     // connected in reverse order. We need to shuffle the bits of data:
     // data: _6543210  ==>  reverse_data: __012345
     byte reverse_data = 0;
-    for (int i = 0; i < 5; i++) {   // For the lowest 5 bits
+    for (int i = 0; i <= 5; i++) {   // For bits 0..5
         if (data & (1 << i)) {   // If bit is set
             // Flip bit in reverse order (0->5, 1->4, ...)
             reverse_data |= 1 << (5 - i); 
@@ -201,8 +201,8 @@ void setup() {
     // Initialize hardware serial
     serial.begin(BAUDRATE);
     
-    // Wait 2 seconds for the user to send a program via serial
-    delay(2000);
+    // Wait 1 second for the programmer to send a program
+    delay(1000);
     pinMode(PINS::IRQ, OUTPUT);
 }
 
@@ -211,8 +211,6 @@ void loop() {
     if (!output_reg_full && can_interrupt && !queue.empty()) {
         // Send current char to CPU
         byte data = queue.pop();
-        serial.print("Writing data and interrupting: 0x");
-        serial.println(data, HEX);
         write_byte(data);
         interrupt_CPU();
         output_reg_full = true;
@@ -223,17 +221,16 @@ void loop() {
     byte in = read_byte();
     if (in != 0) {
         if (in == CPU_ACK) {
-            serial.println("Got ACK");
             clear_output_reg();
         }
         else if (in == CPU_RDY) {
-            serial.println("Got RDY");
             can_interrupt = true;
             if (output_reg_full) clear_output_reg();
         }
         else {
-            serial.print("Got non-command: ");
-            serial.println(in, HEX);
+            // Todo: convert from terminal commands to escape sequences
+            // Regular char, send to serial
+            serial.print(char(in));
         }
         clear_input_reg();
     }
@@ -241,17 +238,13 @@ void loop() {
     // Receive char from PS/2 keyboard
     if (keyboard.available()) {
         byte data = keyboard.read();
-        serial.print("Keystroke from keyboard: 0x");
-        serial.print(data, HEX);
-        serial.print(" (");
-        serial.print((char) data);
-        serial.println(")");
-        queue.push(data);
+        if (data != 0) queue.push(data);
     }
     
     // Receive char from serial line
     if (serial.available()) {
-        queue.push(serial.read());
+        byte data = serial.read();
+        if (data != 0) queue.push(data);
     }
 }
 
