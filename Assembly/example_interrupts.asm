@@ -34,8 +34,8 @@ MAIN_PROGRAM:
     syscall TIME.AttachInterrupt
     
     
-    ; Start timer
-    mov a0, 0x1234
+    ; Start timer (count 1000 ticks = 16000 cycles)
+    mov a0, 1000
     syscall TIME.SetTimer
     
 ..wait:             ; Wait until the timer overflows and Sync gets set to 1.

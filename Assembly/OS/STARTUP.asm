@@ -1,3 +1,6 @@
+; ============================
+;  Startup/Interrupt Routines
+; ============================
 
 
 #bank program
@@ -25,7 +28,9 @@ STARTUP:
     syscall TIME.Halt
     
     #addr INTERRUPT_VECTOR  ; Fill space until interrupt vector (hardware entry point)
-    
+
+
+
 RAM_INT_HANDLER:
     ; This handler gets called when an interrupt occurs while running a program from RAM.
     ; Its only job is to call the main interrupt handler below and then return to RAM.
@@ -57,8 +62,8 @@ MAIN_INTERRUPT_HANDLER:
     jz ..continue       ; If it hasn't, skip the rest of checks
     
     mov a0, [TIMER_ADDR]    ; Read current timer value
-    cmp a0, 0xFFFF      ; The timer causes an interrupt when it reaches 0xFFFF
-    jne ..continue      ; If it has any other value, don't call handler
+    cmp a0, TIME.END_COUNT  ; The timer causes an interrupt when it reaches TIME.END_COUNT
+    jne ..continue          ; If it has any other value, don't call handler
     
     mov [TMR_ACTIVE], zero  ; Disable the timer so the handler only gets called once
     call TIME.Timer_Handler
@@ -89,9 +94,6 @@ MAIN_INTERRUPT_HANDLER:
     ; todo
     mov [KEYBOARD_ADDR], INPUT.RDY  ; It's safe to be interrupted again by keyboard
 ..continue:
-    
-    ; Check other input sources (serial)
-    ; TODO
     
     ; Restore context
     pop t3
