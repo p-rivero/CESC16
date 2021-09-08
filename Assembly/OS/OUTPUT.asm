@@ -9,6 +9,12 @@ Print_Buffer: #res 5    ; Decimal for 0xFFFF has 5 digits
 
 OUTPUT:
 
+; CONSTANTS
+._STR:
+..error_text: str("[ERROR] ")
+#align 32
+
+
 ; -------------------------------
 ; OUTPUTTING DIFFERENT DATA TYPES
 ; -------------------------------
@@ -237,6 +243,24 @@ OUTPUT:
     jmp ..loop
 ..return:
     ret
+    
+; Print an error and halt the computer
+.error:
+    mov t0, a0
+    ; Print newline
+    mov a0, "\n"
+    call .char
+    ; Set color to red
+    mov a0, COLOR.RED
+    call .SetColor
+    ; Print "[ERROR] "
+    mov a0, ._STR.error_text
+    call .string_ROM
+    ; Print user text
+    mov a0, t0
+    call .string_ROM
+    ; Halt computer
+    syscall TIME.Halt
 
 
 
