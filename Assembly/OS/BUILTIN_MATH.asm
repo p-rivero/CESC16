@@ -9,6 +9,9 @@
 ; The provided subroutines allow shifting a variable number of bits.
 
 
+#ifndef _BUILTIN_MATH
+#define _BUILTIN_MATH
+
 ; Signed/unsigned 16 bit Multiply
 ; a0 = a0*a1
 ; Worst case run time: ~235 clock cycles (~125 cycles if smallest value is 8 bit)
@@ -203,3 +206,4 @@ var_srl:
     srl a0, a0, 8
     ret
     
+#endif
