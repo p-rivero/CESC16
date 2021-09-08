@@ -9,7 +9,7 @@ MAIN_PROGRAM:
     mov a0, COLOR.CYAN
     syscall OUTPUT.SetColor    
     mov a0, Title
-    syscall OUTPUT.string_ROM
+    syscall PRINT.string
     
     ; Print rest of lines in white
     mov a0, COLOR.WHITE
@@ -21,7 +21,7 @@ MAIN_PROGRAM:
 
 .fib_loop:
     mov a0, s0
-    syscall OUTPUT.uint16
+    syscall PRINT.uint16
     mov a0, "\n"
     syscall OUTPUT.char
     
@@ -32,7 +32,7 @@ MAIN_PROGRAM:
     
     ; Print remaining number
     mov a0, s0
-    syscall OUTPUT.uint16
+    syscall PRINT.uint16
     
     ret
     

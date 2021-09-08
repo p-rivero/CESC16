@@ -43,7 +43,7 @@ MAIN_PROGRAM:
     jz ..wait       ; interrupts and call OUTPUT.char
     
     mov a0, str_done
-    syscall OUTPUT.string_ROM
+    syscall PRINT.string
     
     ; Stay on an endless loop after finishing, comment out this line if you wish to detach the handlers and return
     jmp pc
@@ -62,19 +62,19 @@ MAIN_PROGRAM:
     mov s0, a0      ; Store the ASCII of the key
     ; Print "Got input: "
     mov a0, str_input
-    syscall OUTPUT.string_ROM
+    syscall PRINT.string
     ; Print the pressed char
     mov a0, s0
     syscall OUTPUT.char
     ; Print " ("
     mov a0, str_end1
-    syscall OUTPUT.string_ROM
+    syscall PRINT.string
     ; Print the ASCII code of the char
     mov a0, s0
-    syscall OUTPUT.hex
+    syscall PRINT.hex
     ; Print ")\n"
     mov a0, str_end2
-    syscall OUTPUT.string_ROM
+    syscall PRINT.string
     pop s0
     ret
    

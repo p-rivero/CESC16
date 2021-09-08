@@ -48,7 +48,7 @@ TIME:
 ..error:
     call .CancelTimer
     mov a0, ._STR.invalid_count
-    syscall OUTPUT.error
+    syscall PRINT.error
     
 ; Cancel the current timer. Note that there is no way to stop the timer once it's started.
 ; However, when the cancelled timer ends, the user handler won't be called.
