@@ -10,16 +10,40 @@ _Print_Buffer: #res 5    ; Decimal for 0xFFFF has 5 digits
 PRINT:
 
 ; Prints the contents of a0 as an UNSIGNED integer.
-; TODO: calculate time of division method
 .uint16:
-    cmp a0, 10
-    jnb ..continue
     ; If the input is a number between 0 and 9, just print it and return
+    cmp a0, 10
+    jnb ..skip_1_digit
     add a0, a0, "0"
     jmp OUTPUT.char
+..skip_1_digit:
     
-..continue:
-    ; Implement 16 bit Double dabble algorithm (convert to BCD)
+    ; If the input is a number between 10 and 99, separate the 2 digits with a div by 10
+    ; (This method takes ~320 cycles instead of ~880)
+    cmp a0, 100
+    jnb ..skip_2_digits
+..print_2_digits:
+    mov a1, 10
+    call div
+    add a0, a0, "0"     ; a0 contains result (10s)
+    syscall OUTPUT.char
+    add a0, a1, "0"     ; a1 contains remainder (1s)
+    jmp OUTPUT.char
+..skip_2_digits:
+
+    ; If the input is a number between 100 and 999, separate the first digits with a div by 100
+    ; (This method takes ~630 cycles instead of ~915)
+    cmp a0, 1000
+    jnb ..skip_3_digits
+    mov a1, 100
+    call div
+    add a0, a0, "0"     ; a0 contains result (100s)
+    syscall OUTPUT.char
+    mov a0, a1          ; a1 contains remainder (10s+1s)
+    jmp ..print_2_digits
+..skip_3_digits:
+
+    ; For 4 and 5 digit numbers, implement 16 bit Double dabble algorithm (convert to BCD)
     ; Takes ~1000 cycles
     mov t0, 16      ; Iteration counter
     mov a1, zero    ; BCD output is stored in a1 and a2
