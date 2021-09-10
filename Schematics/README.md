@@ -21,9 +21,9 @@ The module contains some extra logic to ensure that the clock signal stays valid
 
 The clock module also contains the circuit that generates the Reset signal. This signal is debounced and synchronized with the clock.
 
-![Clock and Reset schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/CLK%2BReset.svg?raw=true)
+![Clock and Reset schematic](./img/schematic/CLK%2BReset.svg)
 
-![Clock and Reset PCB](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/CLK%2BReset.png?raw=true)
+![Clock and Reset PCB](./img/pcb/CLK%2BReset.png)
 
 ***
 
@@ -32,9 +32,9 @@ This is an extremely simple module. Its only job is to implement a 16 bit regist
 
 There are 14 instances of this module connected to the CPU backplane.
 
-![GPR schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/GPR.svg?raw=true)
+![GPR schematic](./img/schematic/GPR.svg)
 
-<img src="https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/GPR.png?raw=true" alt="GPR PCB" width="400"/>
+<img src="./img/pcb/GPR.png" alt="GPR PCB" width="400"/>
 
 ***
 
@@ -43,9 +43,9 @@ A GPR by itself contains very little logic, so there needs to be a module in cha
 
 This module also contains the Zero Register (`zero`) and the Stack Pointer (`sp`), which is implemented as an Up/Down counter.
 
-![Regfile logic schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/RegfileLogic.svg?raw=true)
+![Regfile logic schematic](./img/schematic/RegfileLogic.svg)
 
-<img src="https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/RegfileLogic.png?raw=true" alt="Regfile logic PCB" width="250"/>
+<img src="./img/pcb/RegfileLogic.png" alt="Regfile logic PCB" width="250"/>
 
 ***
 
@@ -54,9 +54,9 @@ The ALU module is based on 74HC181 ALU chips. This makes the rest of the module 
 
 The rest of the module is responsible for **generating the 4 ALU flags** (Zero, Carry, Overflow and Sign), **holding the ALU operands** (in the X and Y temporary registers), **right-shifting** (the only operation the 74181 cannot do) and **outputting the result** to the correct bus.
 
-![ALU schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/ALU.svg?raw=true)
+![ALU schematic](./img/schematic/ALU.svg)
 
-![ALU PCB](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/ALU.png?raw=true)
+![ALU PCB](./img/pcb/ALU.png)
 
 ***
 
@@ -68,9 +68,9 @@ This is a complex module that contains:
 - The Memory Address Register (MAR), which is a regular register.
 - The logic for managing Memory-Mapped IO (MMIO). An address in `[0xFF00, 0xFFFF]` disables ROM and RAM, and activates the read or write signal on an I/O port.
 
-![Memory schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/Memory.svg?raw=true)
+![Memory schematic](./img/schematic/Memory.svg)
 
-![Memory PCB](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/Memory.png?raw=true)
+![Memory PCB](./img/pcb/Memory.png)
 
 ***
 
@@ -84,9 +84,29 @@ This module is also quite complex. It contains:
 - The logic for handling interrupts. If the CPU is in System mode it will jump to `PC=0x0013`; if it's in User mode it will switch to System mode and jump to `PC=0x0011`.
 
 
-![Control schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/Control.svg?raw=true)
+![Control schematic](./img/schematic/Control.svg)
 
-![Control PCB](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/Control.png?raw=true)
+![Control PCB](./img/pcb/Control.png)
+
+***
+
+## I/O (Input + Output)
+
+This is the only module where microcontrollers are allowed, since I don't consider it to be a part of the core CPU.
+
+Some people may consider that implementing I/O using microcontrollers is cheating, but I disagree. All modern peripherals (keyboards, screens...) have microcontrollers inside, so a "microcontroller-free" design is already impossible.
+You may reply that those microcontrollers "don't count", because they're not a part of our CPU; then the same can be said about the I/O module, it's not a part of the CPU since the CPU can execute instructions perfectly without it.
+
+The I/O module contains 4 peripherals:
+- [**Serial line + PS/2 keyboard**](https://github.com/p-rivero/CESC16/tree/main/Peripherals/Keyboard_Serial) (using an Arduino Nano, since it already has the ICs needed for USB serial).
+- [**VGA terminal**](https://github.com/p-rivero/ArduinoVGA) (using an ATmega328P).
+- **16-bit timer** (no microcontroller used, only 74-series chips).
+- [**USB flash drive**](https://github.com/p-rivero/CESC16/tree/main/Peripherals/USB_Disk) (using an ATmega328P and a CH376S module).
+
+
+![I/O schematic](./img/schematic/IO.svg)
+
+![I/O PCB](./img/pcb/IO.png)
 
 ***
 
@@ -95,6 +115,6 @@ Finally, the backplane is responsible for connecting all the different modules u
 
 The schematic for the backplane is trivial, since it only contains the pin headers for each net. However, the PCB is rather complex, since there's a lot of connections with difficult routing.
 
-![Backplane schematic](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/schematic/Backplane.svg?raw=true)
+![Backplane schematic](./img/schematic/Backplane.svg)
 
-![Backplane PCB](https://github.com/p-rivero/CESC16/blob/main/Schematics/img/pcb/Backplane.png?raw=true)
+![Backplane PCB](./img/pcb/Backplane.png)
