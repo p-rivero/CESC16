@@ -1,10 +1,10 @@
-#include "OS/OS.inc"
+#include <OS.inc>
 #bank program
 
 Title: str("Fibonacci sequence:\n")
 #align 32
 
-MAIN_PROGRAM:
+main:
     ; Print title in cyan
     mov a0, COLOR.CYAN
     syscall OUTPUT.SetColor    

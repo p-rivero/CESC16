@@ -21,8 +21,8 @@ STARTUP:
     syscall OUTPUT.Reset    ; Clear screen
     mov [KEYBOARD_ADDR], INPUT.RDY  ; OS is ready to receive new interrupts
     
-    ; User code execution
-    call MAIN_PROGRAM
+    ; User code execution (main() method)
+    call main
     
     ; If user code terminates, halt the computer
     syscall TIME.Halt

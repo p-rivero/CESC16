@@ -4,7 +4,7 @@
 ; This example shows how to attach and detach interrupt handlers for different interrupt events
 
 ; Include libraries
-#include "OS/OS.inc"
+#include <OS.inc>
 
 #bank data
 Sync:   #res 1
@@ -22,7 +22,7 @@ str_end2: str(")\n")
 
 
 ; User program entry point
-MAIN_PROGRAM:
+main:
 .main:
     mov [Sync], zero ; Initialize variables
     

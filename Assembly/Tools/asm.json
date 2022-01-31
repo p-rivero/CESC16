@@ -40,7 +40,7 @@
             "patterns": [
                 {
                     "name": "keyword.control.asm",
-                    "match": "(?i:(?<=\\s)(?:MAIN_PROGRAM|STARTUP|MEMORY|MATH|INPUT|OUTPUT|PRINT|TIME|CALL_GATE)\\b)"
+                    "match": "(?i:(?<=\\s)(?:STARTUP|MEMORY|MATH|INPUT|OUTPUT|PRINT|TIME|CALL_GATE)\\b)"
                 },
                 {
                     "name": "keyword.control.asm",
