@@ -1,0 +1,111 @@
+#!/bin/bash
+
+TEMP_FILE="temp_file"
+
+CheckExitCode() {
+    # Check if exit code != 0
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+}
+
+Preprocess () {
+    cpp -x assembler-with-cpp -include CESC16.cpu -nostdinc -CC -undef -P $1 > $TEMP_FILE
+    CheckExitCode
+}
+
+Cleanup () {
+    rm -f $TEMP_FILE
+}
+trap Cleanup EXIT
+
+PrintHelp () {
+    echo "CESC16 Assembler"
+    echo "Usage: $0 [options] <file>"
+    echo "Options:"
+    echo "-h --help: Show this help message"
+    echo "-o --output <name>: Set output filenames to <name>.hex and <name>.bin"
+    echo "-p --print: Print the assembled file to stdout. Ignore -o option."
+    exit 0
+}
+
+if [ "$#" -eq 0 ]; then
+    PrintHelp
+fi
+
+
+# Parse arguments
+POSITIONAL_ARGS=()
+OUT_FILENAME=out
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+        PrintHelp
+        ;;
+    -o|--output)
+      OUT_FILENAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -p|--print)
+      PRINT_RESULT=1
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+# Check that there is only 1 positional argument
+if [ "$#" -ne 1 ]; then
+    echo "Make sure to specify exactly 1 file to assemble"
+    echo "Specified files: [$@]"
+    exit 1
+fi
+
+OUTPUT_HEX=$OUT_FILENAME.hex
+OUTPUT_BIN=$OUT_FILENAME.bin
+
+
+if ! [ -f "Tools/hex2bin" ] || ! [ -f "Tools/GenerateSymbols" ]
+then
+    echo "Tools not found, recompiling..."
+    make -C Tools/ -f makefile
+    echo ""
+fi
+if ! [ -f "CESC16.cpu" ]
+then
+    echo "CESC16.cpu not found, aborting..."
+    exit 1
+fi
+if ! [ -f "customasm.exe" ]
+then
+    echo "customasm.exe not found, aborting..."
+    echo "Go to https://github.com/hlorenzi/customasm/releases and download the latest version of customasm."
+    exit 1
+fi
+
+Preprocess $1
+if [ $PRINT_RESULT ]; then
+    # -p flag used, print result to stdout
+    ./customasm.exe $TEMP_FILE --print --quiet
+    CheckExitCode
+
+else
+    ./customasm.exe $TEMP_FILE --format logisim16 -o $TEMP_FILE --quiet
+    CheckExitCode
+    
+    # Start at line 2 (remove first line with text "v2.0 raw").
+    # This workaround may need to be removed in the future
+    tail -n +2 $TEMP_FILE > $OUTPUT_HEX
+    
+    Tools/hex2bin $OUTPUT_HEX > $OUTPUT_BIN
+    CheckExitCode
+fi
