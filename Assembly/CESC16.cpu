@@ -181,9 +181,31 @@
     
     test {rA: REG}                          => asm { movf zero, {rA} }
     test [{Addr: u16}]                      => asm { movf zero, [Addr] }
+    test {Imm: i16}                         => asm { movf zero, Imm }
     test [{rA: REG}]                        => asm { movf zero, [{rA}] }
     test [{rA: REG}+{Imm: i16}]             => asm { add zero, [{rA}+Imm] }
     test [{rA: REG}+{rB: REG}]              => asm { add zero, [{rA}+{rB}] }
+    
+    ; sub t0, t0, [t2+5]  =>  sub t0, [t2+5]
+    {op: ALU_OP} {rD: REG}, {rC: REG}, [{rA: REG}+{Imm: i16}] => {
+        assert({rD} == {rC})
+        asm { {op} {rD}, [{rA}+Imm] }
+    }
+    ; sub t0, t1, [t2+5]  =>  add t0, t2, 5 ; sub t0, t1, [t0]
+    {op: ALU_OP} {rD: REG}, {rC: REG}, [{rA: REG}+{Imm: i16}] => {
+        assert({rD} != {rC})
+        asm { add {rD}, {rA}, Imm } @ asm { {op} {rD}, {rC}, [{rD}] }
+    }
+    ; sub t0, t0, [t2+t3]  =>  sub t0, [t2+t3]
+    {op: ALU_OP} {rD: REG}, {rC: REG}, [{rA: REG}+{rB: REG}] => {
+        assert({rD} == {rC})
+        asm { {op} {rD}, [{rA}+{rB}] }
+    }
+    ; sub t0, t1, [t2+t3]  =>  add t0, t2, t3 ; sub t0, t1, [t0]
+    {op: ALU_OP} {rD: REG}, {rC: REG}, [{rA: REG}+{rB: REG}] => {
+        assert({rD} != {rC})
+        asm { add {rD}, {rA}, {rB} } @ asm { {op} {rD}, {rC}, [{rD}] }
+    }
     
     clrf    => asm { movf zero, 0x0001 }
     

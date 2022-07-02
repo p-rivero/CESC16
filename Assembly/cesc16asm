@@ -65,7 +65,7 @@ Assemble() {
 
     if [ "$PRINT_RESULT" = true ]; then
         # -p flag used, print result to stdout
-        ./customasm.exe $TEMP_FILE --print --quiet > /dev/null
+        ./customasm.exe $TEMP_FILE --print --quiet
 
     else
         ./customasm.exe $TEMP_FILE --format logisim16 -o $TEMP_FILE --quiet > /dev/null
