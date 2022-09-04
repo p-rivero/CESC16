@@ -54,9 +54,17 @@ Assemble() {
         make -C Tools/ -f makefile
         echo ""
     fi
-    if ! [ -f "customasm.exe" ]; then
-        printerr "customasm.exe not found, aborting..." >&2
-        printerr "Go to https://github.com/hlorenzi/customasm/releases and download the latest version of customasm."
+    CUSTOMASM_COMMAND=
+    if type "customasm" > /dev/null 2> /dev/null; then
+        # customasm found in path
+        CUSTOMASM_COMMAND="customasm"
+    fi
+    if [ -f "customasm.exe" ]; then
+        # customasm found in current directory
+        CUSTOMASM_COMMAND="./customasm.exe"
+    fi
+    if [ -z "$CUSTOMASM_COMMAND" ]; then
+        printerr "customasm not found, aborting..."
         exit 1
     fi
     
@@ -65,10 +73,10 @@ Assemble() {
 
     if [ "$PRINT_RESULT" = true ]; then
         # -p flag used, print result to stdout
-        ./customasm.exe $TEMP_FILE --print --quiet
+        $CUSTOMASM_COMMAND $TEMP_FILE --print --quiet
 
     else
-        ./customasm.exe $TEMP_FILE --format logisim16 -o $TEMP_FILE --quiet > /dev/null
+        $CUSTOMASM_COMMAND $TEMP_FILE --format logisim16 -o $TEMP_FILE --quiet > /dev/null
         
         # Start at line 2 (remove first line with text "v2.0 raw").
         # This workaround may need to be removed in the future
@@ -160,6 +168,7 @@ while [[ $# -gt 0 ]]; do
         ;;
     -p|--print)
         PRINT_RESULT=true
+        NO_BIN=true
         shift # past argument
         ;;
     -*|--*)
