@@ -12,10 +12,12 @@ This repository contains the following:
 - C++ code for generating the computer microcode
 - Code for the Arduino I/O controllers **(not yet)**
 - Schematics and PCBs
-- Pictures of the finished build **(not yet)**
+- Pictures of the finished build
 - A usage guide **(not yet)**
 
-> *Important notice:* The used assembler is **customasm**, which you can find [here](https://github.com/hlorenzi/customasm).
+> The used assembler is **customasm**, which you can find [here](https://github.com/hlorenzi/customasm).
+
+<img src="Pictures/AllModules.jpg" alt="Picture of the finished computer" width="600"/>
 
 
 # Other repositories
